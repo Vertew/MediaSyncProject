@@ -25,7 +25,7 @@
     </div>
 
     <div class = "container-md mt-3">
-
+        <a class="btn btn-link" href="{{route('users.create')}}">Don't have an account? Click here to register.</a>
     </div>
 
 </div>

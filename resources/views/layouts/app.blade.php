@@ -29,13 +29,29 @@
                     @csrf
                     <input class="btn btn-light" type = "submit" value = "Logout">
                 </form>
-                
+                @if(request()->route()->uri != 'home')
+                    <a href="{{route('home')}}">
+                        <button class="btn btn-light" type="button">Home</button>
+                    </a>
+                @endif
                 <a href="{{url()->previous()}}">
                     <button class="btn btn-light" type="button">Back</button>
                 </a>
             @endif
         </div>
 
+        @if ($errors->any())
+            <div class="alert alert-danger mt-3 container-md">
+                Submit failed due to the following:
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li><strong>{{$error}}</strong></li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Might need to get livewire implemented for this to work-->
         @if (session('message'))
             <div class="alert alert {{ session('alert-class', 'alert-success') }} mt-3 container-md">
                 <p><strong>{{session('message')}}</strong></p>
