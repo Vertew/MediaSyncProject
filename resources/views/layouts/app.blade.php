@@ -29,6 +29,9 @@
                     @csrf
                     <input class="btn btn-light" type = "submit" value = "Logout">
                 </form>
+                <a href="{{route('users.show', ['id'=> Auth::id()])}}">
+                    <button class="btn btn-light mr-2" type="button">My Account</button>
+                </a>
                 @if(request()->route()->uri != 'home')
                     <a href="{{route('home')}}">
                         <button class="btn btn-light" type="button">Home</button>

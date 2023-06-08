@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UsersTableSeeder extends Seeder
@@ -48,6 +47,6 @@ class UsersTableSeeder extends Seeder
         $user->remember_token = Str::random(10);  
         $user->save();
 
-        User::factory()->count(30)->create();
+        User::factory()->has(\App\Models\Profile::factory())->count(30)->create();
     }
 }
