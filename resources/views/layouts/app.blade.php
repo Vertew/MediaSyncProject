@@ -34,15 +34,17 @@
                 </a>
             @endauth
 
-            @guest
-                <a href="{{url()->previous()}}">
-                    <button class="btn btn-light" type="button">Back</button>
-                </a>
-                @if(request()->route()->uri != 'home' and request()->route()->uri != 'login')
+            
+            @if(request()->route()->uri != 'home' and request()->route()->uri != 'login')
                     <a href="{{route('home')}}">
                         <button class="btn btn-light" type="button">Home</button>
                     </a>
-                @endif
+            @endif
+            <a href="{{url()->previous()}}">
+                <button class="btn btn-light" type="button">Back</button>
+            </a>
+
+            @guest
                 @if(request()->route()->uri != 'login')
                     <a href="{{route('login')}}">
                         <button class="btn btn-light" type="button">Login</button>

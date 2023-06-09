@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,11 @@ Route::get('/profiles/{id}', [ProfileController::class, 'show']) -> name('profil
 Route::get('/profiles/edit/{id}', [ProfileController::class, 'edit']) -> name('profiles.edit') -> middleware('auth');
 
 Route::post('/profiles/update/{id}', [ProfileController::class, 'update']) -> name('profiles.update') -> middleware('auth');
+
+Route::get('/videos/upload', [ VideoController::class, 'create' ])->name('videos.create');
+
+Route::post('/videos/upload', [ VideoController::class, 'store' ])->name('videos.store');
+
+Route::get('/videos/index', [ VideoController::class, 'index_user' ])->name('videos.index_user');
+
+Route::get('/videos/room/{id?}', [ VideoController::class, 'room' ])->name('videos.room');
