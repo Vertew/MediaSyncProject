@@ -24,7 +24,7 @@
         <div class= "container-fluid p-5 bg-primary text-white">
             <h1 class = "text-center display-1">MediaSync @yield('title')</h1>
 
-            @if(Auth::check())
+            @auth
                 <form class = 'mb-1' method="POST" action="{{ route('login.logout') }}">
                     @csrf
                     <input class="btn btn-light" type = "submit" value = "Logout">
@@ -32,15 +32,30 @@
                 <a href="{{route('users.show', ['id'=> Auth::id()])}}">
                     <button class="btn btn-light mr-2" type="button">My Account</button>
                 </a>
-                @if(request()->route()->uri != 'home')
+            @endauth
+
+            @guest
+                <a href="{{url()->previous()}}">
+                    <button class="btn btn-light" type="button">Back</button>
+                </a>
+                @if(request()->route()->uri != 'home' and request()->route()->uri != 'login')
                     <a href="{{route('home')}}">
                         <button class="btn btn-light" type="button">Home</button>
                     </a>
                 @endif
-                <a href="{{url()->previous()}}">
-                    <button class="btn btn-light" type="button">Back</button>
-                </a>
-            @endif
+                @if(request()->route()->uri != 'login')
+                    <a href="{{route('login')}}">
+                        <button class="btn btn-light" type="button">Login</button>
+                    </a>
+                @endif
+                @if(request()->route()->uri != 'users/create')
+                    <a href="{{route('users.create')}}">
+                        <button class="btn btn-light" type="button">Create account</button>
+                    </a>
+                @endif
+            @endguest
+
+            
         </div>
 
         @if ($errors->any())

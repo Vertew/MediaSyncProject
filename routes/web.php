@@ -22,7 +22,7 @@ Route::get('/', function () {
 
 Route::get('/home', function() {
     return view('home');
-}) -> name('home') -> middleware('auth');
+}) -> name('home');
 
 Route::get('/login', [LoginController::class, 'show']) -> name('login');
 
