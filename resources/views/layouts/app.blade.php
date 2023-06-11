@@ -15,7 +15,7 @@
         <!-- Scripts-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-       <!-- @livewireStyles-->
+       @livewireStyles
     </head>
 
 
@@ -71,7 +71,6 @@
             </div>
         @endif
 
-        <!-- Might need to get livewire implemented for this to work-->
         @if (session('message'))
             <div class="alert alert {{ session('alert-class', 'alert-success') }} mt-3 container-md">
                 <p><strong>{{session('message')}}</strong></p>
@@ -80,7 +79,7 @@
 
         @yield('content')
 
-        <!--@livewireScripts-->
+        @livewireScripts
 
     </body>
 
