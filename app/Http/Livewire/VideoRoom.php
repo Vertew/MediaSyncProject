@@ -7,7 +7,7 @@ use Livewire\Component;
 use App\Models\Video;
 use App\Models\User;
 
-class VideoIndex extends Component
+class VideoRoom extends Component
 {
 
     public $current_video = "empty";
@@ -20,6 +20,6 @@ class VideoIndex extends Component
     
     public function render()
     {
-        return view('livewire.video-index', ['videos' => $this->videos->sortByDesc('created_at')]);
+        return view('livewire.video-room', ['videos' => $this->videos->sortByDesc('created_at')]);
     }
 }
