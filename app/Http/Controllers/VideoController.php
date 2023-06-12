@@ -64,18 +64,20 @@ class VideoController extends Controller
 
     }
 
-    public function room(string $id = '1')
-    {
-        $video = Video::findOrFail($id);
-        return view('videos.room', ['video' => $video]);
-    }
-
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+
+    public function show(string $id = '1')
     {
-        return view('videos.show');
+        $video = Video::findOrFail($id);
+        return view('videos.show', ['video' => $video]);
+    }
+
+
+    public function room()
+    {
+        return view('videos.room');
     }
 
     /**

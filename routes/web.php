@@ -49,4 +49,6 @@ Route::post('/videos/upload', [ VideoController::class, 'store' ])->name('videos
 
 Route::get('/videos/index', [ VideoController::class, 'index_user' ])->name('videos.index_user');
 
-Route::get('/videos/room/{id?}', [ VideoController::class, 'room' ])->name('videos.room');
+Route::get('/videos/room', [ VideoController::class, 'room' ])->name('videos.room');
+
+Route::get('/videos/show/{id?}', [ VideoController::class, 'show' ])->name('videos.show');
