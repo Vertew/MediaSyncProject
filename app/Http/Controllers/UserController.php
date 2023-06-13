@@ -38,10 +38,14 @@ class UserController extends Controller
         $user = new User;
         $user->username = $validatedData['username'];
         $user->email = $validatedData['email'];
-        $user->email_verified_at = now(); // The email isn't actually verified, this is just demonstrative.
+        $user->email_verified_at = now(); // The email isn't actually verified currently, this is just demonstrative.
         $user->password = $validatedData['password'];
         $user->remember_token = Str::random(10);
         $user->save();
+
+        $profile = new Profile; // Profiles are intrinsically linked to users, so when a user is created, an empty profile is also created.
+        $profile->user_id = $user->id;
+        $profile->save();
 
         session()->flash('message', 'New account created.');
         return redirect()->route('home');

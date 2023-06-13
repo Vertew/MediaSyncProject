@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\RoomController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,3 +53,7 @@ Route::get('/videos/index', [ VideoController::class, 'index_user' ])->name('vid
 Route::get('/videos/room', [ VideoController::class, 'room' ])->name('videos.room');
 
 Route::get('/videos/show/{id?}', [ VideoController::class, 'show' ])->name('videos.show');
+
+Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store');
+
+Route::get('/rooms/{key}', [ RoomController::class, 'show' ])->name('rooms.show');
