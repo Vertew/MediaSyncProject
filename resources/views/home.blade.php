@@ -11,16 +11,15 @@
     @foreach (Auth::user()->rooms as $room)
         <div class="container-md mt-3">
             <div class="list-group">
-                <a class="list-group-item list-group-item-action" href = "{{route('rooms.show', ['key'=> $room->key])}}"> Room {{$room->id}}</a>
+                <a class="list-group-item list-group-item-action" href = "{{route('rooms.show', ['key'=> $room->key])}}">{{$room->name}}</a>
             </div>
         </div>
     @endforeach
 
     <div class="container-md mt-3 text-center">
-        <form action="{{route('rooms.store')}}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <button type="submit" class="btn btn-success"> Create a room</button>
-        </form>
+        <a href="{{route('rooms.create')}}">
+            <button class="btn btn-success" type="button">Create room</button>
+        </a>
     </div>
 
 </div>

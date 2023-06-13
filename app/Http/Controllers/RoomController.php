@@ -22,7 +22,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        //
+        return view('rooms.create');
     }
 
     /**
@@ -30,14 +30,19 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
+
+        $validatedData = $request->validate([
+            'name' => 'required|max:15',
+        ]);
+
         $room = new Room;
         $room->user_id = Auth::id();
+        $room->name = $validatedData['name'];
         $room->key = Str::random(16);
         $room->save();
 
         session()->flash('message', 'New room created.');
         return redirect()->route('rooms.show', ['key' => $room->key]);
-
     }
 
     /**

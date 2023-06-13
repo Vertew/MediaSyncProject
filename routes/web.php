@@ -50,9 +50,9 @@ Route::post('/videos/upload', [ VideoController::class, 'store' ])->name('videos
 
 Route::get('/videos/index', [ VideoController::class, 'index_user' ])->name('videos.index_user');
 
-Route::get('/videos/room', [ VideoController::class, 'room' ])->name('videos.room');
-
 Route::get('/videos/show/{id?}', [ VideoController::class, 'show' ])->name('videos.show');
+
+Route::get('/rooms/create', [RoomController::class, 'create']) -> name('rooms.create');
 
 Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store');
 

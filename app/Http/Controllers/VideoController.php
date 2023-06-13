@@ -74,12 +74,6 @@ class VideoController extends Controller
         return view('videos.show', ['video' => $video]);
     }
 
-
-    public function room()
-    {
-        return view('videos.room');
-    }
-
     /**
      * Remove the specified resource from storage.
      */

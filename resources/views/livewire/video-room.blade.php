@@ -4,12 +4,7 @@
         Your browser does not support mp4 videos.
     </video>
     
-
     <h3 class='display-6 text-center'>Your videos</h3>
-
-    <a href="{{route('videos.create')}}">
-        <button class="btn btn-light" type="button">Upload video</button>
-    </a>
 
     <button class="btn btn-light" type="button" onclick="setSrc({{ Js::from($current_video) }})">Set video</button>
     @foreach ($videos as $video)
@@ -22,6 +17,7 @@
             </div>
         </div>
     @endforeach
+
 
 </div>
 
