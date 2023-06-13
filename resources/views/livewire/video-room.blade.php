@@ -1,24 +1,30 @@
-<div class = "mt-5 mb-3">
+<div class = "mt-3 mb-3">
+
+    <h3 class='display-6 text-center'>{{$video_title ?? "No video selected yet..."}}</h3>
+
     <video id="video1" width="1280" height="720" controls >
         <source src=null type="video/mp4">
         Your browser does not support mp4 videos.
     </video>
     
-    <h3 class='display-6 text-center'>Your videos</h3>
-
+    <div class = "container-md mb-3 text-center">
+        <h3 class='display-6 text-center'>Your videos</h3>
+    </div>
+    
     <button class="btn btn-light" type="button" onclick="setSrc({{ Js::from($current_video) }})">Set video</button>
-    @foreach ($videos as $video)
-        <div class="container-md mt-3">
-            <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-primary">
-                    <input type="radio" name="options" id="option1" autocomplete="off" wire:click="$set('current_video', '{{asset($video->path)}}')"/>
-                    Select {{$video->title}}
-                </label>
+
+    <div class = "container-md mb-3 text-center" style="max-height: 300px; overflow-y: auto;">
+        @foreach ($videos as $video)
+            <div class="container-md mt-3">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                        <input type="radio" name="options" id="option1" autocomplete="off" wire:click="set_media({{$video}})"/>
+                        Select {{$video->title}}
+                    </label>
+                </div>
             </div>
-        </div>
-    @endforeach
-
-
+        @endforeach
+    </div>
 </div>
 
 <script> 

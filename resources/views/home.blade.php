@@ -21,7 +21,6 @@
             <button class="btn btn-success" type="button">Create room</button>
         </a>
     </div>
-
 </div>
 
 @endsection

@@ -11,11 +11,17 @@ class VideoRoom extends Component
 {
 
     public $current_video = "empty";
+    public $video_title = "No video selected yet...";
 
     public function mount()
     {
         // Initialising videos
         $this->videos = Auth::user()->videos;
+    }
+
+    public function set_media(Video $video){
+        $this->current_video = asset($video->path);
+        $this->video_title = $video->title;
     }
     
     public function render()
