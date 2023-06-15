@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
 
 /*
@@ -57,3 +58,5 @@ Route::get('/rooms/create', [RoomController::class, 'create']) -> name('rooms.cr
 Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store');
 
 Route::get('/rooms/{key}', [ RoomController::class, 'show' ])->name('rooms.show');
+
+Route::post('/files/upload', [ FileController::class, 'store' ])->name('files.store');

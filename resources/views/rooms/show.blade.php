@@ -11,14 +11,29 @@
     <livewire:video-room />
 
     <div class = "container-md mt-5 text-center">
-        <button class="btn btn-primary" onclick="showhide()"> Upload new video</button>
+        <button class="btn btn-primary" onclick="showhide()"> Upload media</button>
     </div>
 
+    {{--
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <form action="{{ route('videos.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
                 <div class="container-md mt-3">
                     <input type="file" name="video" class="form-control"/>
+                </div>
+                <div class="container-md mt-3">
+                    <button type="submit" class="btn btn-success">Upload</button>
+                    <button type="reset" onclick="showhide()" class="btn btn-secondary">Cancel</button>
+                </div>
+        </form>
+    </div>
+    --}}
+
+    <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
+        <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+                <div class="container-md mt-3">
+                    <input type="file" name="file" class="form-control"/>
                 </div>
                 <div class="container-md mt-3">
                     <button type="submit" class="btn btn-success">Upload</button>
