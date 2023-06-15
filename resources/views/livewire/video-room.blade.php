@@ -23,7 +23,7 @@
             <div class="container-md mt-3">
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-primary">
-                        <input type="radio" name="options" id="option1" autocomplete="off" wire:click="set_media({{$video}})"/>
+                        <input type="radio" name="options" autocomplete="off" wire:click="set_media({{$video}})"/>
                         Select {{$video->title}}
                     </label>
                 </div>
@@ -42,7 +42,7 @@
             <div class="container-md mt-3">
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-primary">
-                        <input type="radio" name="options" id="option1" autocomplete="off" wire:click="set_media({{$audio}})"/>
+                        <input type="radio" name="options" autocomplete="off" wire:click="set_media({{$audio}})"/>
                         Select {{$audio->title}}
                     </label>
                 </div>
@@ -50,15 +50,16 @@
         @endforeach
     </div>
 
-</div>
+    <script> 
+        var myVideo = document.getElementById("video_player");
+        var myAudio = document.getElementById("audio_player");
+        function setVidSrc(newSrc) {
+            myVideo.src=newSrc
+        }
+        function setSoundSrc(newSrc) {
+            myAudio.src=newSrc
+        }
+    </script>
+    
 
-<script> 
-    var myVideo = document.getElementById("video_player");
-    var myAudio = document.getElementById("audio_player");
-    function setVidSrc(newSrc) {
-        myVideo.src=newSrc
-    }
-    function setSoundSrc(newSrc) {
-        myAudio.src=newSrc
-    }
-</script>
+</div>
