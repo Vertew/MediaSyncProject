@@ -17,6 +17,12 @@
     @endforeach
 
     <div class="container-md mt-3 text-center">
+        <a href="{{route('videos.show', ['id'=> 1])}}">
+            <button class="btn btn-success" type="button">Legacy room</button>
+        </a>
+    </div>
+
+    <div class="container-md mt-3 text-center">
         <a href="{{route('rooms.create')}}">
             <button class="btn btn-success" type="button">Create room</button>
         </a>

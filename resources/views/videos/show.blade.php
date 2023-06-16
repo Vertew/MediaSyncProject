@@ -7,7 +7,7 @@
 <div class = "container-md mt-3 text-center">
 
     <video width="1280" height="720" controls>
-        <source src={{asset($video->path)}} type="video/mp4">
+        <source src="http://127.0.0.1:8080/media/videos/LuxeaRec2023-01-01_12-58-08.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
 
