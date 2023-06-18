@@ -11,23 +11,8 @@
     <livewire:video-room />
 
     <div class = "container-md mt-5 text-center">
-        <button class="btn btn-primary" onclick="showhide()"> Upload media</button>
+        <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>
     </div>
-
-    {{--
-    <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
-        <form action="{{ route('videos.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-                <div class="container-md mt-3">
-                    <input type="file" name="video" class="form-control"/>
-                </div>
-                <div class="container-md mt-3">
-                    <button type="submit" class="btn btn-success">Upload</button>
-                    <button type="reset" onclick="showhide()" class="btn btn-secondary">Cancel</button>
-                </div>
-        </form>
-    </div>
-    --}}
 
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data">
@@ -42,20 +27,19 @@
         </form>
     </div>
 
+    <script>
+        function showhide(id) {
+            var div = document.getElementById(id);
+            if (div.style.display === "none") {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+             }
+        }
+    </script>
+
 </div>
 
 <div class="mt-5 p-4 bg-dark text-white text-center"></div>
-
-<script>
-    function showhide() {
-
-        var div = document.getElementById("upload-div");
-        if (div.style.display === "none") {
-            div.style.display = "block";
-        } else {
-            div.style.display = "none";
-         }
-    }
-</script>
 
 @endsection

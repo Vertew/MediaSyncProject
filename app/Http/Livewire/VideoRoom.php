@@ -11,7 +11,8 @@ class VideoRoom extends Component
 {
 
     public $current_file = "empty";
-    public $title = "Nothing selected";
+    public $title_vid = "";
+    public $title_snd = "";
 
     public function mount()
     {
@@ -21,8 +22,13 @@ class VideoRoom extends Component
     }
 
     public function set_media(File $file){
-        $this->current_file = asset($file->path);
-        $this->title = $file->title;
+        $this->current_file = $file->url;
+        if($file->type == "video"){
+            $this->title_vid = $file->title;
+        }else{
+            $this->title_snd = $file->title;
+        }
+        
     }
     
     public function render()

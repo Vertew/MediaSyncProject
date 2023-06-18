@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('path');
             $table->string('type');
+            $table->string('url');
             $table->string('title');
             $table->bigInteger('user_id')->unsigned();
 

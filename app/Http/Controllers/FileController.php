@@ -40,21 +40,24 @@ class FileController extends Controller
         if($extension == 'mp4'){
             $storePath = 'media/videos/' . $fileName;
             $accessPath = 'storage/media/videos/' . $fileName;
+            $url = 'http://127.0.0.1:8080/media/videos/' . $fileName;
             $type = 'video';
         }else{
             $storePath = 'media/audios/' . $fileName;
             $accessPath = 'storage/media/audios/' . $fileName;
+            $url = 'http://127.0.0.1:8080/media/audios/' . $fileName;
             $type = 'audio';
         }
         
 
         $isFileUploaded = Storage::disk('public')->put($storePath, file_get_contents($request->file));
-        $url = Storage::disk('public')->url($accessPath);
+        //$url = Storage::disk('public')->url($accessPath);
 
         if ($isFileUploaded) {
             $file = new File();
             $file->path = $accessPath;
             $file->type = $type;
+            $file->url = $url;
             $file->title = $fileName;
             $file->user_id = Auth::id();;
             $file->save();
