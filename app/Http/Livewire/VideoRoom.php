@@ -11,8 +11,10 @@ class VideoRoom extends Component
 {
 
     public $current_file = "empty";
-    public $title_vid = "";
-    public $title_snd = "";
+    public $title_vid = "Video player empty...";
+    public $title_snd = "Audio player empty...";
+    public $slctd_title_vid = "";
+    public $slctd_title_snd = "";
 
     public function mount()
     {
@@ -24,11 +26,18 @@ class VideoRoom extends Component
     public function set_media(File $file){
         $this->current_file = $file->url;
         if($file->type == "video"){
-            $this->title_vid = $file->title;
+            $this->slctd_title_vid  = $file->title;
         }else{
-            $this->title_snd = $file->title;
+            $this->slctd_title_snd = $file->title;
         }
-        
+    }
+
+    public function set_title(String $title, String $type){
+        if($type == "video"){
+            $this->title_vid = $title;
+        }else{
+            $this->title_snd = $title;
+        }
     }
     
     public function render()

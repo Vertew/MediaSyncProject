@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Room')
+@section('title')
 
 @section('content')
 
@@ -22,7 +22,7 @@
                 </div>
                 <div class="container-md mt-3">
                     <button type="submit" class="btn btn-success">Upload</button>
-                    <button type="reset" onclick="showhide()" class="btn btn-secondary">Cancel</button>
+                    <button type="reset" onclick="showhide('upload-div')" class="btn btn-secondary">Cancel</button>
                 </div>
         </form>
     </div>
@@ -40,6 +40,6 @@
 
 </div>
 
-<div class="mt-5 p-4 bg-dark text-white text-center"></div>
+<div class="mt-5 p-4 bg-dark text-white text-center"> <p>MediaSync - Copyright 2023 - Sam Tudberry - 1907632</p> </div>
 
 @endsection
