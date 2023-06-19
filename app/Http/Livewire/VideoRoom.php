@@ -16,6 +16,8 @@ class VideoRoom extends Component
     public $slctd_title_vid = "";
     public $slctd_title_snd = "";
 
+    protected $listeners = ['fileUploaded' => '$refresh'];
+
     public function mount()
     {
         // Initialising videos
@@ -42,6 +44,8 @@ class VideoRoom extends Component
     
     public function render()
     {
+        $this->videos = Auth::user()->files->where('type', 'video');
+        $this->audios = Auth::user()->files->where('type', 'audio');
         return view('livewire.video-room', ['videos' => $this->videos->sortByDesc('created_at')], ['audios' => $this->audios->sortByDesc('created_at')]);
     }
 }

@@ -22,8 +22,7 @@
         </audio>
     </div>
     
-    <div class="row">
-
+    <div class="row" wire:poll>
         <div class="col">
             <div class = "container-md mt-5 text-center">
                 <h1 class='display-6 text-center'>Your video files</h1>

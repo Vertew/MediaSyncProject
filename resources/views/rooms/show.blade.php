@@ -15,6 +15,11 @@
     </div>
 
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
+        <livewire:file-upload />
+    </div>
+    
+    {{--
+    <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
                 <div class="container-md mt-3">
@@ -26,6 +31,7 @@
                 </div>
         </form>
     </div>
+    --}}
 
     <script>
         function showhide(id) {
@@ -36,6 +42,10 @@
                 div.style.display = "none";
              }
         }
+        function reset(id){
+            var element = document.getElementById(id).reset();
+        }
+
     </script>
 
 </div>
