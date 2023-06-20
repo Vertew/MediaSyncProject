@@ -33,6 +33,14 @@
     </div>
     --}}
 
+    <div class = "container-md mt-5 text-center">
+        <form method="POST" action="{{ route('rooms.destroy', ['id'=> $room->id])}}">
+            @csrf
+            @method('DELETE')
+            <input class="btn btn-danger" type = "submit" value = "Delete Room" onclick="return confirm('Are you sure?')">
+        </form>
+    </div>
+
     <script>
         function showhide(id) {
             var div = document.getElementById(id);

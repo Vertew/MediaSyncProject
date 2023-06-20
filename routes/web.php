@@ -59,4 +59,6 @@ Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store');
 
 Route::get('/rooms/{key}', [ RoomController::class, 'show' ])->name('rooms.show');
 
+Route::delete('/rooms/{id}', [RoomController::class, 'destroy']) -> name('rooms.destroy');
+
 Route::post('/files/upload', [ FileController::class, 'store' ])->name('files.store');

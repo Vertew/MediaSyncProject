@@ -75,6 +75,9 @@ class RoomController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $room = Room::findOrFail($id);
+        $room->delete();
+        session()->flash('message', 'Room deleted.');
+        return redirect()->route('home');
     }
 }
