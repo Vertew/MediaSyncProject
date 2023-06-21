@@ -68,9 +68,7 @@
                 <button class="btn btn-light" type="button" onclick="setSrc('audio_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_snd) }},'audio')">Add to audio player</button>
                 <button class="btn btn-outline-danger" type="button" wire:click="delete({{ $slctd_id_snd ?? -1 }})">Delete</button>
             </div>
-
         </div>
-
     </div>
 
 
