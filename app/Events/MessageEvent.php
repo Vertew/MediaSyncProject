@@ -10,16 +10,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TestEvent implements ShouldBroadcast
+class MessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    private string $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(string $message)
     {
-        //
+        $this->message = $message;
     }
 
     /**
@@ -30,19 +32,19 @@ class TestEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('public.test.1'),
+            new Channel('public.chat.1'),
         ];
     }
 
     public function broadcastAs(): string
     {
-        return 'Test';
+        return 'message-sent';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'ello' => 42069
+            'message' => $this->message
         ];
     }
 

@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
-use App\Events\TestEvent;
+use App\Events\MessageEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +26,17 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function() {
-    event(new TestEvent());
+    event(new MessageEvent());
 }) -> name('test');
+
+Route::get('/ws', function(){
+    return view('websocket');
+});
+
+Route::post('/input-message', function(Request $request){
+    event(new MessageEvent($request->message));
+    return null;
+});
 
 Route::get('/home', function() {
     return view('home');
