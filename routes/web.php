@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
+use App\Events\TestEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,10 @@ use App\Http\Controllers\RoomController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/test', function() {
+    event(new TestEvent());
+}) -> name('test');
 
 Route::get('/home', function() {
     return view('home');
