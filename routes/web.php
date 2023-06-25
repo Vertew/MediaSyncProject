@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
+use Illuminate\Support\Facades\Auth;
 use App\Events\MessageEvent;
 
 /*
@@ -34,7 +35,7 @@ Route::get('/ws', function(){
 });
 
 Route::post('/input-message', function(Request $request){
-    event(new MessageEvent($request->message));
+    event(new MessageEvent($request->message, auth()->user()));
     return null;
 });
 
