@@ -2,7 +2,19 @@
 
 @section('title')
 
+@section('head')
+
+@vite('resources/js/app.js')
+
+@endsection
+
 @section('content')
+
+<script>
+    // Getting the current user on the page
+    const currentUser = {{ Js::from(Auth::user()->username) }};
+    const currentRoom = {{Js::from($room->id)}}
+</script>
 
 <div class = "container-md mt-3 text-center">
 

@@ -5,7 +5,6 @@ const form = document.getElementById('form1');
 const inputValue = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
-const today = new Date();
 
 form.addEventListener('submit', function(event){
 
@@ -13,7 +12,8 @@ form.addEventListener('submit', function(event){
     const userInput = inputValue.value;
 
     axios.post('/input-message', {
-        message: userInput
+        message: userInput,
+        room_id: currentRoom
     })
 
     form.reset();
@@ -22,6 +22,7 @@ form.addEventListener('submit', function(event){
 
 function addMessage(username, message){
 
+    const today = new Date();
     const li = document.createElement('li');
     li.classList.add('list-group-item');
     li.classList.add('d-flex');
@@ -38,7 +39,7 @@ function addMessage(username, message){
         var minutes = today.getMinutes();
     }
 
-    const time = today.getHours() + ":" + minutes;
+    var time = today.getHours() + ":" + minutes;
 
     const timeSpan = document.createElement('span');
     timeSpan.textContent = time + "        ";
@@ -53,15 +54,17 @@ function addMessage(username, message){
     container.scrollTop = container.scrollHeight;
 }
 
-const channel = Echo.join('presence.chat.1');
+const channel = Echo.join('presence.chat.'+currentRoom);
 
 channel
     .here((users) => {
-        console.log('subscribed!');
+        console.log('Subscribed to room channel ' + currentRoom + '!');
         console.log({users});
     })
 
     .joining((user) => {
+        console.log('presence.chat.'+currentRoom);
+        console.log('presence.chat.${currentRoom}');
         console.log({user}, 'joined')
         addMessage(user.username, 'User has joined the room');
     })
@@ -75,6 +78,5 @@ channel
         console.log(event);
         const message = event.message;
         const username = event.user.username;
-
         addMessage(username, message);
     })

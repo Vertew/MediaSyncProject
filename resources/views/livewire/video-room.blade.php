@@ -1,28 +1,47 @@
 <div class = "mt-3 mb-3">
 
-    <div class = "container-md mt-5 text-center" >
-        <h2 class='text-center'>{{$title_vid}}</h2>
-    </div>
+    <div class="row">
+        <div class="col">
+            <div class = "container-md mt-5 text-center" >
+                <h2 class='text-center'>{{$title_vid}}</h2>
+            </div>
 
-    <div class = "container-md text-center" id = "video-div">
-        <video id="video_player" title={{$title_vid}} width="1280" height="720" controls >
-            <source src=null type="video/mp4">
-            Your browser does not support the selected media format.
-        </video>
-    </div>
+            <div class = "container-md text-center" id = "video-div">
+                <video id="video_player" title={{$title_vid}} width="1280" height="720" controls >
+                    <source src=null type="video/mp4">
+                    Your browser does not support the selected media format.
+                </video>
+            </div>
 
-    <div class = "container-md mt-5 text-center">
-        <h2 class='text-center'>{{$title_snd}}</h2>
-    </div>
+            <div class = "container-md mt-5 text-center">
+                <h2 class='text-center'>{{$title_snd}}</h2>
+            </div>
 
-    <div class = "container-md mt-3 text-center" id = "audio-div">
-        <audio id="audio_player" title={{$title_snd}} controls>
-            <source src=null type="audio/mpeg">
-            Your browser does not support the selected media format.
-        </audio>
+            <div class = "container-md mt-3 text-center" id = "audio-div">
+                <audio id="audio_player" title={{$title_snd}} controls>
+                    <source src=null type="audio/mpeg">
+                    Your browser does not support the selected media format.
+                </audio>
+            </div>
+        </div>
+        <div class="col">
+            <div id="message-container" class = "container-md mt-3" style="max-height: 300px; overflow-y: auto;">
+                <ul class="list-group" id ="message-list">
+            
+                </ul>
+            </div>
+
+            <div class = "container-md mt-3 text-center">
+                <form id='form1'>
+                    <div class="container-md mb-3 mt-3">
+                        <input id="input" type = "text" class="form-control" placeholder="Start typing..." name = "title">
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     
-    <div class="row" wire:poll>
+    <div class="row">
         <div class="col">
             <div class = "container-md mt-5 text-center">
                 <h1 class='display-6 text-center'>Your video files</h1>

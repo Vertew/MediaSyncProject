@@ -17,14 +17,16 @@ class MessageEvent implements ShouldBroadcast
 
     private string $message;
     private User $user;
+    private $room_id;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $message, User $user)
+    public function __construct(string $message, User $user, $room_id)
     {
         $this->message = $message;
         $this->user = $user;
+        $this->room_id = $room_id;
     }
 
     /**
@@ -35,7 +37,7 @@ class MessageEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('presence.chat.1'),
+            new PresenceChannel('presence.chat.'.$this->room_id),
         ];
     }
 

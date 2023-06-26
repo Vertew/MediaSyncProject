@@ -35,7 +35,8 @@ Route::get('/ws', function(){
 });
 
 Route::post('/input-message', function(Request $request){
-    event(new MessageEvent($request->message, auth()->user()));
+    //event(new MessageEvent($request->message, auth()->user()));
+    MessageEvent::dispatch($request->message, auth()->user(), $request->room_id);
     return null;
 });
 
