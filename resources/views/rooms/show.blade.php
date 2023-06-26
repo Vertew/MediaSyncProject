@@ -16,7 +16,7 @@
     const currentRoom = {{Js::from($room->id)}}
 </script>
 
-<div class = "container-md mt-3 text-center">
+<div class = "container-fluid mt-3">
 
     <h1 class='display-5 text-center'>{{$room->name}}</h1>
 
@@ -25,6 +25,7 @@
     <div class = "container-md mt-5 text-center">
         <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>
     </div>
+    
 
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <livewire:file-upload />
