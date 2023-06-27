@@ -11,13 +11,14 @@ use App\Models\User;
 class VideoRoom extends Component
 {
 
-    public $current_file = "empty";
+    public int $current_file;
     public $title_vid = "Video player empty...";
     public $title_snd = "Audio player empty...";
     public $slctd_id_vid;
     public $slctd_id_snd;
     public $slctd_title_vid = "";
     public $slctd_title_snd = "";
+    public $room;
 
     protected $listeners = ['fileUploaded' => '$refresh'];
 
@@ -29,7 +30,8 @@ class VideoRoom extends Component
     }
 
     public function set_media(File $file){
-        $this->current_file = $file->url;
+        //$this->current_file = $file->url;
+        $this->current_file = $file->id;
         if($file->type == "video"){
             $this->slctd_title_vid  = $file->title;
             $this->slctd_id_vid = $file->id;
@@ -66,6 +68,8 @@ class VideoRoom extends Component
     {
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
-        return view('livewire.video-room', ['videos' => $this->videos->sortByDesc('created_at')], ['audios' => $this->audios->sortByDesc('created_at')]);
+        return view('livewire.video-room', ['videos' => $this->videos->sortByDesc('created_at')], 
+                                           ['audios' => $this->audios->sortByDesc('created_at')], 
+                                           ['room' => $this->room]);
     }
 }

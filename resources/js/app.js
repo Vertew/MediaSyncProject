@@ -6,6 +6,8 @@ const inputValue = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
 
+var current_id; // Keeping track of the current video in the player.
+
 form.addEventListener('submit', function(event){
 
     event.preventDefault();
@@ -17,8 +19,8 @@ form.addEventListener('submit', function(event){
     })
 
     form.reset();
-
 });
+
 
 function addMessage(username, message){
 
@@ -63,10 +65,17 @@ channel
     })
 
     .joining((user) => {
-        console.log('presence.chat.'+currentRoom);
-        console.log('presence.chat.${currentRoom}');
-        console.log({user}, 'joined')
+        console.log(user.username, 'joined')
         addMessage(user.username, 'User has joined the room');
+        // When someone new joins the room, the broadcast goes out to set the files again to make sure
+        // they have the current file in their player. If there is no current file of course, this 
+        // will not occur.
+        if (current_id != null){
+            axios.post('/video-set', {
+                file: current_id,
+                room_id: currentRoom
+            })
+        } 
     })
 
     .leaving((user) => {
@@ -79,4 +88,20 @@ channel
         const message = event.message;
         const username = event.user.username;
         addMessage(username, message);
+    })
+
+    .listen('.video-set', (event) => {
+        console.log(event);
+        const newSrc = event.file.url;
+        const type = event.file.type;
+        const title = event.file.title;
+        const id = type + "_player";
+        const username = event.user.username;
+
+        // Preventing the same media source from being set again if it's already set.
+        if (event.file.id != current_id){
+            current_id = event.file.id;
+            addMessage(username,'Set the ' + type + ' to ' + title);
+            setSrc(id,newSrc,title,type);
+        }
     })

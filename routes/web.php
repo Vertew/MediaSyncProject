@@ -10,6 +10,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Auth;
 use App\Events\MessageEvent;
+use App\Events\VideoEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,10 +36,15 @@ Route::get('/ws', function(){
 });
 
 Route::post('/input-message', function(Request $request){
-    //event(new MessageEvent($request->message, auth()->user()));
+    //event(new MessageEvent($request->message, auth()->user())); <- Alternative/old way of doing it, achieves the same thing.
     MessageEvent::dispatch($request->message, auth()->user(), $request->room_id);
     return null;
 });
+
+Route::post('/video-set', function(Request $request){
+    VideoEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+    return null;
+}) -> name('video.set');
 
 Route::get('/home', function() {
     return view('home');

@@ -1,5 +1,9 @@
 <div class = "container-fluid mt-3 mb-3">
 
+    <script>
+
+    </script>
+
     {{-- Video and audio player bit --}}
     <div class = "row">
         <div class = "col-md-9">
@@ -9,7 +13,7 @@
 
             <div class = "container-md text-center" id = "video-div">
                 <video id="video_player" title={{$title_vid}} width="1280" height="720" controls >
-                    <source src=null type="video/mp4">
+                    <source src="currentSrc" type="video/mp4">
                     Your browser does not support the selected media format.
                 </video>
             </div>
@@ -73,7 +77,8 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                <button class="btn btn-light" type="button" onclick="setSrc('video_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_vid) }},'video')">Add to video player</button>
+                {{--<button class="btn btn-light" type="button" onclick="setSrc('video_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_vid) }},'video')">Add to video player</button>--}}
+                <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to video player</button>
                 <button class="btn btn-outline-danger" type="button" wire:click="delete({{ $slctd_id_vid ?? -1 }})">Delete</button>
             </div>
 
@@ -97,7 +102,8 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                <button class="btn btn-light" type="button" onclick="setSrc('audio_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_snd) }},'audio')">Add to audio player</button>
+                {{--<button class="btn btn-light" type="button" onclick="setSrc('audio_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_snd) }},'audio')">Add to audio player</button>--}}
+                <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to audio player</button>
                 <button class="btn btn-outline-danger" type="button" wire:click="delete({{ $slctd_id_snd ?? -1 }})">Delete</button>
             </div>
         </div>
@@ -108,6 +114,12 @@
             var myElement = document.getElementById(id);
             myElement.src=newSrc;
             @this.set_title(title,type);
+        }
+        function sendSrc(new_id) {
+            axios.post('/video-set', {
+                file: new_id,
+                room_id: currentRoom
+            })
         }
     </script>
 </div>
