@@ -99,6 +99,7 @@ channel
         const username = event.user.username;
 
         // Preventing the same media source from being set again if it's already set.
+        // This is mainly for when new users join and the set video broadcast goes out.
         if (event.file.id != current_id){
             current_id = event.file.id;
             addMessage(username,'Set the ' + type + ' to ' + title);
