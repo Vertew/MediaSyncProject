@@ -9,6 +9,7 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Auth;
+use App\Events\PlayPauseEvent;
 use App\Events\MessageEvent;
 use App\Events\VideoEvent;
 
@@ -27,16 +28,14 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/test', function() {
-    event(new MessageEvent());
-}) -> name('test');
-
 Route::get('/ws', function(){
     return view('websocket');
 });
 
+
+// --- EVENTS ---
 Route::post('/input-message', function(Request $request){
-    //event(new MessageEvent($request->message, auth()->user())); <- Alternative/old way of doing it, achieves the same thing.
+    //event(new MessageEvent($request->message, auth()->user())); <-- Alternative/old way of doing it, achieves the same thing.
     MessageEvent::dispatch($request->message, auth()->user(), $request->room_id);
     return null;
 });
@@ -45,6 +44,14 @@ Route::post('/video-set', function(Request $request){
     VideoEvent::dispatch(auth()->user(), $request->file, $request->room_id);
     return null;
 }) -> name('video.set');
+
+Route::post('/play-pause', function(Request $request){
+    PlayPauseEvent::dispatch(auth()->user(), $request->room_id);
+    return null;
+}) -> name('media.play-pause');
+
+// --- EVENTS ---
+
 
 Route::get('/home', function() {
     return view('home');

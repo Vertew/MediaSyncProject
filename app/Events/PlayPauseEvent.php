@@ -11,20 +11,18 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class MessageEvent implements ShouldBroadcast
+class PlayPauseEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private string $message;
     private User $user;
     private int $room_id;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $message, User $user, int $room_id)
+    public function __construct(User $user, int $room_id)
     {
-        $this->message = $message;
         $this->user = $user;
         $this->room_id = $room_id;
     }
@@ -43,15 +41,13 @@ class MessageEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'message-sent';
+        return 'play-pause';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message,
-            'user' => $this->user->only(['username','email'])
+            'user' => $this->user->only(['username']),
         ];
     }
-
 }

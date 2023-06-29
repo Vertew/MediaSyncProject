@@ -6,7 +6,89 @@ const inputValue = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
 
+const videoContainer = document.getElementById("video-div");
+const video = document.getElementById("video_player");
+const videoControls = document.getElementById("video-controls");
+const playpause = document.getElementById("playpause");
+const progress = document.getElementById("progress");
+const progressBar = document.getElementById("progress-bar");
+const fullscreen = document.getElementById("fs");
+
 var current_id; // Keeping track of the current video in the player.
+
+const channel = Echo.join('presence.chat.' + currentRoom);
+
+video.addEventListener("loadedmetadata", () => {
+    progressBar.ariaValueMax = video.duration;
+});
+
+video.addEventListener("timeupdate", () => {
+    if (!progressBar.ariaValueMax){
+        progressBar.ariaValueMax = video.duration;
+    }
+    progressBar.ariaValueNow = video.currentTime;
+    progressBar.style.width = `${Math.floor((video.currentTime * 100) / video.duration)}%`;
+    //progressBar.innerHTML = `${progressBar.style.width}`;
+});
+
+/*
+video.addEventListener('play', (e) => {
+
+    axios.post('/play-pause', {
+        room_id: currentRoom
+    })
+
+});
+*/
+
+playpause.addEventListener('click', (e) => {
+
+    axios.post('/play-pause', {
+        room_id: currentRoom
+    })
+
+});
+
+fullscreen.addEventListener("click", (e) => {
+    handleFullscreen();
+});
+
+document.addEventListener("fullscreenchange", (e) => {
+    setFullscreenData(!!document.fullscreenElement);
+});
+
+function handleFullscreen() {
+    if (document.fullscreenElement !== null) {
+        document.exitFullscreen();
+        videoReduce(false);
+        setFullscreenData(false);
+    } else {
+        videoContainer.requestFullscreen();
+        videoEnlarge(true);
+        setFullscreenData(true);
+    }
+}
+
+
+function videoEnlarge(state) {
+    if (state) {
+        video.width = window.innerWidth;
+        video.height = window.innerHeight;
+    }
+}
+
+function videoReduce(state) {
+    if (!state) {
+        video.width = 1280;
+        video.height = 720;
+    }
+}
+
+function setFullscreenData(state) {
+    videoReduce(!!state);
+    videoContainer.setAttribute("data-fullscreen", !!state);
+}
+
 
 form.addEventListener('submit', function(event){
 
@@ -21,6 +103,22 @@ form.addEventListener('submit', function(event){
     form.reset();
 });
 
+function playPause(username){
+    if (video.paused || video.ended) {
+        video.play();
+        addMessage(username, "User pressed play.");
+    } else {
+        video.pause();
+        addMessage(username, "User pressed pause.");
+    }
+}
+
+function play(username){
+    if (video.paused || video.ended) {
+        video.play();
+        addMessage(username, "User pressed play.");
+    }
+}
 
 function addMessage(username, message){
 
@@ -55,8 +153,6 @@ function addMessage(username, message){
 
     container.scrollTop = container.scrollHeight;
 }
-
-const channel = Echo.join('presence.chat.'+currentRoom);
 
 channel
     .here((users) => {
@@ -99,10 +195,16 @@ channel
         const username = event.user.username;
 
         // Preventing the same media source from being set again if it's already set.
-        // This is mainly for when new users join and the set video broadcast goes out.
+        // This is mainly for when new users join and the set-video broadcast goes out.
         if (event.file.id != current_id){
             current_id = event.file.id;
             addMessage(username,'Set the ' + type + ' to ' + title);
             setSrc(id,newSrc,title,type);
-        }
+        }    
+    })
+
+    .listen('.play-pause', (event) => {
+        console.log(event);
+        const username = event.user.username;
+        playPause(username);
     })

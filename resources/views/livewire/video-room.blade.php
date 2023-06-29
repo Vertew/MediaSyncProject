@@ -1,9 +1,5 @@
 <div class = "container-fluid mt-3 mb-3">
 
-    <script>
-
-    </script>
-
     {{-- Video and audio player bit --}}
     <div class = "row">
         <div class = "col-md-9">
@@ -12,10 +8,25 @@
             </div>
 
             <div class = "container-md text-center" id = "video-div">
-                <video id="video_player" title={{$title_vid}} width="1280" height="720" controls >
-                    <source src="currentSrc" type="video/mp4">
+                <video id="video_player" preload="metadata" title={{$title_vid}} width="1280" height="720" controls >
+                    <source src="source" type="video/mp4">
                     Your browser does not support the selected media format.
                 </video>
+                {{-- Defining custom media controls --}}
+                <div class = "row" id="video-controls">
+                    <div class = "col">
+                        <button class="btn btn-light" id="playpause" type="button">Play/Pause</button>
+                    </div>
+                    <div class = "col">
+                        <div class="progress" id = "progress">
+                            <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class = "col">
+                        <button class="btn btn-light" id="fs" type="button">Fullscreen</button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -102,7 +113,6 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                {{--<button class="btn btn-light" type="button" onclick="setSrc('audio_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_snd) }},'audio')">Add to audio player</button>--}}
                 <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to audio player</button>
                 <button class="btn btn-outline-danger" type="button" wire:click="delete({{ $slctd_id_snd ?? -1 }})">Delete</button>
             </div>
