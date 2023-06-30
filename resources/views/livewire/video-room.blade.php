@@ -14,15 +14,18 @@
                 </video>
                 {{-- Defining custom media controls --}}
                 <div class = "row" id="video-controls">
-                    <div class = "col">
+                    <div class = "col-md-1">
                         <button class="btn btn-light" id="playpause" type="button">►</button>
                     </div>
-                    <div class = "col">
+                    <div class = "col-md-1">
+                        <p id="time-text">00:00</p>
+                    </div>
+                    <div class = "col-md-8">
                         <div class="progress" id = "progress">
                             <div class="progress-bar" id="progress-bar" role="progressbar" style="transition: none" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
-                    <div class = "col">
+                    <div class = "col-md-2">
                         <button class="btn btn-light" id="fs" type="button">Fullscreen</button>
                     </div>
                 </div>

@@ -13,6 +13,7 @@ const playpause = document.getElementById("playpause");
 const progress = document.getElementById("progress");
 const progressBar = document.getElementById("progress-bar");
 const fullscreen = document.getElementById("fs");
+const timeText = document.getElementById("time-text");
 
 var current_id; // Keeping track of the current video in the player.
 
@@ -41,11 +42,9 @@ video.addEventListener('play', (e) => {
 */
 
 playpause.addEventListener('click', (e) => {
-
     axios.post('/play-pause', {
         room_id: currentRoom
     })
-
 });
 
 fullscreen.addEventListener("click", (e) => {
@@ -54,6 +53,19 @@ fullscreen.addEventListener("click", (e) => {
 
 document.addEventListener("fullscreenchange", (e) => {
     setFullscreenData(!!document.fullscreenElement);
+});
+
+form.addEventListener('submit', function(event){
+
+    event.preventDefault();
+    const userInput = inputValue.value;
+
+    axios.post('/input-message', {
+        message: userInput,
+        room_id: currentRoom
+    })
+
+    form.reset();
 });
 
 /* 
@@ -79,7 +91,6 @@ function scrub(e) {
 function broadcastTime(e){
     mousedown = false;
     const time = (e.offsetX / progress.offsetWidth) * video.duration;
-
     axios.post('/change-time', {
         time: time,
         room_id: currentRoom
@@ -89,6 +100,20 @@ function broadcastTime(e){
 function updateBar(){
     progressBar.ariaValueNow = video.currentTime;
     progressBar.style.width = `${Math.floor((video.currentTime * 100) / video.duration)}%`;
+    timeText.innerHTML = timeTextFormat(video.currentTime) + '/' + timeTextFormat(video.duration);
+
+}
+
+function timeTextFormat(time){
+    const hours = formatTime(parseInt(time/(60*60),10));
+    const minutes = formatTime(parseInt(time/60,10));
+    const seconds = formatTime(Math.floor(time%60));
+
+    if (hours == 0){
+        return minutes + ':' + seconds;
+    }else{
+        return hours + ':' + minutes + ':' + seconds;
+    }
 }
 
 function handleFullscreen() {
@@ -108,6 +133,7 @@ function videoEnlarge(state) {
     if (state) {
         video.width = window.innerWidth;
         video.height = window.innerHeight;
+        timeText.classList.add('text-light');
     }
 }
 
@@ -115,6 +141,7 @@ function videoReduce(state) {
     if (!state) {
         video.width = 1280;
         video.height = 720;
+        timeText.classList.remove('text-light');
     }
 }
 
@@ -122,20 +149,6 @@ function setFullscreenData(state) {
     videoReduce(!!state);
     videoContainer.setAttribute("data-fullscreen", !!state);
 }
-
-
-form.addEventListener('submit', function(event){
-
-    event.preventDefault();
-    const userInput = inputValue.value;
-
-    axios.post('/input-message', {
-        message: userInput,
-        room_id: currentRoom
-    })
-
-    form.reset();
-});
 
 function playPause(username){
     if (video.paused || video.ended) {
@@ -153,7 +166,7 @@ function playPause(username){
 function play(username){
     if (video.paused || video.ended) {
         video.play();
-        addMessage(username, "User pressed play.");
+        playpause.innerHTML = "❚❚";
     }
 }
 function pause(){
@@ -198,21 +211,12 @@ function addMessage(username, message){
 }
 
 function setTime(username, time) {
-    const hours = formatTime(parseInt(time/(60*60),10));
-    const minutes = formatTime(parseInt(time/60,10));
-    const seconds = formatTime(Math.floor(time%60));
-
-    if (hours == 0){
-        addMessage(username, 'Set time to ' + minutes + ':' + seconds);
-    }else{
-        addMessage(username, 'Set time to ' + hours + ':' + minutes + ':' + seconds);
-    }
-    
+    addMessage(username, 'Set time to ' + timeTextFormat(time));
     video.currentTime = time;
 }
 
 function formatTime(number){
-    if(number < 10 && number > 0){
+    if(number < 10){
         number = '0' + number;
     }
     return number;
