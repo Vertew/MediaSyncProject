@@ -149,10 +149,17 @@ function playPause(username){
     }
 }
 
+// Seperate pause and plays functions for certain situations where toggle is bad
 function play(username){
     if (video.paused || video.ended) {
         video.play();
         addMessage(username, "User pressed play.");
+    }
+}
+function pause(){
+    if (!(video.paused || video.ending)) {
+        video.pause();
+        playpause.innerHTML = "►";
     }
 }
 
@@ -191,16 +198,24 @@ function addMessage(username, message){
 }
 
 function setTime(username, time) {
-    var hours=parseInt(time/(60*60),10);
-    var minutes = parseInt(time / 60, 10);
-    var seconds = time % 60;
-    seconds = Math.floor(seconds);
-    if(seconds < 10){
-        seconds = '0' + seconds;
-    }
+    const hours = formatTime(parseInt(time/(60*60),10));
+    const minutes = formatTime(parseInt(time/60,10));
+    const seconds = formatTime(Math.floor(time%60));
 
-    addMessage(username, 'Set time to ' + minutes + ":" + seconds);
+    if (hours == 0){
+        addMessage(username, 'Set time to ' + minutes + ':' + seconds);
+    }else{
+        addMessage(username, 'Set time to ' + hours + ':' + minutes + ':' + seconds);
+    }
+    
     video.currentTime = time;
+}
+
+function formatTime(number){
+    if(number < 10 && number > 0){
+        number = '0' + number;
+    }
+    return number;
 }
 
 
@@ -228,6 +243,8 @@ channel
                 room_id: currentRoom
             })
         }
+        // Pauses the video when someone new joins the room
+        pause();
     })
 
     .leaving((user) => {
