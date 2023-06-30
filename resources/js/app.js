@@ -28,16 +28,13 @@ video.addEventListener("timeupdate", () => {
         progressBar.ariaValueMax = video.duration;
     }
     updateBar();
-    //progressBar.innerHTML = `${progressBar.style.width}`;
 });
 
 /*
 video.addEventListener('play', (e) => {
-
     axios.post('/play-pause', {
         room_id: currentRoom
     })
-
 });
 */
 
@@ -56,15 +53,12 @@ document.addEventListener("fullscreenchange", (e) => {
 });
 
 form.addEventListener('submit', function(event){
-
     event.preventDefault();
     const userInput = inputValue.value;
-
     axios.post('/input-message', {
         message: userInput,
         room_id: currentRoom
     })
-
     form.reset();
 });
 
@@ -101,7 +95,6 @@ function updateBar(){
     progressBar.ariaValueNow = video.currentTime;
     progressBar.style.width = `${Math.floor((video.currentTime * 100) / video.duration)}%`;
     timeText.innerHTML = timeTextFormat(video.currentTime) + '/' + timeTextFormat(video.duration);
-
 }
 
 function timeTextFormat(time){
@@ -177,7 +170,6 @@ function pause(){
 }
 
 function addMessage(username, message){
-
     const today = new Date();
     const li = document.createElement('li');
     li.classList.add('list-group-item');

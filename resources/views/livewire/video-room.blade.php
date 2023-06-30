@@ -18,7 +18,7 @@
                         <button class="btn btn-light" id="playpause" type="button">►</button>
                     </div>
                     <div class = "col-md-1">
-                        <p id="time-text">00:00</p>
+                        <p id="time-text">00:00/00:00</p>
                     </div>
                     <div class = "col-md-8">
                         <div class="progress" id = "progress">
