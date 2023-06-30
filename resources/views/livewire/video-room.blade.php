@@ -15,11 +15,11 @@
                 {{-- Defining custom media controls --}}
                 <div class = "row" id="video-controls">
                     <div class = "col">
-                        <button class="btn btn-light" id="playpause" type="button">Play/Pause</button>
+                        <button class="btn btn-light" id="playpause" type="button">►</button>
                     </div>
                     <div class = "col">
                         <div class="progress" id = "progress">
-                            <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar" id="progress-bar" role="progressbar" style="transition: none" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                     <div class = "col">

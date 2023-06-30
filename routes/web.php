@@ -9,6 +9,7 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ChangeTimeEvent;
 use App\Events\PlayPauseEvent;
 use App\Events\MessageEvent;
 use App\Events\VideoEvent;
@@ -43,13 +44,17 @@ Route::post('/input-message', function(Request $request){
 Route::post('/video-set', function(Request $request){
     VideoEvent::dispatch(auth()->user(), $request->file, $request->room_id);
     return null;
-}) -> name('video.set');
+}) -> name('media.set');
 
 Route::post('/play-pause', function(Request $request){
     PlayPauseEvent::dispatch(auth()->user(), $request->room_id);
     return null;
 }) -> name('media.play-pause');
 
+Route::post('/change-time', function(Request $request){
+    ChangeTimeEvent::dispatch(auth()->user(), $request->time, $request->room_id);
+    return null;
+}) -> name('media.change-time');
 // --- EVENTS ---
 
 
