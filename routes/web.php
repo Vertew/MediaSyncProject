@@ -9,6 +9,8 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ChangeVolumeEvent;
+use App\Events\ChangeMuteEvent;
 use App\Events\ChangeTimeEvent;
 use App\Events\PlayPauseEvent;
 use App\Events\MessageEvent;
@@ -55,6 +57,16 @@ Route::post('/change-time', function(Request $request){
     ChangeTimeEvent::dispatch(auth()->user(), $request->time, $request->room_id);
     return null;
 }) -> name('media.change-time');
+
+Route::post('/change-volume', function(Request $request){
+    ChangeVolumeEvent::dispatch(auth()->user(), $request->volume, $request->room_id);
+    return null;
+}) -> name('media.change-volume');
+
+Route::post('/mute-unmute', function(Request $request){
+    ChangeMuteEvent::dispatch(auth()->user(), $request->state, $request->room_id);
+    return null;
+}) -> name('media.mute-unmute');
 // --- EVENTS ---
 
 

@@ -1,35 +1,37 @@
 <div class = "container-fluid mt-3 mb-3">
 
     {{-- Video and audio player bit --}}
-    <div class = "row">
+    <div class = "row " >
         <div class = "col-md-9">
             <div class = "container-md mt-5 text-center" >
                 <h2 class='text-center'>{{$title_vid}}</h2>
             </div>
-
-            <div class = "container-md text-center" id = "video-div">
-                <video id="video_player" preload="metadata" title={{$title_vid}} width="1280" height="720" controls >
+            <div class = "container-md text-center bg-dark" id = "video-div">
+                <video id="video_player" preload="metadata" title={{$title_vid}} width="1280" height="720">
                     <source src="source" type="video/mp4">
                     Your browser does not support the selected media format.
                 </video>
                 {{-- Defining custom media controls --}}
-                <div class = "row" id="video-controls">
+                <div class = "row" id="video-controls" wire:ignore>
                     <div class = "col-md-1">
-                        <button class="btn btn-light" id="playpause" type="button">►</button>
+                        <button class="btn btn-light" id="playpause" type="button">&#x1F782;</button>
                     </div>
-                    <div class = "col-md-1">
-                        <p id="time-text">00:00/00:00</p>
+                    <div class = "col-md-1" style = "margin-top: 8px">
+                        <p class="text-light" id="time-text">00:00/00:00</p>
                     </div>
-                    <div class = "col-md-8">
+                    <div class = "col-md-8" style = "margin-top: 12px">
                         <div class="progress" id = "progress">
                             <div class="progress-bar" id="progress-bar" role="progressbar" style="transition: none" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
-                    <div class = "col-md-2">
-                        <button class="btn btn-light" id="fs" type="button">Fullscreen</button>
+                    <div class = "col-md-1">
+                        <button class="btn btn-light" id="volume-toggle" value="0" type="button">&#128266;</button>
+                        <input type="range" name="volume" id="volume-slider" class="form-range" min="0" max="1" step="0.05" value="1"/>
+                    </div>
+                    <div class = "col-md-1">
+                        <button class="btn btn-light" id="fs" type="button"><b>&#x26F6;</b></button>
                     </div>
                 </div>
-
             </div>
         </div>
 

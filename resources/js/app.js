@@ -14,6 +14,8 @@ const progress = document.getElementById("progress");
 const progressBar = document.getElementById("progress-bar");
 const fullscreen = document.getElementById("fs");
 const timeText = document.getElementById("time-text");
+const volumeSlider = document.getElementById("volume-slider");
+const volumeToggle = document.getElementById("volume-toggle");
 
 var current_id; // Keeping track of the current video in the player.
 
@@ -21,6 +23,7 @@ const channel = Echo.join('presence.chat.' + currentRoom);
 
 video.addEventListener("loadedmetadata", () => {
     progressBar.ariaValueMax = video.duration;
+    timeText.innerHTML = timeTextFormat(video.currentTime) + '/' + timeTextFormat(video.duration);
 });
 
 video.addEventListener("timeupdate", () => {
@@ -28,6 +31,10 @@ video.addEventListener("timeupdate", () => {
         progressBar.ariaValueMax = video.duration;
     }
     updateBar();
+});
+
+video.addEventListener("ended", () => {
+    playpause.innerHTML = "&#x1F782;";
 });
 
 /*
@@ -61,6 +68,9 @@ form.addEventListener('submit', function(event){
     })
     form.reset();
 });
+
+volumeSlider.addEventListener("change", broadcastVolume);
+volumeToggle.addEventListener("click", broadcastMute);
 
 /* 
 progress.addEventListener("click", (e) => {
@@ -109,6 +119,31 @@ function timeTextFormat(time){
     }
 }
 
+function broadcastVolume(){
+    axios.post('/change-volume', {
+        volume: this.value,
+        room_id: currentRoom
+    })
+}
+
+function broadcastMute(){
+    axios.post('/mute-unmute', {
+        state: !video.muted,
+        room_id: currentRoom
+    })
+}
+
+function handleVolumeUpdate(username, volume) {
+    video['volume'] = volume;
+    volumeSlider.value = volume;
+    if (volume == 0 || video.muted){
+        volumeToggle.innerHTML = "&#128264;"; 
+    }else{
+        volumeToggle.innerHTML = "&#128266;";
+    }
+    addMessage(username, 'Set volume to ' + volume*100 + "%");
+}
+
 function handleFullscreen() {
     if (document.fullscreenElement !== null) {
         document.exitFullscreen();
@@ -150,7 +185,7 @@ function playPause(username){
         addMessage(username, "User pressed play.");
     } else {
         video.pause();
-        playpause.innerHTML = "►";
+        playpause.innerHTML = "&#x1F782;";
         addMessage(username, "User pressed pause.");
     }
 }
@@ -165,7 +200,7 @@ function play(username){
 function pause(){
     if (!(video.paused || video.ending)) {
         video.pause();
-        playpause.innerHTML = "►";
+        playpause.innerHTML = "&#x1F782;";
     }
 }
 
@@ -214,6 +249,18 @@ function formatTime(number){
     return number;
 }
 
+function muteUnmute(username,state){
+    video.muted = state;
+    if (video.muted && video.volume != 0){
+        addMessage(username, 'Muted the video.');
+        volumeToggle.innerHTML = "&#128264;";
+        console.log(volumeToggle.innerHTML);
+    }else if (!video.muted && video.volume != 0){
+        addMessage(username, 'Unmuted the video.');
+        volumeToggle.innerHTML = "&#128266;"; 
+    }
+}
+
 
 channel
     .here((users) => {
@@ -239,13 +286,26 @@ channel
                 room_id: currentRoom
             })
         }
+        if(video.volume != 1){
+            axios.post('/change-volume', {
+                volume: video.volume,
+                room_id: currentRoom
+            })
+        }
+        if(video.muted){
+            axios.post('/mute-unmute', {
+                state: video.muted,
+                room_id: currentRoom
+            })
+        }
+        
         // Pauses the video when someone new joins the room
         pause();
     })
 
     .leaving((user) => {
         console.log({user}, 'left')
-        addMessage(user.username, 'User has left the room');
+        addMessage(user.username, 'User has left the room.');
     })
 
     .listen('.message-sent', (event) => {
@@ -284,3 +344,18 @@ channel
         const time = event.time;
         setTime(username,time);
     })
+
+    .listen('.volume-change', (event) => {
+        console.log(event);
+        const username = event.user.username;
+        const volume = event.volume;
+        handleVolumeUpdate(username, volume);
+    })
+
+    .listen('.mute-unmute', (event) => {
+        console.log(event);
+        const username = event.user.username;
+        const state = event.state;
+        muteUnmute(username, state);
+    })
+
