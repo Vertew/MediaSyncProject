@@ -182,11 +182,11 @@ function playPause(username){
     if (video.paused || video.ended) {
         video.play();
         playpause.innerHTML = "❚❚";
-        addMessage(username, "User pressed play.");
+        addMessage(username, "Pressed play.");
     } else {
         video.pause();
         playpause.innerHTML = "&#x1F782;";
-        addMessage(username, "User pressed pause.");
+        addMessage(username, "Pressed pause.");
     }
 }
 
