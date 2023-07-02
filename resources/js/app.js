@@ -23,7 +23,7 @@ const channel = Echo.join('presence.chat.' + currentRoom);
 
 video.addEventListener("loadedmetadata", () => {
     progressBar.ariaValueMax = video.duration;
-    timeText.innerHTML = timeTextFormat(video.currentTime) + '/' + timeTextFormat(video.duration);
+    updateBar();
 });
 
 video.addEventListener("timeupdate", () => {
@@ -254,7 +254,6 @@ function muteUnmute(username,state){
     if (video.muted && video.volume != 0){
         addMessage(username, 'Muted the video.');
         volumeToggle.innerHTML = "&#128264;";
-        console.log(volumeToggle.innerHTML);
     }else if (!video.muted && video.volume != 0){
         addMessage(username, 'Unmuted the video.');
         volumeToggle.innerHTML = "&#128266;"; 
