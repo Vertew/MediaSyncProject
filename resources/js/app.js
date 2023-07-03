@@ -14,6 +14,7 @@ const fullscreen = document.getElementById("fs");
 const timeText = document.getElementById("time-text");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeToggle = document.getElementById("volume-toggle");
+const alertContainer = document.getElementById("alert-container");
 
 var current_id; // Keeping track of the current video in the player.
 
@@ -34,7 +35,7 @@ media.addEventListener("timeupdate", () => {
 media.addEventListener("ended", () => {
     playpause.innerHTML = "&#x1F782;";
 });
-    
+
 /*
 video.addEventListener('play', (e) => {
     axios.post('/play-pause', {
@@ -139,7 +140,7 @@ function handleVolumeUpdate(username, volume) {
     }else{
         volumeToggle.innerHTML = "&#128266;";
     }
-    addMessage(username, 'Set volume to ' + volume*100 + "%");
+    addAlert(username, 'Set volume to ' + volume*100 + "%");
 }
 
 function handleFullscreen() {
@@ -180,11 +181,11 @@ function playPause(username){
     if (media.paused || media.ended) {
         media.play();
         playpause.innerHTML = "❚❚";
-        addMessage(username, "Pressed play.");
+        addAlert(username, "Pressed play.");
     } else {
         media.pause();
         playpause.innerHTML = "&#x1F782;";
-        addMessage(username, "Pressed pause.");
+        addAlert(username, "Pressed pause.");
     }
 }
 
@@ -202,6 +203,37 @@ function pause(){
     }
 }
 
+// Used for adding general alerts regarding room state changes e.g. play/pause
+function addAlert(username, message){
+    const div = document.createElement('div');
+    div.classList.add('alert');
+    div.classList.add('alert-dismissible');
+    div.classList.add('fade');
+    div.classList.add('show');
+
+    if(username == currentUser){
+        div.classList.add('alert-primary');
+    }else{
+        div.classList.add('alert-light');
+    }
+
+    const userSpan = document.createElement('span');
+    const msgSpan = document.createElement('span');
+    const strong = document.createElement('strong');
+    
+    strong.textContent = username + ": ";
+    userSpan.append(strong);
+    
+    msgSpan.textContent = message;
+
+    div.append(userSpan,msgSpan);
+
+    alertContainer.prepend(div);
+
+    alertContainer.scrollTop = 0;
+}
+
+// Used for adding chat messages
 function addMessage(username, message){
     const today = new Date();
     const li = document.createElement('li');
@@ -236,7 +268,7 @@ function addMessage(username, message){
 }
 
 function setTime(username, time) {
-    addMessage(username, 'Set time to ' + timeTextFormat(time));
+    addAlert(username, 'Set time to ' + timeTextFormat(time));
     media.currentTime = time;
 }
 
@@ -250,10 +282,10 @@ function formatTime(number){
 function muteUnmute(username,state){
     media.muted = state;
     if (media.muted && media.volume != 0){
-        addMessage(username, 'Muted the video.');
+        addAlert(username, 'Muted the video.');
         volumeToggle.innerHTML = "&#128264;";
     }else if (!media.muted && media.volume != 0){
-        addMessage(username, 'Unmuted the video.');
+        addAlert(username, 'Unmuted the video.');
         volumeToggle.innerHTML = "&#128266;"; 
     }
 }
@@ -326,9 +358,10 @@ channel
         // This is mainly for when new users join and the set-video broadcast goes out.
         if (event.file.id != current_id){
             current_id = event.file.id;
-            addMessage(username,'Set the ' + type + ' to ' + title);
             setSrc(newSrc,title,type);
-        }    
+        }
+        // Sending the alert regardless so everyone is on the same page (Might change this)   
+        addAlert(username,'Set the ' + type + ' to ' + title);
     })
 
     .listen('.play-pause', (event) => {

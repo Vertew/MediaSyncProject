@@ -60,6 +60,10 @@
             </div>
         </div>
     </div>
+
+    <div wire:ignore class = "container-md mt-3 text-center" id="alert-container" style="max-height: 300px; overflow-y: auto;">
+
+    </div>
     
     {{-- Video and audio selection bit --}}
     <div class="row">
@@ -71,7 +75,7 @@
             
             <div class = "container-md mt-3 text-center" style="max-height: 300px; overflow-y: auto;">
                 <div class="btn-group-vertical" role="group" id="btngrp-video" aria-label="Basic radio toggle button group">
-                    @foreach ($videos as $video)
+                    @foreach ($videos->reverse() as $video)
                         <div class="container-md mt-2">
                             <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"vidbutton".$video->id}} wire:click="set_media({{$video}})"/>    
                             <label class="btn btn-outline-primary" for={{"vidbutton".$video->id}}>{{$video->title}}</label>
@@ -96,7 +100,7 @@
 
             <div class = "container-md mt-3 text-center" style="max-height: 300px; overflow-y: auto;">
                 <div class="btn-group-vertical" role="group" id="btngrp-audio" aria-label="Basic radio toggle button group">
-                    @foreach ($audios as $audio)
+                    @foreach ($audios->reverse() as $audio)
                         <div class="container-md mt-2">
                             <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"sndbutton".$audio->id}} wire:click="set_media({{$audio}})"/>    
                             <label class="btn btn-outline-primary" for={{"sndbutton".$audio->id}}>{{$audio->title}}</label>
