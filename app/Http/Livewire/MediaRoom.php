@@ -12,12 +12,11 @@ class MediaRoom extends Component
 {
 
     public int $current_file;
-    public $title_vid = "Video player empty...";
-    public $title_snd = "Audio player empty...";
-    public $slctd_id_vid;
-    public $slctd_id_snd;
-    public $slctd_title_vid = "";
-    public $slctd_title_snd = "";
+    public $title = "Media player empty...";
+    public $slctd_id;
+    public $slctd_title = "";
+    public $audio_slctd = false;
+    public $video_slctd = false;
     public $room;
 
     protected $listeners = ['fileUploaded' => '$refresh'];
@@ -32,12 +31,18 @@ class MediaRoom extends Component
     public function set_media(File $file){
         //$this->current_file = $file->url;
         $this->current_file = $file->id;
-        $this->slctd_title_vid  = $file->title;
-        $this->slctd_id_vid = $file->id;
+        $this->slctd_title = $file->title;
+        if($file->type == "video"){
+            $this->video_slctd = true;
+            $this->audio_slctd = false;
+        }else {
+            $this->video_slctd = false;
+            $this->audio_slctd = true;
+        }
     }
 
     public function set_title(String $title, String $type){
-        $this->title_vid = $title;
+        $this->title = $title;
     }
 
     public function delete($fileid)

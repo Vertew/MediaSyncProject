@@ -5,7 +5,6 @@ const form = document.getElementById('form1');
 const inputValue = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
-
 const mediaContainer = document.getElementById("media-div");
 const media = document.getElementById("media-player");
 const playpause = document.getElementById("playpause");
@@ -35,7 +34,7 @@ media.addEventListener("timeupdate", () => {
 media.addEventListener("ended", () => {
     playpause.innerHTML = "&#x1F782;";
 });
-
+    
 /*
 video.addEventListener('play', (e) => {
     axios.post('/play-pause', {
