@@ -14,7 +14,7 @@ use App\Events\ChangeMuteEvent;
 use App\Events\ChangeTimeEvent;
 use App\Events\PlayPauseEvent;
 use App\Events\MessageEvent;
-use App\Events\VideoEvent;
+use App\Events\SetEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,8 +43,8 @@ Route::post('/input-message', function(Request $request){
     return null;
 });
 
-Route::post('/video-set', function(Request $request){
-    VideoEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+Route::post('/media-set', function(Request $request){
+    SetEvent::dispatch(auth()->user(), $request->file, $request->room_id);
     return null;
 }) -> name('media.set');
 

@@ -13,14 +13,14 @@
 <script>
     // Getting the current user on the page
     const currentUser = {{ Js::from(Auth::user()->username) }};
-    const currentRoom = {{Js::from($room->id)}}
+    const currentRoom = {{ Js::from($room->id) }}
 </script>
 
 <div class = "container-fluid mt-3">
 
     <h1 class='display-5 text-center'>{{$room->name}}</h1>
 
-    <livewire:video-room :room="$room">
+    <livewire:media-room :room="$room">
 
     <div class = "container-md mt-5 text-center">
         <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>
@@ -30,21 +30,6 @@
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <livewire:file-upload />
     </div>
-    
-    {{--
-    <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
-        <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-                <div class="container-md mt-3">
-                    <input type="file" name="file" class="form-control"/>
-                </div>
-                <div class="container-md mt-3">
-                    <button type="submit" class="btn btn-success">Upload</button>
-                    <button type="reset" onclick="showhide('upload-div')" class="btn btn-secondary">Cancel</button>
-                </div>
-        </form>
-    </div>
-    --}}
 
     <div class = "container-md mt-5 text-center">
         <form method="POST" action="{{ route('rooms.destroy', ['id'=> $room->id])}}">

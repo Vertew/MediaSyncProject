@@ -8,7 +8,7 @@ use Livewire\Component;
 use App\Models\File;
 use App\Models\User;
 
-class VideoRoom extends Component
+class MediaRoom extends Component
 {
 
     public int $current_file;
@@ -24,7 +24,7 @@ class VideoRoom extends Component
 
     public function mount()
     {
-        // Initialising videos
+        // Initialising media files
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
     }
@@ -32,23 +32,12 @@ class VideoRoom extends Component
     public function set_media(File $file){
         //$this->current_file = $file->url;
         $this->current_file = $file->id;
-        if($file->type == "video"){
-            $this->slctd_title_vid  = $file->title;
-            $this->slctd_id_vid = $file->id;
-            $this->slctd_id_snd = null;
-        }else{
-            $this->slctd_title_snd = $file->title;
-            $this->slctd_id_snd = $file->id;
-            $this->slctd_id_vid = null;
-        }
+        $this->slctd_title_vid  = $file->title;
+        $this->slctd_id_vid = $file->id;
     }
 
     public function set_title(String $title, String $type){
-        if($type == "video"){
-            $this->title_vid = $title;
-        }else{
-            $this->title_snd = $title;
-        }
+        $this->title_vid = $title;
     }
 
     public function delete($fileid)
@@ -68,7 +57,7 @@ class VideoRoom extends Component
     {
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
-        return view('livewire.video-room', ['videos' => $this->videos->sortByDesc('created_at')], 
+        return view('livewire.media-room', ['videos' => $this->videos->sortByDesc('created_at')], 
                                            ['audios' => $this->audios->sortByDesc('created_at')], 
                                            ['room' => $this->room]);
     }

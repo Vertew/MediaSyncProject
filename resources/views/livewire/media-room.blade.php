@@ -6,13 +6,13 @@
             <div class = "container-md mt-5 text-center" >
                 <h2 class='text-center'>{{$title_vid}}</h2>
             </div>
-            <div class = "container-md text-center bg-dark" id = "video-div">
-                <video id="video_player" preload="metadata" title={{$title_vid}} width="1280" height="720">
-                    <source src="source" type="video/mp4">
+            <div class = "container-md text-center bg-dark" id = "media-div">
+                <video id="media-player" preload="metadata" title={{$title_vid}} width="1280" height="720">
+                    <source src="source" type="video/mp4, audio/mpeg">
                     Your browser does not support the selected media format.
                 </video>
                 {{-- Defining custom media controls --}}
-                <div class = "row" id="video-controls" wire:ignore>
+                <div class = "row" id="media-controls" wire:ignore>
                     <div class = "col-md-1">
                         <button class="btn btn-light" id="playpause" type="button">&#x1F782;</button>
                     </div>
@@ -60,18 +60,6 @@
             </div>
         </div>
     </div>
-
-    <div class = "container-md mt-5 text-center">
-        <h2 class='text-center'>{{$title_snd}}</h2>
-    </div>
-
-    <div class = "container-md mt-3 text-center" id = "audio-div">
-        <audio id="audio_player" title={{$title_snd}} controls>
-            <source src=null type="audio/mpeg">
-            Your browser does not support the selected media format.
-        </audio>
-    </div>
-
     
     {{-- Video and audio selection bit --}}
     <div class="row">
@@ -94,7 +82,7 @@
 
             <div class = "container-md mt-3 text-center">
                 {{--<button class="btn btn-light" type="button" onclick="setSrc('video_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_vid) }},'video')">Add to video player</button>--}}
-                <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to video player</button>
+                <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to media player</button>
                 <button class="btn btn-outline-danger" type="button" wire:click="delete({{ $slctd_id_vid ?? -1 }})">Delete</button>
             </div>
 
@@ -118,20 +106,20 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to audio player</button>
+                <button class="btn btn-light" type="button" onclick="sendSrc({{ Js::from($current_file) }})">Add to media player</button>
                 <button class="btn btn-outline-danger" type="button" wire:click="delete({{ $slctd_id_snd ?? -1 }})">Delete</button>
             </div>
         </div>
     </div>
 
     <script> 
-        function setSrc(id,newSrc,title,type) {
-            var myElement = document.getElementById(id);
+        function setSrc(newSrc,title,type) {
+            var myElement = document.getElementById("media-player");
             myElement.src=newSrc;
             @this.set_title(title,type);
         }
         function sendSrc(new_id) {
-            axios.post('/video-set', {
+            axios.post('/media-set', {
                 file: new_id,
                 room_id: currentRoom
             })

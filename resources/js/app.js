@@ -6,9 +6,8 @@ const inputValue = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
 
-const videoContainer = document.getElementById("video-div");
-const video = document.getElementById("video_player");
-const videoControls = document.getElementById("video-controls");
+const mediaContainer = document.getElementById("media-div");
+const media = document.getElementById("media-player");
 const playpause = document.getElementById("playpause");
 const progress = document.getElementById("progress");
 const progressBar = document.getElementById("progress-bar");
@@ -21,19 +20,19 @@ var current_id; // Keeping track of the current video in the player.
 
 const channel = Echo.join('presence.chat.' + currentRoom);
 
-video.addEventListener("loadedmetadata", () => {
-    progressBar.ariaValueMax = video.duration;
+media.addEventListener("loadedmetadata", () => {
+    progressBar.ariaValueMax = media.duration;
     updateBar();
 });
 
-video.addEventListener("timeupdate", () => {
+media.addEventListener("timeupdate", () => {
     if (!progressBar.ariaValueMax){
-        progressBar.ariaValueMax = video.duration;
+        progressBar.ariaValueMax = media.duration;
     }
     updateBar();
 });
 
-video.addEventListener("ended", () => {
+media.addEventListener("ended", () => {
     playpause.innerHTML = "&#x1F782;";
 });
 
@@ -87,14 +86,14 @@ progress.addEventListener("mousemove", (e) => mousedown && scrub(e));
 progress.addEventListener("mouseup", (e) => broadcastTime(e));
 
 function scrub(e) {
-    const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
-    video.currentTime = scrubTime;
+    const scrubTime = (e.offsetX / progress.offsetWidth) * media.duration;
+    media.currentTime = scrubTime;
     updateBar();
 }
 
 function broadcastTime(e){
     mousedown = false;
-    const time = (e.offsetX / progress.offsetWidth) * video.duration;
+    const time = (e.offsetX / progress.offsetWidth) * media.duration;
     axios.post('/change-time', {
         time: time,
         room_id: currentRoom
@@ -102,9 +101,9 @@ function broadcastTime(e){
 }
 
 function updateBar(){
-    progressBar.ariaValueNow = video.currentTime;
-    progressBar.style.width = `${Math.floor((video.currentTime * 100) / video.duration)}%`;
-    timeText.innerHTML = timeTextFormat(video.currentTime) + '/' + timeTextFormat(video.duration);
+    progressBar.ariaValueNow = media.currentTime;
+    progressBar.style.width = `${Math.floor((media.currentTime * 100) / media.duration)}%`;
+    timeText.innerHTML = timeTextFormat(media.currentTime) + '/' + timeTextFormat(media.duration);
 }
 
 function timeTextFormat(time){
@@ -128,15 +127,15 @@ function broadcastVolume(){
 
 function broadcastMute(){
     axios.post('/mute-unmute', {
-        state: !video.muted,
+        state: !media.muted,
         room_id: currentRoom
     })
 }
 
 function handleVolumeUpdate(username, volume) {
-    video['volume'] = volume;
+    media['volume'] = volume;
     volumeSlider.value = volume;
-    if (volume == 0 || video.muted){
+    if (volume == 0 || media.muted){
         volumeToggle.innerHTML = "&#128264;"; 
     }else{
         volumeToggle.innerHTML = "&#128266;";
@@ -150,7 +149,7 @@ function handleFullscreen() {
         videoReduce(false);
         setFullscreenData(false);
     } else {
-        videoContainer.requestFullscreen();
+        mediaContainer.requestFullscreen();
         videoEnlarge(true);
         setFullscreenData(true);
     }
@@ -159,32 +158,32 @@ function handleFullscreen() {
 
 function videoEnlarge(state) {
     if (state) {
-        video.width = window.innerWidth;
-        video.height = window.innerHeight;
+        media.width = window.innerWidth;
+        media.height = window.innerHeight;
         timeText.classList.add('text-light');
     }
 }
 
 function videoReduce(state) {
     if (!state) {
-        video.width = 1280;
-        video.height = 720;
+        media.width = 1280;
+        media.height = 720;
         timeText.classList.remove('text-light');
     }
 }
 
 function setFullscreenData(state) {
     videoReduce(!!state);
-    videoContainer.setAttribute("data-fullscreen", !!state);
+    mediaContainer.setAttribute("data-fullscreen", !!state);
 }
 
 function playPause(username){
-    if (video.paused || video.ended) {
-        video.play();
+    if (media.paused || media.ended) {
+        media.play();
         playpause.innerHTML = "❚❚";
         addMessage(username, "Pressed play.");
     } else {
-        video.pause();
+        media.pause();
         playpause.innerHTML = "&#x1F782;";
         addMessage(username, "Pressed pause.");
     }
@@ -192,14 +191,14 @@ function playPause(username){
 
 // Seperate pause and plays functions for certain situations where toggle is bad
 function play(username){
-    if (video.paused || video.ended) {
-        video.play();
+    if (media.paused || media.ended) {
+        media.play();
         playpause.innerHTML = "❚❚";
     }
 }
 function pause(){
-    if (!(video.paused || video.ending)) {
-        video.pause();
+    if (!(media.paused || media.ending)) {
+        media.pause();
         playpause.innerHTML = "&#x1F782;";
     }
 }
@@ -239,7 +238,7 @@ function addMessage(username, message){
 
 function setTime(username, time) {
     addMessage(username, 'Set time to ' + timeTextFormat(time));
-    video.currentTime = time;
+    media.currentTime = time;
 }
 
 function formatTime(number){
@@ -250,11 +249,11 @@ function formatTime(number){
 }
 
 function muteUnmute(username,state){
-    video.muted = state;
-    if (video.muted && video.volume != 0){
+    media.muted = state;
+    if (media.muted && media.volume != 0){
         addMessage(username, 'Muted the video.');
         volumeToggle.innerHTML = "&#128264;";
-    }else if (!video.muted && video.volume != 0){
+    }else if (!media.muted && media.volume != 0){
         addMessage(username, 'Unmuted the video.');
         volumeToggle.innerHTML = "&#128266;"; 
     }
@@ -270,35 +269,38 @@ channel
     .joining((user) => {
         console.log(user.username, 'joined')
         addMessage(user.username, 'User has joined the room');
-        // When someone new joins the room, the broadcast goes out to set the files again to make sure
+        // When someone new joins the room, we want to broadcast the current  media file again to make sure
         // they have the current file in their player. If there is no current file of course, this 
-        // will not occur.
+        // will not occur as no file is the default state when entering the room.
         if (current_id != null){
-            axios.post('/video-set', {
+            axios.post('/media-set', {
                 file: current_id,
                 room_id: currentRoom
             })
         }
-        if(video.currentTime != 0){
+        // If a new user joins we want to broadcast the current time of the other users to them so they're caught up.
+        // Of course, the default is to be at time 0 so there's no point doing this if the current time for everyone
+        // else is 0. The Broadcasts below are essentially the same thing but for the other values we want joining users
+        // to be updated with.
+        if(media.currentTime != 0){
             axios.post('/change-time', {
-                time: video.currentTime,
+                time: media.currentTime,
                 room_id: currentRoom
             })
         }
-        if(video.volume != 1){
+        if(media.volume != 1){
             axios.post('/change-volume', {
-                volume: video.volume,
+                volume: media.volume,
                 room_id: currentRoom
             })
         }
-        if(video.muted){
+        if(media.muted){
             axios.post('/mute-unmute', {
-                state: video.muted,
+                state: media.muted,
                 room_id: currentRoom
             })
         }
-        
-        // Pauses the video when someone new joins the room
+        // Pauses the video when someone new joins the room. If the video is already paused, this will do nothing.
         pause();
     })
 
@@ -314,12 +316,11 @@ channel
         addMessage(username, message);
     })
 
-    .listen('.video-set', (event) => {
+    .listen('.media-set', (event) => {
         console.log(event);
         const newSrc = event.file.url;
         const type = event.file.type;
         const title = event.file.title;
-        const id = type + "_player";
         const username = event.user.username;
 
         // Preventing the same media source from being set again if it's already set.
@@ -327,7 +328,7 @@ channel
         if (event.file.id != current_id){
             current_id = event.file.id;
             addMessage(username,'Set the ' + type + ' to ' + title);
-            setSrc(id,newSrc,title,type);
+            setSrc(newSrc,title,type);
         }    
     })
 

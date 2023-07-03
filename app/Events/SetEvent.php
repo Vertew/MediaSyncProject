@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 use App\Models\File;
 
-class VideoEvent implements ShouldBroadcast
+class SetEvent implements ShouldBroadcast
 {
 
     private User $user;
@@ -45,7 +45,7 @@ class VideoEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'video-set';
+        return 'media-set';
     }
 
     public function broadcastWith(): array
