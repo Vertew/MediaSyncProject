@@ -1,18 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoomController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ChangeVolumeEvent;
 use App\Events\ChangeMuteEvent;
 use App\Events\ChangeTimeEvent;
 use App\Events\PlayPauseEvent;
+use Illuminate\Http\Request;
 use App\Events\MessageEvent;
 use App\Events\SetEvent;
 
@@ -26,15 +26,6 @@ use App\Events\SetEvent;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', function () {
-    return redirect()->route('login');
-});
-
-Route::get('/ws', function(){
-    return view('websocket');
-});
-
 
 // --- EVENTS ---
 Route::post('/input-message', function(Request $request){
@@ -70,9 +61,10 @@ Route::post('/mute-unmute', function(Request $request){
 // --- EVENTS ---
 
 
-Route::get('/home', function() {
-    return view('home');
-}) -> name('home');
+
+Route::get('/', function () {return redirect()->route('login');});
+
+Route::get('/home', function() {return view('home');}) -> name('home');
 
 Route::get('/login', [LoginController::class, 'show']) -> name('login');
 
@@ -84,6 +76,8 @@ Route::get('/users/create', [UserController::class, 'create']) -> name('users.cr
 
 Route::post('/users', [UserController::class, 'store']) -> name('users.store');
 
+Route::post('/users/guest', [UserController::class, 'storeGuest']) -> name('users.storeGuest');
+
 Route::get('/users/{id}', [UserController::class, 'show']) -> name('users.show') -> middleware('auth');
 
 Route::get('/profiles/{id}', [ProfileController::class, 'show']) -> name('profiles.show') -> middleware('auth');
@@ -92,20 +86,31 @@ Route::get('/profiles/edit/{id}', [ProfileController::class, 'edit']) -> name('p
 
 Route::post('/profiles/update/{id}', [ProfileController::class, 'update']) -> name('profiles.update') -> middleware('auth');
 
-Route::get('/videos/upload', [ VideoController::class, 'create' ])->name('videos.create');
+Route::get('/rooms/create', [RoomController::class, 'create']) -> name('rooms.create') -> middleware('auth');
 
-Route::post('/videos/upload', [ VideoController::class, 'store' ])->name('videos.store');
+Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store') -> middleware('auth');
 
-Route::get('/videos/index', [ VideoController::class, 'index_user' ])->name('videos.index_user');
+Route::get('/rooms/{key}', [RoomController::class, 'show'])->name('rooms.show') -> middleware('auth');
 
-Route::get('/videos/show/{id?}', [ VideoController::class, 'show' ])->name('videos.show');
+Route::delete('/rooms/{id}', [RoomController::class, 'destroy']) -> name('rooms.destroy') -> middleware('auth');
 
-Route::get('/rooms/create', [RoomController::class, 'create']) -> name('rooms.create');
 
-Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store');
 
-Route::get('/rooms/{key}', [ RoomController::class, 'show' ])->name('rooms.show');
+/* 
 
-Route::delete('/rooms/{id}', [RoomController::class, 'destroy']) -> name('rooms.destroy');
+--- Legacy routes ---
 
-Route::post('/files/upload', [ FileController::class, 'store' ])->name('files.store');
+Route::get('/videos/upload', [VideoController::class, 'create'])->name('videos.create') -> middleware('auth');
+
+Route::post('/videos/upload', [VideoController::class, 'store'])->name('videos.store') -> middleware('auth');
+
+Route::get('/videos/index', [VideoController::class, 'index_user'])->name('videos.index_user') -> middleware('auth');
+
+Route::get('/videos/show/{id?}', [VideoController::class, 'show'])->name('videos.show') -> middleware('auth');
+
+Route::post('/files/upload', [FileController::class, 'store'])->name('files.store') -> middleware('auth');
+
+Route::get('/ws', function(){
+    return view('websocket');
+});
+*/

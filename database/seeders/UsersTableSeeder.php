@@ -19,7 +19,8 @@ class UsersTableSeeder extends Seeder
         $user->email = "joe1205@hotmail.com";
         $user->email_verified_at = now();
         $user->password = "password1";
-        $user->remember_token = Str::random(10);  
+        $user->guest = false;
+        $user->remember_token = Str::random(10);
         $user->save();
 
 
@@ -28,6 +29,7 @@ class UsersTableSeeder extends Seeder
         $user->email = "mike999@gmail.com";
         $user->email_verified_at = now();
         $user->password = "password2";
+        $user->guest = false;
         $user->remember_token = Str::random(10);
         $user->save();
 
@@ -36,6 +38,7 @@ class UsersTableSeeder extends Seeder
         $user->email = "baduser@hotmail.com";
         $user->email_verified_at = now();
         $user->password = "password3";
+        $user->guest = false;
         $user->remember_token = Str::random(10);  
         $user->save();
 
@@ -44,6 +47,7 @@ class UsersTableSeeder extends Seeder
         $user->email = "kait092@hotmail.com";
         $user->email_verified_at = now();
         $user->password = "password4";
+        $user->guest = false;
         $user->remember_token = Str::random(10);  
         $user->save();
 

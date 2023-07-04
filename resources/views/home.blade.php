@@ -8,19 +8,23 @@
 
     <h3 class='display-6 text-center'>Your rooms</h3>
 
-    @foreach (Auth::user()->rooms as $room)
+    @forelse (Auth::user()->rooms as $room)
         <div class="container-md mt-3">
             <div class="list-group">
                 <a class="list-group-item list-group-item-action" href = "{{route('rooms.show', ['key'=> $room->key])}}">{{$room->name}}</a>
             </div>
         </div>
-    @endforeach
+    @empty
+        <p>No rooms just yet...</p>
+    @endforelse
 
+    {{-- Legacy room
     <div class="container-md mt-3 text-center">
         <a href="{{route('videos.show', ['id'=> 1])}}">
             <button class="btn btn-success" type="button">Legacy room</button>
         </a>
     </div>
+    --}}
 
     <div class="container-md mt-3 text-center">
         <a href="{{route('rooms.create')}}">

@@ -29,7 +29,11 @@
     </div>
 
     <div class = "container-md mt-3">
-        <a class="btn btn-link" href="{{route('home')}}">Don't want an account? Continue as a guest.</a>
+        {{--<a class="btn btn-link" href="{{route('home')}}">Don't want an account? Continue as a guest.</a>--}}
+        <form method="POST" action="{{ route('users.storeGuest') }}">
+            @csrf
+            <input class="btn btn-link" type = "submit" value = "Don't want an account? Continue as a guest.">
+        </form>
     </div>
 
 </div>

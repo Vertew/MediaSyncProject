@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -29,7 +31,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
  
-            return redirect()->intended('home');
+            return redirect()->route('home');
         }
  
         return back()->withErrors([
@@ -39,6 +41,19 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        $id = Auth::id();
+        $user = User::findOrFail($id);
+
+        // Guest user accounts and their associated rooms/files are deleted upon logging out.
+        if($user->guest == true){
+            $user->rooms->each->delete();
+            foreach($user->files as $file){
+                SystemFile::delete('storage/media/'.$file->type.'s/'.$file->title);
+                $file->delete();
+            }
+            $user->delete();
+        }
+
         Auth::logout();
     
         $request->session()->invalidate();

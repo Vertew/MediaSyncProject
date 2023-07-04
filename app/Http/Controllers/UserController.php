@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\Profile;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -40,6 +42,7 @@ class UserController extends Controller
         $user->email = $validatedData['email'];
         $user->email_verified_at = now(); // The email isn't actually verified currently, this is just demonstrative.
         $user->password = $validatedData['password'];
+        $user->guest = false;
         $user->remember_token = Str::random(10);
         $user->save();
 
@@ -47,8 +50,31 @@ class UserController extends Controller
         $profile->user_id = $user->id;
         $profile->save();
 
-        session()->flash('message', 'New account created.');
-        return redirect()->route('home');
+        session()->flash('message', 'New account created!');
+
+        // Login the user upon account creation
+        if (Auth::attempt($validatedData)) {
+            $request->session()->regenerate();
+            return redirect()->route('home');
+        }
+    }
+
+    // Creation of a temporary guest account with no email, password or profile.
+    public function storeGuest(Request $request){
+
+        $user = new User;
+        $user->username = "Guest-" . Str::random(6);
+        $user->guest = true;
+        $user->remember_token = Str::random(10);
+        $user->save();
+
+        session()->flash('message', 'Logged in as guest! This account will last until your session expires.');
+
+        // There's no need for credential validation on a guest account so we log the guest in via their ID.
+        if (Auth::loginUsingId($user->id)) {
+            $request->session()->regenerate();
+            return redirect()->route('home');
+        }
     }
 
     /**
@@ -81,13 +107,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = Comment::findOrFail($id);
-
-        $user_id = $user->id;
+        $user = User::findOrFail($id);
         $user->delete();
 
         session()->flash('message', 'User was deleted.');
-        return redirect()->route('home');
+        return redirect()->route('login.logout');
 
     }
 }

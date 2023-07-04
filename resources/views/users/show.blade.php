@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h3 class = "text-center display-5">Hi {{$user->profile->name}}!</h3>
+    <h3 class = "text-center display-5">Hi {{$user->profile->name ?? $user->username}}!</h3>
 
     <div class="container-md mt-3 text-center">
         <h3>General</h3>
