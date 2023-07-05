@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Events\AddQueueEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Room;
+use App\Models\File;
 
 class RoomController extends Controller
 {
@@ -52,6 +54,14 @@ class RoomController extends Controller
     {
         $room = Room::where('key',$key)->firstOrFail();
         return view('rooms.show', ['room' => $room]);
+    }
+
+    public function updateQueue(Request $request){
+        $room = Room::findOrFail($request->room_id);
+        $file = File::findOrFail($request->file);
+        $room->files()->attach($file);
+        AddQueueEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+        return null;
     }
 
     /**

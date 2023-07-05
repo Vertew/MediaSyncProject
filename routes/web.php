@@ -12,6 +12,7 @@ use App\Events\ChangeVolumeEvent;
 use App\Events\ChangeMuteEvent;
 use App\Events\ChangeTimeEvent;
 use App\Events\PlayPauseEvent;
+use App\Events\AddQueueEvent;
 use Illuminate\Http\Request;
 use App\Events\MessageEvent;
 use App\Events\SetEvent;
@@ -58,6 +59,13 @@ Route::post('/mute-unmute', function(Request $request){
     ChangeMuteEvent::dispatch(auth()->user(), $request->state, $request->room_id);
     return null;
 }) -> name('media.mute-unmute');
+
+Route::post('/add-queue', [RoomController::class, 'updateQueue']) -> name('room.add-queue');
+
+// Route::post('/add-queue', function(Request $request){
+//     AddQueueEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+//     return null;
+// }) -> name('room.add-queue');
 // --- EVENTS ---
 
 

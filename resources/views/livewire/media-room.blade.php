@@ -1,13 +1,28 @@
 <div class = "container-fluid mt-3 mb-3">
-
-    {{-- Video and audio player bit --}}
     <div class = "row " >
-        <div class = "col-md-9">
+        {{-- File Queue bit --}}
+        <div class = "col-md-2">
+            <div class = "container-md mt-5 text-center" >
+                <h2 class='text-center'>File Queue</h2>
+            </div>
+            <div id="file-container" class = "container-md mt-3 text-center" style="min-height: 300px; max-height: 700px; overflow-y: auto;">
+                @forelse ($queue as $file)
+                    <div class="container-md mt-2">
+                        <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}} wire:click="set_media({{$file}})"/>    
+                        <label class="btn btn-outline-primary" for={{"queuebutton".$file->id}}>{{$file->title}}</label>
+                    </div>
+                @empty
+                    <p>Nothing in the queue right now...</p>
+                @endforelse
+            </div>
+        </div>
+        {{-- Media player bit --}}
+        <div class = "col-md-8">
             <div class = "container-md mt-5 text-center" >
                 <h2 class='text-center'>{{$title}}</h2>
             </div>
             <div class = "container-md text-center bg-dark" id = "media-div">
-                <video id="media-player" preload="metadata" title={{$title}} width="1280" height="720">
+                <video id="media-player" class="w-100" preload="metadata" title={{$title}}>
                     <source src="source" type="video/mp4, audio/mpeg">
                     Your browser does not support the selected media format.
                 </video>
@@ -34,25 +49,24 @@
                 </div>
             </div>
         </div>
-
-        <div class = "col-md-3">
-            {{-- Chat message bit --}}
+        {{-- Chat message bit --}}
+        <div class = "col-md-2">
             <div class = "container-md mt-5 text-center" >
                 <h2 class='text-center'>Chat</h2>
             </div>
 
             <div class = "container-md" wire:ignore>
-                <div id="message-container" class = "container-md mt-3" style="min-height: 300px; max-height: 660px; overflow-y: auto;">
+                <div id="message-container" class = "container-md mt-3" style="min-height: 300px; max-height: 680px; overflow-y: auto;">
                     <ul class="list-group" id ="message-list">
                         {{-- Bit of a hacky dumb way to get the list items to start drawing from the bottom of the container --}}
-                        <li style="min-height: 660px">
+                        <li style="min-height: 680px">
  
                     </ul>
                 </div>
 
                 <div class = "container-md mt-3 text-center">
                     <form id='form1'>
-                        <div class="container-md mb-3 mt-3">
+                        <div class="container-md">
                             <input id="input" type = "text" class="form-control" placeholder="Start typing..." name = "title">
                         </div>
                     </form>
@@ -73,7 +87,7 @@
                 <h4 class='text-center'>Select a video</h4>
             </div>
             
-            <div class = "container-md mt-3 text-center" style="max-height: 300px; overflow-y: auto;">
+            <div class = "container-md mt-3 text-center" style="max-height: 300px; overflow-y: auto;" wire:poll>
                 <div class="btn-group-vertical" role="group" id="btngrp-video" aria-label="Basic radio toggle button group">
                     @foreach ($videos->reverse() as $video)
                         <div class="container-md mt-2">
@@ -86,7 +100,8 @@
 
             <div class = "container-md mt-3 text-center">
                 {{--<button class="btn btn-light" type="button" onclick="setSrc('video_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_vid) }},'video')">Add to video player</button>--}}
-                <button class="btn btn-success {{$video_slctd  ? "" : "disabled"}}" type="button" id="add-video" onclick="sendSrc({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-success {{$video_slctd  ? "" : "disabled"}}" type="button" id="add-video" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-primary {{$video_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
                 <button class="btn btn-danger {{$video_slctd  ? "" : "disabled"}}" type="button" id="dlt-video" wire:click="delete({{ $current_file ?? -1 }})">Delete</button>
             </div>
 
@@ -110,7 +125,8 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                <button class="btn btn-success {{$audio_slctd  ? "" : "disabled"}}" type="button" id="add-audio" onclick="sendSrc({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-success {{$audio_slctd  ? "" : "disabled"}}" type="button" id="add-audio" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-primary {{$audio_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
                 <button class="btn btn-danger {{$audio_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" wire:click="delete({{ $current_file ?? -1 }})">Delete</button>
             </div>
         </div>
@@ -122,8 +138,14 @@
             myElement.src=newSrc;
             @this.set_title(title,type);
         }
-        function sendSrc(new_id) {
+        function sendIdSet(new_id) {
             axios.post('/media-set', {
+                file: new_id,
+                room_id: currentRoom
+            })
+        }
+        function sendIdQueue(new_id) {
+            axios.post('/add-queue', {
                 file: new_id,
                 room_id: currentRoom
             })

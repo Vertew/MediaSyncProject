@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\File;
 use App\Models\User;
+use App\Models\Room;
 
 class MediaRoom extends Component
 {
@@ -18,14 +19,26 @@ class MediaRoom extends Component
     public $audio_slctd = false;
     public $video_slctd = false;
     public $room;
-
-    protected $listeners = ['fileUploaded' => '$refresh'];
+    public $queue;
 
     public function mount()
     {
         // Initialising media files
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
+        $this->queue = $this->room->files->sortBy('added_at');
+    }
+
+    public function getListeners()
+    {
+        return [
+            "echo-presence:presence.chat.{$this->room->id},.add-queue" => 'updateQueue',
+            'fileUploaded' => '$refresh'
+        ];
+    }
+
+    public function updateQueue(){
+        $this->queue = (Room::findOrFail($this->room->id))->files->sortBy('added_at');
     }
 
     public function set_media(File $file){
@@ -64,6 +77,7 @@ class MediaRoom extends Component
         $this->audios = Auth::user()->files->where('type', 'audio');
         return view('livewire.media-room', ['videos' => $this->videos->sortByDesc('created_at')], 
                                            ['audios' => $this->audios->sortByDesc('created_at')], 
-                                           ['room' => $this->room]);
+                                           ['room' => $this->room],
+                                           ['queue' => $this->queue]);
     }
 }

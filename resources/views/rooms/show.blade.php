@@ -20,7 +20,7 @@
 
     <h1 class='display-5 text-center'>{{$room->name}}</h1>
 
-    <livewire:media-room :room="$room">
+    <livewire:media-room :room="$room" :queue="$room->files">
 
     <div class = "container-md mt-5 text-center">
         <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>

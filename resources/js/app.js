@@ -160,7 +160,6 @@ function videoEnlarge(state) {
     if (state) {
         media.width = window.innerWidth;
         media.height = window.innerHeight;
-        timeText.classList.add('text-light');
     }
 }
 
@@ -168,7 +167,6 @@ function videoReduce(state) {
     if (!state) {
         media.width = 1280;
         media.height = 720;
-        timeText.classList.remove('text-light');
     }
 }
 
