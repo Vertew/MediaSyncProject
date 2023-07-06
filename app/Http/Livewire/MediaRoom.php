@@ -4,10 +4,14 @@ namespace App\Http\Livewire;
 
 use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Support\Facades\Auth;
+use App\Events\UpdateQueueEvent;
+use App\Events\ChangeModeEvent;
+use App\Events\SetEvent;
 use Livewire\Component;
 use App\Models\File;
 use App\Models\User;
 use App\Models\Room;
+
 
 class MediaRoom extends Component
 {
@@ -18,6 +22,7 @@ class MediaRoom extends Component
     public $slctd_title = "";
     public $audio_slctd = false;
     public $video_slctd = false;
+    public string $queue_mode = "sequential";
     public $room;
     public $queue;
 
@@ -26,19 +31,47 @@ class MediaRoom extends Component
         // Initialising media files
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
-        $this->queue = $this->room->files->sortBy('added_at');
+        $this->queue = $this->room->files->sortBy('pivot.created_at');
+    }
+
+    public function dump(){
+        dd($this->queue);
     }
 
     public function getListeners()
     {
         return [
-            "echo-presence:presence.chat.{$this->room->id},.add-queue" => 'updateQueue',
+            "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
+            "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
             'fileUploaded' => '$refresh'
         ];
     }
 
     public function updateQueue(){
-        $this->queue = (Room::findOrFail($this->room->id))->files->sortBy('added_at');
+        $this->room->refresh();
+        $this->queue = $this->room->files->sortBy('pivot.created_at');
+    }
+
+    public function changeMode(array $event){
+        $this->queue_mode = $event["newMode"];
+    }
+
+    public function broadcastMode(string $newMode){
+        ChangeModeEvent::dispatch(Auth::user(), $newMode, $this->room->id);
+    }
+
+    public function removeFromQueue(int $file_id){
+        $this->room->files()->detach($file_id);
+        UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+    }
+
+    public function playNext(){
+        $this->file = $this->queue->first();
+        if ($this->file != null){
+            $this->room->files()->detach($this->file->id);
+            UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+            SetEvent::dispatch(Auth::user(), $this->file->id, $this->room->id);
+        }
     }
 
     public function set_media(File $file){

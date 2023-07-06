@@ -12,21 +12,19 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 use App\Models\File;
 
-class AddQueueEvent implements ShouldBroadcast
+class UpdateQueueEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private User $user;
-    private File $file; 
     private int $room_id;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, int $file, int $room_id)
+    public function __construct(User $user, int $room_id)
     {
         $this->user = $user;
-        $this->file = File::findOrFail($file);
         $this->room_id = $room_id;
     }
 
@@ -44,14 +42,13 @@ class AddQueueEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'add-queue';
+        return 'update-queue';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'user' => $this->user->only(['username','email']),
-            'file' => $this->file->only(['url','title','type','id'])
+            'user' => $this->user->only(['username']),
         ];
     }
 }

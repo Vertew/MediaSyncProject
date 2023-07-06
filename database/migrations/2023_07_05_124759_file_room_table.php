@@ -22,7 +22,9 @@ return new class extends Migration
             $table->foreign('file_id')->references('id')->on('files')
                   ->onDelete('cascade')->onUpdate('cascade');
 
-            $table->timestamp('added_at')->useCurrent();
+            //$table->timestamp('added_at')->useCurrent();
+            $table->timestamps();
+
         });
     }
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use App\Events\AddQueueEvent;
+use App\Events\UpdateQueueEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Room;
@@ -60,7 +60,7 @@ class RoomController extends Controller
         $room = Room::findOrFail($request->room_id);
         $file = File::findOrFail($request->file);
         $room->files()->attach($file);
-        AddQueueEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+        UpdateQueueEvent::dispatch(auth()->user(), $request->room_id);
         return null;
     }
 

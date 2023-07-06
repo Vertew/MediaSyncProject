@@ -15,6 +15,6 @@ class Room extends Model
     }
 
     public function files(): BelongsToMany{
-        return $this->belongsToMany(File::class);
+        return $this->belongsToMany(File::class)->withTimestamps();
     }
 }

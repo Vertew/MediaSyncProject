@@ -1,15 +1,28 @@
 <div class = "container-fluid mt-3 mb-3">
+    <button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>
     <div class = "row " >
         {{-- File Queue bit --}}
         <div class = "col-md-2">
             <div class = "container-md mt-5 text-center" >
                 <h2 class='text-center'>File Queue</h2>
             </div>
+            <div class="container-md text-center">
+                <button class="btn btn-sm {{$queue_mode=="sequential"  ? "btn-secondary" : "btn-outline-secondary"}}" id="sequential-button" type="button" data-bs-toggle="tooltip" title="Sequential mode" wire:click="broadcastMode('sequential')"><b>&#129034;</b></button>
+                <button class="btn btn-sm {{$queue_mode=="vote"  ? "btn-secondary" : "btn-outline-secondary"}}" id="vote-button" type="button" data-bs-toggle="tooltip" title="Vote mode" wire:click="broadcastMode('vote')"><b>&#128587;</b></button>
+            </div>
+            <div class = "container-md mt-2 text-center">
+                <button class="btn btn-primary btn-sm" id="play-queue" type="button" data-bs-toggle="tooltip" title="Play next in queue" wire:click="playNext"><b>&#x1F782;</b></button>
+            </div>
             <div id="file-container" class = "container-md mt-3 text-center" style="min-height: 300px; max-height: 700px; overflow-y: auto;">
                 @forelse ($queue as $file)
-                    <div class="container-md mt-2">
+                    <div class="container-md mt-2 d-grid">
                         <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}} wire:click="set_media({{$file}})"/>    
-                        <label class="btn btn-outline-primary" for={{"queuebutton".$file->id}}>{{$file->title}}</label>
+                        <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>{{$file->title}}
+                            @if ($queue_mode == "vote")
+                                <span class="badge bg-success" data-bs-toggle="tooltip" title="Votes">0</span>
+                            @endif
+                            <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="tooltip" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
+                        </label>
                     </div>
                 @empty
                     <p>Nothing in the queue right now...</p>
@@ -145,7 +158,7 @@
             })
         }
         function sendIdQueue(new_id) {
-            axios.post('/add-queue', {
+            axios.post('/update-queue', {
                 file: new_id,
                 room_id: currentRoom
             })

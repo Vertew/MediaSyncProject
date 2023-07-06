@@ -16,6 +16,11 @@ const volumeSlider = document.getElementById("volume-slider");
 const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
 
+// var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+// var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+//   return new bootstrap.Tooltip(tooltipTriggerEl)
+// })
+
 var current_id; // Keeping track of the current video in the player.
 
 const channel = Echo.join('presence.chat.' + currentRoom);
@@ -387,5 +392,11 @@ channel
         const username = event.user.username;
         const state = event.state;
         muteUnmute(username, state);
+    })
+
+    .listen('.update-queue', (event) => {
+        console.log(event);
+        const username = event.user.username;
+        addAlert(username, "Updated the queue.");
     })
 
