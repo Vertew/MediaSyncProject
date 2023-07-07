@@ -34,7 +34,11 @@ class MediaRoom extends Component
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
         $this->queue = $this->room->files->sortBy('pivot.created_at');
-        $this->shuffle_array = array();
+        $i=1;
+        foreach ($this->queue as $file) {
+            $this->shuffle_array[$i] = ($this->room->files->find($file->id))->pivot->votes;
+            $i++;
+        }
         $this->myVote = new File;
         MediaRoom::resetVotes();
     }
@@ -51,8 +55,8 @@ class MediaRoom extends Component
     }
 
     public function reloadQueueState() {
-        MediaRoom::resetVotes();
-        ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id);
+        //MediaRoom::resetVotes();
+        ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
     public function dump(){
