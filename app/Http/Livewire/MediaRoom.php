@@ -91,6 +91,8 @@ class MediaRoom extends Component
             $this->queue = $this->room->files->sortBy('pivot.created_at');
         else if($this->queue_mode == "vote"){
             $this->queue = $this->room->files->sortByDesc('pivot.votes');
+        }else if($this->queue_mode == "random"){
+            $this->queue =  $this->room->files->shuffle();
         }
     }
 

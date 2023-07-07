@@ -8,6 +8,7 @@
             </div>
             <div class="container-md text-center">
                 <button class="btn btn-sm {{$queue_mode=="sequential"  ? "btn-secondary" : "btn-outline-secondary"}}" id="sequential-button" type="button" data-bs-toggle="tooltip" title="Sequential mode" wire:click="broadcastMode('sequential')"><b>&#129034;</b></button>
+                <button class="btn btn-sm {{$queue_mode=="random"  ? "btn-secondary" : "btn-outline-secondary"}}" id="random-button" type="button" data-bs-toggle="tooltip" title="Shuffle mode" wire:click="broadcastMode('random')"><b>Shuffle</b></button>
                 <button class="btn btn-sm {{$queue_mode=="vote"  ? "btn-secondary" : "btn-outline-secondary"}}" id="vote-button" type="button" data-bs-toggle="tooltip" title="Vote mode" wire:click="broadcastMode('vote')"><b>&#128587;</b></button>
             </div>
             <div class = "container-md mt-2 text-center">
@@ -22,7 +23,7 @@
                                 <span class="badge bg-success" data-bs-toggle="tooltip" title="Votes">{{($room->files->find($file->id))->pivot->votes}}</span>
                                 <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="tooltip" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
                             </label>
-                        @elseif ($queue_mode == "sequential")
+                        @else
                             <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}}/>    
                             <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>{{$file->title}}
                                 <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="tooltip" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
