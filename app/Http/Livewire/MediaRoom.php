@@ -24,6 +24,7 @@ class MediaRoom extends Component
     public $video_slctd = false;
     public string $queue_mode = "sequential";
     public File $myVote;
+    public array $shuffle_array;
     public $room;
     public $queue;
 
@@ -33,6 +34,7 @@ class MediaRoom extends Component
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
         $this->queue = $this->room->files->sortBy('pivot.created_at');
+        $this->shuffle_array = array();
         $this->myVote = new File;
         MediaRoom::resetVotes();
     }
@@ -92,18 +94,29 @@ class MediaRoom extends Component
         else if($this->queue_mode == "vote"){
             $this->queue = $this->room->files->sortByDesc('pivot.votes');
         }else if($this->queue_mode == "random"){
-            $this->queue =  $this->room->files->shuffle();
+            $i = 1;
+            foreach($this->room->files as $file){
+                $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes = $this->shuffle_array[$i]]);
+                $i++;
+            }
+            $this->queue = $this->room->files->sortByDesc('pivot.votes');
         }
     }
 
     public function changeMode(array $event){
         $this->queue_mode = $event["newMode"];
+        $this->shuffle_array = $event["shuffle_array"];
         //MediaRoom::resetVotes();
         UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
     public function broadcastMode(string $newMode){
-        ChangeModeEvent::dispatch(Auth::user(), $newMode, $this->room->id);
+        if ($newMode == "random"){
+            for ($i = 1; $i <= count($this->room->files); $i++) {
+                $this->shuffle_array[$i] = rand(1,count($this->room->files));
+            }
+        }
+        ChangeModeEvent::dispatch(Auth::user(), $newMode, $this->room->id, $this->shuffle_array);
     }
 
     public function removeFromQueue(int $file_id){

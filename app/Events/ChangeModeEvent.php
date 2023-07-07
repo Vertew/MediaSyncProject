@@ -18,15 +18,17 @@ class ChangeModeEvent implements ShouldBroadcast
     private User $user;
     private string $mode;
     private int $room_id;
+    private array $shuffle_array;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, string $mode, int $room_id)
+    public function __construct(User $user, string $mode, int $room_id, array $shuffle_array = array())
     {
         $this->user = $user;
         $this->mode = $mode;
         $this->room_id = $room_id;
+        $this->shuffle_array = $shuffle_array;
     }
 
     /**
@@ -50,7 +52,8 @@ class ChangeModeEvent implements ShouldBroadcast
     {
         return [
             'user' => $this->user->only(['username']),
-            'newMode' => $this->mode
+            'newMode' => $this->mode,
+            'shuffle_array' => $this->shuffle_array,
         ];
     }
 }
