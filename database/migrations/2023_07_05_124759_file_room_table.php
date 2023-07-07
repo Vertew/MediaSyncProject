@@ -15,6 +15,7 @@ return new class extends Migration
             $table->primary(['room_id','file_id']);
             $table->bigInteger('room_id')->unsigned();
             $table->bigInteger('file_id')->unsigned();
+            $table->bigInteger('votes')->unsigned()->default(0);
 
             $table->foreign('room_id')->references('id')->on('rooms')
                   ->onDelete('cascade')->onUpdate('cascade');

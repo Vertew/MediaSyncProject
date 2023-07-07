@@ -16,13 +16,18 @@
             <div id="file-container" class = "container-md mt-3 text-center" style="min-height: 300px; max-height: 700px; overflow-y: auto;">
                 @forelse ($queue as $file)
                     <div class="container-md mt-2 d-grid">
-                        <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}} wire:click="set_media({{$file}})"/>    
-                        <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>{{$file->title}}
-                            @if ($queue_mode == "vote")
-                                <span class="badge bg-success" data-bs-toggle="tooltip" title="Votes">0</span>
-                            @endif
-                            <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="tooltip" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
-                        </label>
+                        @if ($queue_mode == "vote")
+                            <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}} wire:click="placeVote({{$file}})"/>    
+                            <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>{{$file->title}}
+                                <span class="badge bg-success" data-bs-toggle="tooltip" title="Votes">{{($room->files->find($file->id))->pivot->votes}}</span>
+                                <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="tooltip" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
+                            </label>
+                        @elseif ($queue_mode == "sequential")
+                            <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}}/>    
+                            <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>{{$file->title}}
+                                <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="tooltip" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
+                            </label>
+                        @endif
                     </div>
                 @empty
                     <p>Nothing in the queue right now...</p>

@@ -394,9 +394,9 @@ channel
         muteUnmute(username, state);
     })
 
-    .listen('.update-queue', (event) => {
-        console.log(event);
-        const username = event.user.username;
-        addAlert(username, "Updated the queue.");
-    })
+    // .listen('.update-queue', (event) => {
+    //     console.log(event);
+    //     const username = event.user.username;
+    //     addAlert(username, "Updated the queue.");
+    // })
 

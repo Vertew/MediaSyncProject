@@ -19,6 +19,6 @@ class File extends Model
     }
 
     public function rooms(): BelongsToMany{
-        return $this->belongsToMany(Room::class)->withTimestamps();
+        return $this->belongsToMany(Room::class)->withTimestamps()->withPivot('votes');
     }
 }

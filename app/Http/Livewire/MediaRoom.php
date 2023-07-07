@@ -23,19 +23,18 @@ class MediaRoom extends Component
     public $audio_slctd = false;
     public $video_slctd = false;
     public string $queue_mode = "sequential";
+    public File $myVote;
     public $room;
     public $queue;
 
     public function mount()
     {
-        // Initialising media files
+        // Initialising
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
         $this->queue = $this->room->files->sortBy('pivot.created_at');
-    }
-
-    public function dump(){
-        dd($this->queue);
+        $this->myVote = new File;
+        MediaRoom::resetVotes();
     }
 
     public function getListeners()
@@ -43,17 +42,62 @@ class MediaRoom extends Component
         return [
             "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
+            "echo-presence:presence.chat.{$this->room->id},joining" => 'reloadQueueState',
+            "echo-presence:presence.chat.{$this->room->id},leaving" => 'reloadQueueState',
             'fileUploaded' => '$refresh'
         ];
     }
 
+    public function reloadQueueState() {
+        MediaRoom::resetVotes();
+        ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id);
+    }
+
+    public function dump(){
+        //dd($this->queue);
+        foreach ($this->queue as $file) {
+            //$file->pivot->votes = 1;
+            $newFile = $this->room->files->find($file->id);
+            $newFile->pivot->votes = 1;
+        }
+    }
+
+    public function placeVote(File $file){
+        if ($this->myVote->id != null){
+            if($this->myVote != $file){
+                $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes += 1]);
+                $this->room->files()->updateExistingPivot($this->myVote->id, ['votes' => $this->room->files->find($this->myVote->id)->pivot->votes -= 1]);
+                $this->myVote = $file;
+                UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+            }  
+        }else{
+            $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes += 1]);
+            $this->myVote = $file;
+            UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+        } 
+    }
+
+    public function resetVotes() {
+        foreach ($this->queue as $file) {
+            $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes = 0]);
+        }
+        $this->myVote = new File;
+        UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+    }
+
     public function updateQueue(){
         $this->room->refresh();
-        $this->queue = $this->room->files->sortBy('pivot.created_at');
+        if($this->queue_mode == "sequential")
+            $this->queue = $this->room->files->sortBy('pivot.created_at');
+        else if($this->queue_mode == "vote"){
+            $this->queue = $this->room->files->sortByDesc('pivot.votes');
+        }
     }
 
     public function changeMode(array $event){
         $this->queue_mode = $event["newMode"];
+        //MediaRoom::resetVotes();
+        UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
     public function broadcastMode(string $newMode){
@@ -62,6 +106,7 @@ class MediaRoom extends Component
 
     public function removeFromQueue(int $file_id){
         $this->room->files()->detach($file_id);
+        MediaRoom::resetVotes();
         UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
@@ -69,6 +114,7 @@ class MediaRoom extends Component
         $this->file = $this->queue->first();
         if ($this->file != null){
             $this->room->files()->detach($this->file->id);
+            MediaRoom::resetVotes();
             UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
             SetEvent::dispatch(Auth::user(), $this->file->id, $this->room->id);
         }
