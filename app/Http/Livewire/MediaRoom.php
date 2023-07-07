@@ -106,7 +106,7 @@ class MediaRoom extends Component
     public function changeMode(array $event){
         $this->queue_mode = $event["newMode"];
         $this->shuffle_array = $event["shuffle_array"];
-        //MediaRoom::resetVotes();
+        MediaRoom::resetVotes();
         UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
