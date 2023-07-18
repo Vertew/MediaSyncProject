@@ -17,6 +17,7 @@ class MediaRoom extends Component
 {
 
     public int $current_file;
+    public int $active_file_id;
     public $title = "Media player empty...";
     public $slctd_id;
     public $slctd_title = "";
@@ -24,7 +25,7 @@ class MediaRoom extends Component
     public $video_slctd = false;
     public string $queue_mode = "sequential";
     public File $myVote;
-    public array $shuffle_array;
+    public array $shuffle_array = [];
     public $room;
     public $queue;
 
@@ -48,6 +49,7 @@ class MediaRoom extends Component
         return [
             "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
+            "echo-presence:presence.chat.{$this->room->id},.media-set" => 'updateValues',
             "echo-presence:presence.chat.{$this->room->id},joining" => 'reloadQueueState',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'reloadQueueState',
             'fileUploaded' => '$refresh'
@@ -57,6 +59,10 @@ class MediaRoom extends Component
     public function reloadQueueState() {
         //MediaRoom::resetVotes();
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
+    }
+
+    public function updateValues(array $event) {
+        $this->active_file_id = $event["file"]["id"];
     }
 
     public function dump(){
@@ -164,6 +170,12 @@ class MediaRoom extends Component
             $this->file->delete();
             session()->flash('message', 'File deleted.');
             $this->emit('file-deleted');
+
+            if($fileid == $this->active_file_id){
+                // If the current file in the player is deleted then set the file
+                // to be the default file in the player.
+                SetEvent::dispatch(Auth::user(), 1, $this->room->id);
+            }
         }else{
             session()->flash('message', 'Select a file to delete');
         }
