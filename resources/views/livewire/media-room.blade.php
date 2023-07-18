@@ -1,5 +1,13 @@
 <div class = "container-fluid mt-3 mb-3">
-    <button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>
+    {{--<button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>--}}
+    <div class = "container-fluid text-center" wire:ignore>
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+            View users
+        </button>
+        <ul class="dropdown-menu text-center" id="user-list">
+            {{-- List of users gets inserted into here via js --}}
+        </ul>
+    </div>
     <div class = "row " >
         {{-- File Queue bit --}}
         <div class = "col-md-2">
@@ -70,7 +78,7 @@
         </div>
         {{-- Chat message bit --}}
         <div class = "col-md-2">
-            <div class = "container-md mt-5 text-center" >
+            <div class = "container-md mt-5 text-center" wire:ignore>
                 <h2 class='text-center'>Chat</h2>
             </div>
 
@@ -79,7 +87,6 @@
                     <ul class="list-group" id ="message-list">
                         {{-- Bit of a hacky dumb way to get the list items to start drawing from the bottom of the container --}}
                         <li style="min-height: 680px">
- 
                     </ul>
                 </div>
 

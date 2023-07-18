@@ -15,6 +15,8 @@ const timeText = document.getElementById("time-text");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
+const userList = document.getElementById("user-list");
+var currentUsers = [];
 
 // var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 // var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -41,6 +43,10 @@ media.addEventListener("ended", () => {
     playpause.innerHTML = "&#x1F782;";
 });
 
+
+// This version uses the play event fired by the video player element
+// however it causes an infinite loop of events to be fired off if used
+// in this manner.
 /*
 video.addEventListener('play', (e) => {
     axios.post('/play-pause', {
@@ -270,6 +276,33 @@ function addMessage(username, message){
     container.scrollTop = container.scrollHeight;
 }
 
+function populateUserList() {
+    currentUsers.forEach((user) => {
+        addUserList(user.username);
+    })     
+}
+
+function addUserList(username) {
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.classList.add('dropdown-item-text');
+    span.textContent = username;
+    if(username == currentUser){
+        span.classList.add('text-bg-primary');
+    }else{
+        span.classList.add('text-bg-light');
+    }
+    li.id = "list-" + username;
+    li.append(span);
+
+    userList.append(li);
+}
+
+function removeUserList(username) {
+    const li = document.getElementById("list-" + username);
+    userList.removeChild(li);
+}
+
 function setTime(username, time) {
     addAlert(username, 'Set time to ' + timeTextFormat(time));
     media.currentTime = time;
@@ -298,11 +331,14 @@ channel
     .here((users) => {
         console.log('Subscribed to room channel ' + currentRoom + '!');
         console.log({users});
+        currentUsers = [...users];
+        populateUserList();
     })
 
     .joining((user) => {
         console.log(user.username, 'joined')
         addMessage(user.username, 'User has joined the room');
+        addUserList(user.username);
         // When someone new joins the room, we want to broadcast the current  media file again to make sure
         // they have the current file in their player. If there is no current file of course, this 
         // will not occur as no file is the default state when entering the room.
@@ -341,6 +377,7 @@ channel
     .leaving((user) => {
         console.log({user}, 'left')
         addMessage(user.username, 'User has left the room.');
+        removeUserList(user.username);
     })
 
     .listen('.message-sent', (event) => {
