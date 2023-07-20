@@ -66,7 +66,7 @@ class MediaRoom extends Component
     }
 
     public function dump(){
-        dd(Auth::user()->roles->find($this->room->id));
+        dd(Auth::user()->roles->where('role', 'Admin')->contains('pivot.room_id', $this->room->id));
     }
 
     public function placeVote(File $file){

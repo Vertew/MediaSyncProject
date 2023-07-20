@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('role_user', function (Blueprint $table) {
-            $table->primary(['role_id','user_id']);
+            $table->primary(['role_id','user_id','room_id']);
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('role_id')->unsigned();
-            $table->bigInteger('room_id')->unsigned()->nullable();
+            $table->bigInteger('room_id')->unsigned();
 
             $table->foreign('user_id')->references('id')->on('users')
                   ->onDelete('cascade')->onUpdate('cascade');

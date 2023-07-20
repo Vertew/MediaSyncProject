@@ -34,8 +34,8 @@ class UsersTableSeeder extends Seeder
         $room->save();
 
         $role = $roles->find(1);
-        $user->roles()->attach($role);
-        $user->roles()->updateExistingPivot($role->id, ['room_id' => $room->id]);
+        $user->roles()->attach($role, ['room_id' => $room->id]);
+        //$user->roles()->updateExistingPivot($role->id, ['room_id' => $room->id]);
 
         $user = new User;
         $user->username = "mike999";

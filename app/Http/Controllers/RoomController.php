@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Room;
 use App\Models\File;
+use App\Models\Role;
 
 class RoomController extends Controller
 {
@@ -42,6 +43,13 @@ class RoomController extends Controller
         $room->name = $validatedData['name'];
         $room->key = Str::random(16);
         $room->save();
+
+        $roles = Role::Get();
+        $role = $roles->find(1); // The user who created the room is automatically the room admin
+
+        $user = Auth::user();
+        $user->roles()->attach($role, ['room_id' => $room->id]);
+
 
         session()->flash('message', 'New room created.');
         return redirect()->route('rooms.show', ['key' => $room->key]);

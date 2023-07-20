@@ -31,13 +31,15 @@
         <livewire:file-upload />
     </div>
 
-    <div class = "container-md mt-5 text-center">
-        <form method="POST" action="{{ route('rooms.destroy', ['id'=> $room->id])}}">
-            @csrf
-            @method('DELETE')
-            <input class="btn btn-danger" type = "submit" value = "Delete Room" onclick="return confirm('Are you sure?')">
-        </form>
-    </div>
+    @if(Auth::user()->roles->where('role', 'Admin')->contains('pivot.room_id', $room->id))
+        <div class = "container-md mt-5 text-center">
+            <form method="POST" action="{{ route('rooms.destroy', ['id'=> $room->id])}}">
+                @csrf
+                @method('DELETE')
+                <input class="btn btn-danger" type = "submit" value = "Delete Room" onclick="return confirm('Are you sure?')">
+            </form>
+        </div>
+    @endif
 
     <script>
         function showhide(id) {
