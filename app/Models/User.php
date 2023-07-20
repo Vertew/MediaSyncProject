@@ -58,4 +58,8 @@ class User extends Authenticatable
     public function rooms(){
         return $this->hasMany(Room::class);
     }
+
+    public function roles(){
+        return $this->belongsToMany(Role::class)->withPivot('room_id');
+    }
 }

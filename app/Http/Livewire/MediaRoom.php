@@ -66,12 +66,7 @@ class MediaRoom extends Component
     }
 
     public function dump(){
-        //dd($this->queue);
-        foreach ($this->queue as $file) {
-            //$file->pivot->votes = 1;
-            $newFile = $this->room->files->find($file->id);
-            $newFile->pivot->votes = 1;
-        }
+        dd(Auth::user()->roles->find($this->room->id));
     }
 
     public function placeVote(File $file){

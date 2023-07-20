@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\Room;
+use App\Models\Role;
 
 class UsersTableSeeder extends Seeder
 {
@@ -14,6 +16,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        $roles = Role::Get();
+
         $user = new User;
         $user->username = "user1205";
         $user->email = "joe1205@hotmail.com";
@@ -23,6 +27,15 @@ class UsersTableSeeder extends Seeder
         $user->remember_token = Str::random(10);
         $user->save();
 
+        $room = new Room;
+        $room->user_id = $user->id;
+        $room->name = "Joe's Room";
+        $room->key = Str::random(16);
+        $room->save();
+
+        $role = $roles->find(1);
+        $user->roles()->attach($role);
+        $user->roles()->updateExistingPivot($role->id, ['room_id' => $room->id]);
 
         $user = new User;
         $user->username = "mike999";

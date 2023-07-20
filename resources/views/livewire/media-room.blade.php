@@ -1,5 +1,7 @@
 <div class = "container-fluid mt-3 mb-3">
-    {{--<button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>--}}
+    @if(Auth::user()->roles->find($room->id)?->role == 'Admin')
+        <button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>
+    @endif
     <div class = "container-fluid text-center" wire:ignore>
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
             View users
