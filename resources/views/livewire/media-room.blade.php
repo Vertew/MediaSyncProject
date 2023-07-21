@@ -1,18 +1,38 @@
 <div class = "container-fluid mt-3 mb-3">
     <button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>
-    <div class = "container-fluid text-center" wire:ignore>
-        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-            View users
-        </button>
-        <ul class="dropdown-menu text-center" id="user-list">
-            {{-- List of users gets inserted into here via js --}}
-        </ul>
+    {{-- User list bit --}}
+    <div class = "container-fluid text-center">
+        <div class = "row">
+            <div class = "col-md-4">
+            </div>
+            <div class = "col-md-4">
+                <div class="container-sm">
+                    <h2>Online Users</h2>
+                    <ul class = "list-group" id="user-list" style="max-height: 100px; overflow-y: auto;">
+                        @foreach($currentUsers as $user)
+                            <li id="list-{{$user['username']}}">
+                                <span class="list-group-item {{Auth::user()->username==$user['username'] ? "text-bg-primary" : "text-bg-light"}}">{{$user['username']}}  
+                                    <button class = "btn btn-secondary btn-sm" type="button">⁝</button>
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                    {{--
+                    <ul class = "list-group" id="user-list" style="max-height: 100px; overflow-y: auto;">
+                        {{-- List of users gets inserted into here via js -}}
+                    </ul>
+                    --}}
+                </div>
+            </div>
+            <div class = "col-md-4">
+            </div>
+        </div>
     </div>
-    <div class = "row " >
+    <div class = "row">
         {{-- File Queue bit --}}
         <div class = "col-md-2">
             <div class = "container-md mt-5 text-center" >
-                <h2 class='text-center'>File Queue</h2>
+                <h2>File Queue</h2>
             </div>
             <div class="container-md text-center">
                 <button class="btn btn-sm {{$queue_mode=="sequential"  ? "btn-secondary" : "btn-outline-secondary"}}" id="sequential-button" type="button" data-bs-toggle="tooltip" title="Sequential mode" wire:click="broadcastMode('sequential')"><b>&#129034;</b></button>
@@ -22,7 +42,7 @@
             <div class = "container-md mt-2 text-center">
                 <button class="btn btn-primary btn-sm" id="play-queue" type="button" data-bs-toggle="tooltip" title="Play next in queue" wire:click="playNext"><b>&#x1F782;</b></button>
             </div>
-            <div id="file-container" class = "container-md mt-3 text-center" style="min-height: 300px; max-height: 700px; overflow-y: auto;">
+            <div class = "container-md mt-3 text-center" id="file-container" style="min-height: 300px; max-height: 700px; overflow-y: auto;">
                 @forelse ($queue as $file)
                     <div class="container-md mt-2 d-grid">
                         @if ($queue_mode == "vote")

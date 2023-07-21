@@ -276,33 +276,6 @@ function addMessage(username, message){
     container.scrollTop = container.scrollHeight;
 }
 
-function populateUserList() {
-    currentUsers.forEach((user) => {
-        addUserList(user.username);
-    })     
-}
-
-function addUserList(username) {
-    const li = document.createElement('li');
-    const span = document.createElement('span');
-    span.classList.add('dropdown-item-text');
-    span.textContent = username;
-    if(username == currentUser){
-        span.classList.add('text-bg-primary');
-    }else{
-        span.classList.add('text-bg-light');
-    }
-    li.id = "list-" + username;
-    li.append(span);
-
-    userList.append(li);
-}
-
-function removeUserList(username) {
-    const li = document.getElementById("list-" + username);
-    userList.removeChild(li);
-}
-
 function setTime(username, time) {
     addAlert(username, 'Set time to ' + timeTextFormat(time));
     media.currentTime = time;
@@ -436,4 +409,40 @@ channel
     //     const username = event.user.username;
     //     addAlert(username, "Updated the queue.");
     // })
+    
+    // function populateUserList() {
+    //     currentUsers.forEach((user) => {
+    //         addUserList(user.username);
+    //     })     
+    // }
+    
+    // function addUserList(username) {
+    //     const li = document.createElement('li');
+    //     const span = document.createElement('span');
+    //     const button = document.createElement('button');
+    //     button.classList.add('btn');
+    //     button.classList.add('btn-secondary');
+    //     button.classList.add('btn-sm');
+    //     button.type = 'button';
+    //     button.textContent = '⁝';
+    
+    
+    //     span.classList.add('list-group-item');
+    //     span.textContent = username + " ";
+    //     if(username == currentUser){
+    //         span.classList.add('text-bg-primary');
+    //     }else{
+    //         span.classList.add('text-bg-light');
+    //     }
+    //     li.id = "list-" + username;
+    //     span.append(button);
+    //     li.append(span);
+    
+    //     userList.append(li);
+    // }
+    
+    // function removeUserList(username) {
+    //     const li = document.getElementById("list-" + username);
+    //     userList.removeChild(li);
+    // }
 

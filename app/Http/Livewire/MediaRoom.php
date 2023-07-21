@@ -18,6 +18,7 @@ class MediaRoom extends Component
 
     public int $current_file;
     public int $active_file_id;
+    public array $currentUsers = [];
     public $title = "Media player empty...";
     public $slctd_id;
     public $slctd_title = "";
@@ -50,14 +51,28 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
             "echo-presence:presence.chat.{$this->room->id},.media-set" => 'updateValues',
-            "echo-presence:presence.chat.{$this->room->id},joining" => 'reloadQueueState',
-            "echo-presence:presence.chat.{$this->room->id},leaving" => 'reloadQueueState',
+            "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
+            "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
+            "echo-presence:presence.chat.{$this->room->id},here" => 'here',
             'fileUploaded' => '$refresh'
         ];
     }
 
-    public function reloadQueueState() {
+    public function here(array $users) {
+        $this->currentUsers = $users;
+    }
+
+    public function joining(array $user) {
         //MediaRoom::resetVotes();
+        $this->currentUsers[] = $user;
+        ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
+    }
+
+    public function leaving(array $user) {
+        //MediaRoom::resetVotes();
+        if(($key = array_search($user, $this->currentUsers)) !== false) {
+            unset($this->currentUsers[$key]);
+        }
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
@@ -66,7 +81,7 @@ class MediaRoom extends Component
     }
 
     public function dump(){
-        dd(Auth::user()->roles->where('role', 'Admin')->contains('pivot.room_id', $this->room->id));
+        dd($this->currentUsers);
     }
 
     public function placeVote(File $file){
