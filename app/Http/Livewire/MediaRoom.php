@@ -11,6 +11,7 @@ use Livewire\Component;
 use App\Models\File;
 use App\Models\User;
 use App\Models\Room;
+use App\Models\Role;
 
 
 class MediaRoom extends Component
@@ -27,6 +28,7 @@ class MediaRoom extends Component
     public string $queue_mode = "sequential";
     public File $myVote;
     public array $shuffle_array = [];
+    public $roles;
     public $room;
     public $queue;
 
@@ -36,6 +38,7 @@ class MediaRoom extends Component
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
         $this->queue = $this->room->files->sortBy('pivot.created_at');
+        $this->roles = Role::Get();
         $i=1;
         foreach ($this->queue as $file) {
             $this->shuffle_array[$i] = ($this->room->files->find($file->id))->pivot->votes;
@@ -74,6 +77,21 @@ class MediaRoom extends Component
             unset($this->currentUsers[$key]);
         }
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
+    }
+
+    public function toggleRole(int $newRole, int $userId) {
+
+        $user = User::find($userId);
+
+        // Check if user already as the new role
+        if(!($user->roles->where('pivot.room_id', $this->room->id)->first()?->id == $newRole)){
+            // Detach current roles associated with user through room
+            $user->roles()->wherePivot('room_id', $this->room->id)->detach();
+
+            // Attach new role
+            $role = $this->roles->find($newRole);
+            $user->roles()->attach($role, ['room_id' => $this->room->id]);
+        }
     }
 
     public function updateValues(array $event) {

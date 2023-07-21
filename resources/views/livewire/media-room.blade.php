@@ -11,17 +11,36 @@
                     <ul class = "list-group" id="user-list" style="max-height: 100px; overflow-y: auto;">
                         @foreach($currentUsers as $user)
                             <li id="list-{{$user['username']}}">
-                                <span class="list-group-item {{Auth::user()->username==$user['username'] ? "text-bg-primary" : "text-bg-light"}}">{{$user['username']}}  
-                                    <button class = "btn btn-secondary btn-sm" type="button">⁝</button>
+                                <span class="list-group-item {{Auth::user()->username==$user['username'] ? "text-bg-primary" : "text-bg-light"}}">{{$user['username']}}
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">Roles</button>
                                 </span>
                             </li>
+                            {{-- Roles modal --}}
+                            <div class="modal" id="modal-{{$user['username']}}" wire:ignore.self>
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">{{$user["username"]}}</h4>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                
+                                        <div class="modal-body">
+                                            <h5 class="modal-title">Current role</h5>
+                                            <button class="btn btn-light" type="button"><b>{{App\Models\User::find($user['id'])->roles->where('pivot.room_id', $this->room->id)->first()->role}}</b></button> 
+                                            <h5 class="modal-title">Change role</h5>
+                                            @foreach($roles->where('role', '!=', App\Models\User::find($user['id'])->roles->where('pivot.room_id', $this->room->id)->first()->role) as $role)
+                                                <button class="btn btn-light" type="button" wire:click="toggleRole({{$role->id}}, {{$user['id']}})"><b>{{$role->role}}</b></button> 
+                                            @endforeach
+                                        </div>
+                                
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endforeach
                     </ul>
-                    {{--
-                    <ul class = "list-group" id="user-list" style="max-height: 100px; overflow-y: auto;">
-                        {{-- List of users gets inserted into here via js -}}
-                    </ul>
-                    --}}
                 </div>
             </div>
             <div class = "col-md-4">
