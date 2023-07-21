@@ -305,13 +305,13 @@ channel
         console.log('Subscribed to room channel ' + currentRoom + '!');
         console.log({users});
         currentUsers = [...users];
-        populateUserList();
+        //populateUserList();
     })
 
     .joining((user) => {
         console.log(user.username, 'joined')
         addMessage(user.username, 'User has joined the room');
-        addUserList(user.username);
+        //addUserList(user.username);
         // When someone new joins the room, we want to broadcast the current  media file again to make sure
         // they have the current file in their player. If there is no current file of course, this 
         // will not occur as no file is the default state when entering the room.
@@ -350,7 +350,7 @@ channel
     .leaving((user) => {
         console.log({user}, 'left')
         addMessage(user.username, 'User has left the room.');
-        removeUserList(user.username);
+        //removeUserList(user.username);
     })
 
     .listen('.message-sent', (event) => {
@@ -409,13 +409,15 @@ channel
     //     const username = event.user.username;
     //     addAlert(username, "Updated the queue.");
     // })
+
+    // -- Old user list implementation --
     
     // function populateUserList() {
     //     currentUsers.forEach((user) => {
     //         addUserList(user.username);
     //     })     
     // }
-    
+
     // function addUserList(username) {
     //     const li = document.createElement('li');
     //     const span = document.createElement('span');
@@ -425,8 +427,8 @@ channel
     //     button.classList.add('btn-sm');
     //     button.type = 'button';
     //     button.textContent = '⁝';
-    
-    
+
+
     //     span.classList.add('list-group-item');
     //     span.textContent = username + " ";
     //     if(username == currentUser){
@@ -437,12 +439,13 @@ channel
     //     li.id = "list-" + username;
     //     span.append(button);
     //     li.append(span);
-    
+
     //     userList.append(li);
     // }
-    
+
     // function removeUserList(username) {
     //     const li = document.getElementById("list-" + username);
     //     userList.removeChild(li);
     // }
+
 

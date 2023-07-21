@@ -58,19 +58,19 @@ class MediaRoom extends Component
         ];
     }
 
-    public function here(array $users) {
-        $this->currentUsers = $users;
+    public function here(array $event) {
+        $this->currentUsers = $event;
     }
 
-    public function joining(array $user) {
+    public function joining(array $event) {
         //MediaRoom::resetVotes();
-        $this->currentUsers[] = $user;
+        $this->currentUsers[] = $event;
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
-    public function leaving(array $user) {
+    public function leaving(array $event) {
         //MediaRoom::resetVotes();
-        if(($key = array_search($user, $this->currentUsers)) !== false) {
+        if(($key = array_search($event, $this->currentUsers)) !== false) {
             unset($this->currentUsers[$key]);
         }
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
