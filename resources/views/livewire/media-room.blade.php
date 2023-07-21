@@ -12,7 +12,7 @@
                         @foreach($currentUsers as $user)
                             <li id="list-{{$user['username']}}">
                                 <span class="list-group-item {{Auth::user()->username==$user['username'] ? "text-bg-primary" : "text-bg-light"}}">{{$user['username']}}
-                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">Roles</button>
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">Roles</button>
                                 </span>
                             </li>
                             {{-- Roles modal --}}
