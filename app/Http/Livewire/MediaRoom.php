@@ -4,7 +4,9 @@ namespace App\Http\Livewire;
 
 use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Events\UpdateQueueEvent;
+use App\Events\RoleChangedEvent;
 use App\Events\ChangeModeEvent;
 use App\Events\SetEvent;
 use Livewire\Component;
@@ -25,6 +27,8 @@ class MediaRoom extends Component
     public $slctd_title = "";
     public $audio_slctd = false;
     public $video_slctd = false;
+    public $moderator_level;
+    public $standard_level;
     public string $queue_mode = "sequential";
     public File $myVote;
     public array $shuffle_array = [];
@@ -35,8 +39,10 @@ class MediaRoom extends Component
     public function mount()
     {
         // Initialising
-        $this->videos = Auth::user()->files->where('type', 'video');
-        $this->audios = Auth::user()->files->where('type', 'audio');
+        $user = Auth::user();
+
+        $this->videos = $user->files->where('type', 'video');
+        $this->audios = $user->files->where('type', 'audio');
         $this->queue = $this->room->files->sortBy('pivot.created_at');
         $this->roles = Role::Get();
         $i=1;
@@ -46,6 +52,11 @@ class MediaRoom extends Component
         }
         $this->myVote = new File;
         MediaRoom::resetVotes();
+
+        if($user->roles->where('pivot.room_id', $this->room->id)->isEmpty()){
+            $role = $this->roles->firstWhere('role', 'Standard');
+            $user->roles()->attach($role, ['room_id' => $this->room->id]);
+        }
     }
 
     public function getListeners()
@@ -54,6 +65,7 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
             "echo-presence:presence.chat.{$this->room->id},.media-set" => 'updateValues',
+            "echo-presence:presence.chat.{$this->room->id},.room-deleted" => 'exitRoom',
             "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
             "echo-presence:presence.chat.{$this->room->id},here" => 'here',
@@ -63,6 +75,8 @@ class MediaRoom extends Component
 
     public function here(array $event) {
         $this->currentUsers = $event;
+        $user = Auth::user();
+        RoleChangedEvent::dispatch($user, $this->room->id, $user->roles->firstWhere('pivot.room_id', $this->room->id));
     }
 
     public function joining(array $event) {
@@ -79,18 +93,29 @@ class MediaRoom extends Component
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
+    // This doesn't work at the moment since the room is deleted before the 
+    // websocket broadcast has time to reach the other users.
+    public function exitRoom() {
+        return redirect()->route('home');
+    }
+
     public function toggleRole(int $newRole, int $userId) {
 
-        $user = User::find($userId);
+        // Make sure user is allowed to change roles
+        if (Gate::allows('admin-action', $this->room->id)) {
+            $user = User::find($userId);
+            // Check if user already as the new role
+            if(!($user->roles->where('pivot.room_id', $this->room->id)->first()?->id == $newRole)){
 
-        // Check if user already as the new role
-        if(!($user->roles->where('pivot.room_id', $this->room->id)->first()?->id == $newRole)){
-            // Detach current roles associated with user through room
-            $user->roles()->wherePivot('room_id', $this->room->id)->detach();
+                // Detach current roles associated with user through room
+                $user->roles()->wherePivot('room_id', $this->room->id)->detach();
 
-            // Attach new role
-            $role = $this->roles->find($newRole);
-            $user->roles()->attach($role, ['room_id' => $this->room->id]);
+                // Attach new role
+                $role = $this->roles->find($newRole);
+                $user->roles()->attach($role, ['room_id' => $this->room->id]);
+
+                RoleChangedEvent::dispatch($user, $this->room->id, $role);
+            }   
         }
     }
 
@@ -99,7 +124,7 @@ class MediaRoom extends Component
     }
 
     public function dump(){
-        dd($this->currentUsers);
+        dd($this->manual_set);
     }
 
     public function placeVote(File $file){
@@ -149,12 +174,14 @@ class MediaRoom extends Component
     }
 
     public function broadcastMode(string $newMode){
-        if ($newMode == "random"){
-            for ($i = 1; $i <= count($this->room->files); $i++) {
-                $this->shuffle_array[$i] = rand(1,count($this->room->files));
+        if (Gate::allows('moderator-action', $this->room->id)) {
+            if ($newMode == "random"){
+                for ($i = 1; $i <= count($this->room->files); $i++) {
+                    $this->shuffle_array[$i] = rand(1,count($this->room->files));
+                }
             }
+            ChangeModeEvent::dispatch(Auth::user(), $newMode, $this->room->id, $this->shuffle_array);
         }
-        ChangeModeEvent::dispatch(Auth::user(), $newMode, $this->room->id, $this->shuffle_array);
     }
 
     public function removeFromQueue(int $file_id){
@@ -164,12 +191,14 @@ class MediaRoom extends Component
     }
 
     public function playNext(){
-        $this->file = $this->queue->first();
-        if ($this->file != null){
-            $this->room->files()->detach($this->file->id);
-            MediaRoom::resetVotes();
-            UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
-            SetEvent::dispatch(Auth::user(), $this->file->id, $this->room->id);
+        if(Gate::allows('standard-action', $this->room->id)) {
+            $this->file = $this->queue->first();
+            if ($this->file != null){
+                $this->room->files()->detach($this->file->id);
+                MediaRoom::resetVotes();
+                UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+                SetEvent::dispatch(Auth::user(), $this->file->id, $this->room->id);
+            }
         }
     }
 
@@ -211,6 +240,8 @@ class MediaRoom extends Component
     
     public function render()
     {
+        $this->moderator_level = Gate::allows('moderator-action', $this->room->id);
+        $this->standard_level = Gate::allows('standard-action', $this->room->id);
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
         return view('livewire.media-room', ['videos' => $this->videos->sortByDesc('created_at')], 

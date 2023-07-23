@@ -26,7 +26,6 @@
         <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>
     </div>
     
-
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <livewire:file-upload />
     </div>
@@ -55,7 +54,6 @@
         }
 
     </script>
-
 </div>
 
 <div class="mt-5 p-4 bg-dark text-white text-center"> <p>MediaSync - Copyright 2023 - Sam Tudberry - 1907632</p> </div>

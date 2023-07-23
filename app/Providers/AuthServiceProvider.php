@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,6 +24,18 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        Gate::define('admin-action', function (User $user, int $room_id) {
+            return $user->roles->where('pivot.room_id', $room_id)->contains(1);
+        });
+
+        Gate::define('moderator-action', function (User $user, int $room_id) {
+            return $user->roles->where('pivot.room_id', $room_id)->where('id', '<', 3)->isNotEmpty();
+        });
+
+        Gate::define('standard-action', function (User $user, int $room_id) {
+            return $user->roles->where('pivot.room_id', $room_id)->where('id', '<', 4)->isNotEmpty();
+        });
     }
 }

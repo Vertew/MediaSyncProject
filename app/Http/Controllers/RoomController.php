@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Events\RoomDeletedEvent;
 use App\Events\UpdateQueueEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -45,7 +46,7 @@ class RoomController extends Controller
         $room->save();
 
         $roles = Role::Get();
-        $role = $roles->find(1); // The user who created the room is automatically the room admin
+        $role = $roles->firstWhere('role', 'Admin'); // The user who created the room is automatically an admin
 
         $user = Auth::user();
         $user->roles()->attach($role, ['room_id' => $room->id]);
@@ -93,6 +94,7 @@ class RoomController extends Controller
      */
     public function destroy(string $id)
     {
+        RoomDeletedEvent::dispatch($id); // Currently non-functional
         $room = Room::findOrFail($id);
         $room->delete();
         session()->flash('message', 'Room deleted.');

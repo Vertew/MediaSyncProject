@@ -35,27 +35,37 @@ Route::post('/input-message', function(Request $request){
 });
 
 Route::post('/media-set', function(Request $request){
-    SetEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+    if(Gate::allows('standard-action', $request->room_id)){
+        SetEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+    }
     return null;
 }) -> name('media.set');
 
 Route::post('/play-pause', function(Request $request){
-    PlayPauseEvent::dispatch(auth()->user(), $request->room_id);
+    if(Gate::allows('standard-action', $request->room_id)){
+        PlayPauseEvent::dispatch(auth()->user(), $request->room_id);
+    }
     return null;
 }) -> name('media.play-pause');
 
 Route::post('/change-time', function(Request $request){
-    ChangeTimeEvent::dispatch(auth()->user(), $request->time, $request->room_id);
+    if(Gate::allows('standard-action', $request->room_id)){
+        ChangeTimeEvent::dispatch(auth()->user(), $request->time, $request->room_id);
+    }
     return null;
 }) -> name('media.change-time');
 
 Route::post('/change-volume', function(Request $request){
-    ChangeVolumeEvent::dispatch(auth()->user(), $request->volume, $request->room_id);
+    if(Gate::allows('standard-action', $request->room_id)){
+        ChangeVolumeEvent::dispatch(auth()->user(), $request->volume, $request->room_id);
+    }
     return null;
 }) -> name('media.change-volume');
 
 Route::post('/mute-unmute', function(Request $request){
-    ChangeMuteEvent::dispatch(auth()->user(), $request->state, $request->room_id);
+    if(Gate::allows('standard-action', $request->room_id)){
+        ChangeMuteEvent::dispatch(auth()->user(), $request->state, $request->room_id);
+    }
     return null;
 }) -> name('media.mute-unmute');
 

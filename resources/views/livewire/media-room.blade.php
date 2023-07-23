@@ -12,7 +12,7 @@
                         @foreach($currentUsers as $user)
                             <li id="list-{{$user['username']}}">
                                 <span class="list-group-item {{Auth::user()->username==$user['username'] ? "text-bg-primary" : "text-bg-light"}}">{{$user['username']}}
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">Roles</button>
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">{{App\Models\User::find($user['id'])->roles->where('pivot.room_id', $this->room->id)->first()->role}}</button>
                                 </span>
                             </li>
                             {{-- Roles modal --}}
@@ -121,8 +121,8 @@
                 <h2 class='text-center'>Chat</h2>
             </div>
 
-            <div class = "container-md" wire:ignore>
-                <div id="message-container" class = "container-md mt-3" style="min-height: 300px; max-height: 680px; overflow-y: auto;">
+            <div class = "container-md">
+                <div id="message-container" class = "container-md mt-3" style="min-height: 300px; max-height: 680px; overflow-y: auto;" wire:ignore>
                     <ul class="list-group" id ="message-list">
                         {{-- Bit of a hacky dumb way to get the list items to start drawing from the bottom of the container --}}
                         <li style="min-height: 680px">
@@ -132,7 +132,9 @@
                 <div class = "container-md mt-3 text-center">
                     <form id='form1'>
                         <div class="container-md">
-                            <input id="input" type = "text" class="form-control" placeholder="Start typing..." name = "title">
+                            @if($standard_level)
+                                <input id="input" type = "text" class="form-control" placeholder="Start typing..." name = "title">
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -140,8 +142,8 @@
         </div>
     </div>
 
-    <div wire:ignore class = "container-md mt-3 text-center" id="alert-container" style="max-height: 300px; overflow-y: auto;">
-
+    <div class = "container-md mt-3 text-center" id="alert-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
+        {{-- Alerts go here via js --}}
     </div>
     
     {{-- Video and audio selection bit --}}
@@ -165,8 +167,8 @@
 
             <div class = "container-md mt-3 text-center">
                 {{--<button class="btn btn-light" type="button" onclick="setSrc('video_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_vid) }},'video')">Add to video player</button>--}}
-                <button class="btn btn-success {{$video_slctd  ? "" : "disabled"}}" type="button" id="add-video" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
-                <button class="btn btn-primary {{$video_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
+                <button class="btn btn-success {{$video_slctd && $moderator_level  ? "" : "disabled"}}" type="button" id="add-video" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-primary {{$video_slctd && $standard_level  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
                 <button class="btn btn-danger {{$video_slctd  ? "" : "disabled"}}" type="button" id="dlt-video" wire:click="delete({{ $current_file ?? -1 }})">Delete</button>
             </div>
 
@@ -190,8 +192,8 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                <button class="btn btn-success {{$audio_slctd  ? "" : "disabled"}}" type="button" id="add-audio" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
-                <button class="btn btn-primary {{$audio_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
+                <button class="btn btn-success {{$audio_slctd && $moderator_level  ? "" : "disabled"}}" type="button" id="add-audio" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-primary {{$audio_slctd && $standard_level  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
                 <button class="btn btn-danger {{$audio_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" wire:click="delete({{ $current_file ?? -1 }})">Delete</button>
             </div>
         </div>

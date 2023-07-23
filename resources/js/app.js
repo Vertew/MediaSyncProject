@@ -2,7 +2,6 @@ import axios from 'axios';
 import './bootstrap';
 
 const form = document.getElementById('form1');
-const inputValue = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
 const mediaContainer = document.getElementById("media-div");
@@ -16,6 +15,7 @@ const volumeSlider = document.getElementById("volume-slider");
 const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
 const userList = document.getElementById("user-list");
+var currentRole;
 var currentUsers = [];
 
 // var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -71,6 +71,7 @@ document.addEventListener("fullscreenchange", (e) => {
 
 form.addEventListener('submit', function(event){
     event.preventDefault();
+    const inputValue = document.getElementById('input');
     const userInput = inputValue.value;
     axios.post('/input-message', {
         message: userInput,
@@ -96,10 +97,13 @@ progress.addEventListener("mousedown", () => (mousedown = true));
 progress.addEventListener("mousemove", (e) => mousedown && scrub(e));
 progress.addEventListener("mouseup", (e) => broadcastTime(e));
 
+
 function scrub(e) {
-    const scrubTime = (e.offsetX / progress.offsetWidth) * media.duration;
-    media.currentTime = scrubTime;
-    updateBar();
+    if(currentRole != 'Restricted'){
+        const scrubTime = (e.offsetX / progress.offsetWidth) * media.duration;
+        media.currentTime = scrubTime;
+        updateBar();
+    }
 }
 
 function broadcastTime(e){
@@ -402,6 +406,14 @@ channel
         const username = event.user.username;
         const state = event.state;
         muteUnmute(username, state);
+    })
+
+    .listen('.role-changed', (event) => {
+        console.log(event);
+        if(event.user.username == currentUser){
+            currentRole = event.role.role;
+            console.log(currentRole);
+        }
     })
 
     // .listen('.update-queue', (event) => {

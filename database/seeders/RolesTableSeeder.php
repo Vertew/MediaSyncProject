@@ -18,7 +18,15 @@ class RolesTableSeeder extends Seeder
         $role->save();
 
         $role = new Role;
+        $role->role = "Moderator";
+        $role->save();
+
+        $role = new Role;
         $role->role = "Standard";
+        $role->save();
+
+        $role = new Role;
+        $role->role = "Restricted";
         $role->save();
     }
 }
