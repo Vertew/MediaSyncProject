@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Events\UpdateQueueEvent;
 use App\Events\RoleChangedEvent;
 use App\Events\ChangeModeEvent;
+use App\Events\KickUserEvent;
 use App\Events\SetEvent;
 use Livewire\Component;
 use App\Models\File;
@@ -66,6 +67,7 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
             "echo-presence:presence.chat.{$this->room->id},.media-set" => 'updateValues',
             "echo-presence:presence.chat.{$this->room->id},.room-deleted" => 'exitRoom',
+            "echo-presence:presence.chat.{$this->room->id},.kick-user" => 'checkKick',
             "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
             "echo-presence:presence.chat.{$this->room->id},here" => 'here',
@@ -97,6 +99,21 @@ class MediaRoom extends Component
     // websocket broadcast has time to reach the other users.
     public function exitRoom() {
         return redirect()->route('home');
+    }
+
+    public function kick(int $victim_id) {
+        $victim = User::find($victim_id);
+        if (Gate::allows('moderator-action', $this->room->id)) {
+            if($victim->roles->firstWhere('pivot.room_id', $this->room->id)->id != 1) {
+                KickUserEvent::dispatch(Auth::user(), $victim, $this->room->id);
+            }
+        }
+    }
+
+    public function checkKick(array $event) {
+        if (Auth::user()->id == $event["victim"]["id"]){
+            return redirect()->route('home');
+        }
     }
 
     public function toggleRole(int $newRole, int $userId) {

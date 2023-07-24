@@ -12,7 +12,8 @@
                         @foreach($currentUsers as $user)
                             <li id="list-{{$user['username']}}">
                                 <span class="list-group-item {{Auth::user()->username==$user['username'] ? "text-bg-primary" : "text-bg-light"}}">{{$user['username']}}
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">{{App\Models\User::find($user['id'])->roles->where('pivot.room_id', $this->room->id)->first()->role}}</button>
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user['username']}}">{{App\Models\User::find($user['id'])->roles->firstWhere('pivot.room_id', $this->room->id)->role}}</button>
+                                    <button class="btn btn-danger btn-sm {{Gate::allows('moderator-action', $this->room->id) && App\Models\User::find($user['id'])->roles->firstWhere('pivot.room_id', $this->room->id)->role!='Admin'  ? "" : "disabled"}}" type="button" wire:click="kick({{$user['id']}})"><b>X</b></button> 
                                 </span>
                             </li>
                             {{-- Roles modal --}}
