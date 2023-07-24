@@ -21,4 +21,6 @@
         </a>
     </div>
 
+    <livewire:friend-request-list />
+
 @endsection

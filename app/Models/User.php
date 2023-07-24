@@ -62,4 +62,8 @@ class User extends Authenticatable
     public function roles(){
         return $this->belongsToMany(Role::class)->withPivot('room_id');
     }
+
+    public function friends() {
+        return $this->belongsToMany(User::class, 'user_user', 'user1_id', 'user2_id');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Notifications\FriendRequest;
 use App\Events\UpdateQueueEvent;
 use App\Events\RoleChangedEvent;
 use App\Events\ChangeModeEvent;
@@ -141,7 +142,16 @@ class MediaRoom extends Component
     }
 
     public function dump(){
-        dd($this->manual_set);
+        //Auth::user()->friends()->attach(User::find(2));
+        //User::find(2)->friends()->attach(Auth::user());
+        dd(Auth::user()->friends->doesntContain(2));
+    }
+
+    public function sendRequest(int $recipient_id) {
+        // You'll need to make sure that you can't send a request if you're already friends/
+        // have already sent a friend request. Also, make sure you can't send yourself a friend request.
+        $recipient =  User::find($recipient_id);
+        $recipient->notify(new FriendRequest(Auth::user()));
     }
 
     public function placeVote(File $file){
