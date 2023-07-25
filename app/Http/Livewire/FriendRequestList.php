@@ -8,6 +8,7 @@ use App\Models\User;
 
 class FriendRequestList extends Component
 {
+
     public function acceptRequest(int $sender_id, string $notificationId) {
         $recipient = Auth::user();
         $sender = User::find($sender_id);
@@ -15,7 +16,10 @@ class FriendRequestList extends Component
         $recipient->friends()->attach($sender);
         $sender->friends()->attach($recipient);
 
+        // Deletes the notification/request and if the sender also had a request from this current user,
+        // that notification is deleted as well.
         $recipient->notifications()->firstWhere('id', $notificationId)->delete();
+        $sender->notifications()->firstWhere('data->sender_id', $recipient->id)?->delete();
     }
 
     public function declineRequest(string $notificationId) {

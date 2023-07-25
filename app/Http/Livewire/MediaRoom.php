@@ -148,10 +148,12 @@ class MediaRoom extends Component
     }
 
     public function sendRequest(int $recipient_id) {
-        // You'll need to make sure that you can't send a request if you're already friends/
-        // have already sent a friend request. Also, make sure you can't send yourself a friend request.
         $recipient =  User::find($recipient_id);
-        $recipient->notify(new FriendRequest(Auth::user()));
+
+        // Only sends a request if the recipient doesn't already have one from the same source.
+        if(is_null($recipient->notifications()->firstWhere('data->sender_id', Auth::user()->id))){
+            $recipient->notify(new FriendRequest(Auth::user()));
+        }
     }
 
     public function placeVote(File $file){

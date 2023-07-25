@@ -2,7 +2,7 @@
     <div class = "row">
         <div class = "col-md-4">
             <h3>Friend requests</h3>
-            <ul class = "list-group" id="request-list" style="max-height: 500px; overflow-y: auto;">
+            <ul class = "list-group" id="request-list" style="max-height: 500px; overflow-y: auto;" wire:poll>
                 @foreach(Auth::user()->notifications as $notification)
                     <li>
                         <span class="list-group-item">{{$notification->data['sender_name']}}
