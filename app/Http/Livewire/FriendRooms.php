@@ -8,19 +8,20 @@ use Pusher\Pusher;
 
 class FriendRooms extends Component
 {
-
     private $pusher;
     public $rooms = [];
+    public $my_rooms = [];
     public $channels = [];
     public $user_array = [];
+    public $connection; 
 
     public function mount(){
-        $connection = config('broadcasting.connections.pusher');
+        $this->connection = config('broadcasting.connections.pusher');
         $this->pusher = new Pusher(
-            $connection['key'],
-            $connection['secret'],
-            $connection['app_id'],
-            $connection['options'] ?? []
+            $this->connection['key'],
+            $this->connection['secret'],
+            $this->connection['app_id'],
+            $this->connection['options'] ?? []
         );
 
         $allChannels = ($this->pusher->get_channels()->channels);
@@ -41,23 +42,17 @@ class FriendRooms extends Component
             }
         }
 
+        foreach(Auth::user()->rooms as $room){
+            $this->my_rooms[] = $room;
+            if(in_array('presence-presence.chat.'.$room->id, $this->channels)) {
+                $this->user_array[$room->id] = $this->pusher->get('/channels/presence-presence.chat.'.$room->id.'/users');
+            }
+        }
 
-        // $allChannels = ($this->pusher->get_channels()->channels);
-        // foreach ($allChannels as $channel => $object){
-        //     if(str_contains($channel, 'presence-presence.chat.')){
-        //         $this->channels[] =  $channel;
-        //     }
-        // }
-
-  
-        //dd($this->user_array[2]->users);
-
-        //dd($this->rooms[0]->id);
-        //dd($this->pusher->get('/channels/presence-presence.chat.2/users'));
     }
 
     public function dump(){
-        dd($this->pusher->get_channels());
+        dd($this->user_array[3]['users']);
     }
 
     public function render()
