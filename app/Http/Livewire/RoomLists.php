@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Pusher\Pusher;
 
-class FriendRooms extends Component
+class RoomLists extends Component
 {
     private $pusher;
     public $rooms = [];
@@ -57,6 +57,6 @@ class FriendRooms extends Component
 
     public function render()
     {
-        return view('livewire.friend-rooms');
+        return view('livewire.room-lists');
     }
 }

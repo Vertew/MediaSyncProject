@@ -6,7 +6,9 @@
 
 <div class="container-md mt-3 text-center">
 
-    <livewire:friend-rooms />   
+    <p class="h6">On the home page you can see all of your rooms as well as your friend's rooms.</p>
+
+    <livewire:room-lists />   
 
     {{-- Legacy room
     <div class="container-md mt-3 text-center">
