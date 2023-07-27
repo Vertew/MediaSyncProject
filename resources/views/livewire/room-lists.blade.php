@@ -26,7 +26,11 @@
                                     @endif
                                 @endforeach
                                 @if($inList)
-                                    <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users) - 1}}</span>
+                                    @if(count($user_array[$room->id]->users) - 1 == 0)
+                                        <span class="badge bg-primary rounded-pill">{{count($user_array[$room->id]->users) - 1}}</span>
+                                    @else
+                                        <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users) - 1}}</span>
+                                    @endif
                                 @else
                                     <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users)}}</span>
                                 @endif

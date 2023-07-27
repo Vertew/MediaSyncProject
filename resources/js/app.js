@@ -216,7 +216,7 @@ function pause(){
     }
 }
 
-// Used for adding general alerts regarding room state changes e.g. play/pause
+// Used for adding general alerts regarding media state changes e.g. play/pause
 function addAlert(username, message){
     const div = document.createElement('div');
     div.classList.add('alert');
@@ -244,10 +244,14 @@ function addAlert(username, message){
     alertContainer.prepend(div);
 
     alertContainer.scrollTop = 0;
+
+    setTimeout(function() {
+        bootstrap.Alert.getOrCreateInstance(document.querySelector(".alert")).close();
+    }, 3000);
 }
 
 // Used for adding chat messages
-function addMessage(username, message){
+function addMessage(username, message, auto){
     const today = new Date();
     const li = document.createElement('li');
     li.classList.add('list-group-item');
@@ -271,7 +275,13 @@ function addMessage(username, message){
     timeSpan.textContent = time + "        ";
     
     const span = document.createElement('span');
-    span.textContent = username + ': ' + message;
+    if (auto == true){
+        span.textContent = username + message;
+    }else{
+        span.textContent = username + ': ' + message;
+    }
+    
+    
 
     li.append(span, timeSpan);
 
@@ -314,7 +324,7 @@ channel
 
     .joining((user) => {
         console.log(user.username, 'joined')
-        addMessage(user.username, 'User has joined the room');
+        addMessage(user.username, ' joined the room.', true);
         //addUserList(user.username);
         // When someone new joins the room, we want to broadcast the current  media file again to make sure
         // they have the current file in their player. If there is no current file of course, this 
@@ -353,7 +363,7 @@ channel
 
     .leaving((user) => {
         console.log({user}, 'left')
-        addMessage(user.username, 'User has left the room.');
+        addMessage(user.username, ' left the room.', true);
         //removeUserList(user.username);
     })
 
@@ -361,7 +371,7 @@ channel
         console.log(event);
         const message = event.message;
         const username = event.user.username;
-        addMessage(username, message);
+        addMessage(username, message, false);
     })
 
     .listen('.media-set', (event) => {
