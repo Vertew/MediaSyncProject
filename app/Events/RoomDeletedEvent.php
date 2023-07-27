@@ -33,13 +33,20 @@ class RoomDeletedEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('presence.chat.'.$this->room_id),
+            new PresenceChannel('presence.chat.0'),
         ];
     }
 
     public function broadcastAs(): string
     {
         return 'room-deleted';
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'room_id' => $this->room_id,
+        ];
     }
 
 }

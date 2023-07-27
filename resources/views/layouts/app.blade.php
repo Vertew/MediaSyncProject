@@ -23,6 +23,8 @@
 
     <body>
 
+        <livewire:top-bar />
+
         <div class= "container-fluid p-5 bg-primary text-white">
             <h1 class = "text-center display-1">MediaSync @yield('title')</h1>
 

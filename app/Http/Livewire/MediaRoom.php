@@ -67,7 +67,6 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
             "echo-presence:presence.chat.{$this->room->id},.media-set" => 'updateValues',
-            "echo-presence:presence.chat.{$this->room->id},.room-deleted" => 'exitRoom',
             "echo-presence:presence.chat.{$this->room->id},.kick-user" => 'checkKick',
             "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
@@ -94,12 +93,6 @@ class MediaRoom extends Component
             unset($this->currentUsers[$key]);
         }
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
-    }
-
-    // This doesn't work at the moment since the room is deleted before the 
-    // websocket broadcast has time to reach the other users.
-    public function exitRoom() {
-        return redirect()->route('home');
     }
 
     public function kick(int $victim_id) {

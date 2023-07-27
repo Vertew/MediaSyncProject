@@ -77,11 +77,11 @@ Route::post('/update-queue', [RoomController::class, 'updateQueue']) -> name('ro
 // }) -> name('room.add-queue');
 // --- EVENTS ---
 
-
-
 Route::get('/', function () {return redirect()->route('login');});
 
 Route::get('/home', function() {return view('home');}) -> name('home');
+
+Route::fallback(function () {return redirect()->route('home');});
 
 Route::get('/login', [LoginController::class, 'show']) -> name('login');
 
@@ -110,7 +110,6 @@ Route::post('/rooms', [RoomController::class, 'store']) -> name('rooms.store') -
 Route::get('/rooms/{key}', [RoomController::class, 'show'])->name('rooms.show') -> middleware('auth');
 
 Route::delete('/rooms/{id}', [RoomController::class, 'destroy']) -> name('rooms.destroy') -> middleware('auth');
-
 
 
 /* 

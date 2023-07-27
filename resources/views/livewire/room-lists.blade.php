@@ -14,7 +14,7 @@
             @forelse ($my_rooms as $room)
                 <div class="container-sm mt-3">
                     <div class="list-group">
-                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}"--}}>
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}">
                             <b>{{$room->name}}</b>
                             @if(isset($user_array[$room->id]))
                                 @foreach ($user_array[$room->id]->users as $user)
