@@ -15,6 +15,10 @@
         <!-- Scripts-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
+        <!-- Vite resources-->
+        @vite('resources/js/layout.js')
+
+        <!-- Livewire-->
        @livewireStyles
 
        @yield('head')
@@ -22,6 +26,11 @@
 
 
     <body>
+
+        <script>
+            // Getting the current user on the page
+            const AuthUser = {{ Js::from(Auth::user()->id) }};
+        </script>
 
         <livewire:top-bar />
 
@@ -71,6 +80,10 @@
                 <p><strong>{{session('message')}}</strong></p>
             </div>
         @endif
+
+        <div class = "container-md mt-3 text-center" id="alert-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
+            {{-- Alerts go here via js --}}
+        </div>
 
         @yield('content')
 

@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Notifications\FriendRequest;
+use App\Events\UserUnbannedEvent;
 use App\Events\UpdateQueueEvent;
 use App\Events\RoleChangedEvent;
+use App\Events\UserBannedEvent;
 use App\Events\ChangeModeEvent;
 use App\Events\KickUserEvent;
 use App\Events\SetEvent;
@@ -37,14 +39,16 @@ class MediaRoom extends Component
     public $roles;
     public $room;
     public $queue;
+    public $user;
 
     public function mount()
     {
         // Initialising
-        $user = Auth::user();
 
-        $this->videos = $user->files->where('type', 'video');
-        $this->audios = $user->files->where('type', 'audio');
+        $this->user = Auth::user();
+
+        $this->videos = $this->user->files->where('type', 'video');
+        $this->audios = $this->user->files->where('type', 'audio');
         $this->queue = $this->room->files->sortBy('pivot.created_at');
         $this->roles = Role::Get();
         $i=1;
@@ -55,9 +59,9 @@ class MediaRoom extends Component
         $this->myVote = new File;
         MediaRoom::resetVotes();
 
-        if($user->roles->where('pivot.room_id', $this->room->id)->isEmpty()){
+        if($this->user->roles->where('pivot.room_id', $this->room->id)->isEmpty()){
             $role = $this->roles->firstWhere('role', 'Standard');
-            $user->roles()->attach($role, ['room_id' => $this->room->id]);
+            $this->user->roles()->attach($role, ['room_id' => $this->room->id]);
         }
     }
 
@@ -67,7 +71,8 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},.update-queue" => 'updateQueue',
             "echo-presence:presence.chat.{$this->room->id},.change-mode" => 'changeMode',
             "echo-presence:presence.chat.{$this->room->id},.media-set" => 'updateValues',
-            "echo-presence:presence.chat.{$this->room->id},.kick-user" => 'checkKick',
+            "echo-presence:presence.chat.{$this->room->id},.kick-user" => 'kicked',
+            "echo-presence:presence.chat.{$this->room->id},.user-banned" => 'banned',
             "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
             "echo-presence:presence.chat.{$this->room->id},here" => 'here',
@@ -95,6 +100,30 @@ class MediaRoom extends Component
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
+    public function ban(int $victim_id) {
+        if (Gate::allows('admin-action', $this->room->id)) {
+            $victim = User::find($victim_id);
+            $victim->banned_from()->attach($this->room);
+            UserBannedEvent::dispatch(Auth::user(), $victim, $this->room->id);
+        }
+    }
+
+    public function banned(array $event) {
+        if (Auth::user()->id == $event["victim"]["id"]){
+            session()->flash('message', 'You have been banned from '.$this->room->name.' by '.$event['user']['username'].'.');
+            session()->flash('alert-class', 'alert-danger');
+            return redirect()->route('home');
+        }
+    }
+
+    public function unban(User $user) {
+        if (Gate::allows('admin-action', $this->room->id)) {
+            $user->banned_from()->detach($this->room);
+            $this->room->refresh();
+            UserUnbannedEvent::dispatch(Auth::user(), $user, $this->room);
+        }
+    }
+
     public function kick(int $victim_id) {
         $victim = User::find($victim_id);
         if (Gate::allows('moderator-action', $this->room->id)) {
@@ -104,8 +133,10 @@ class MediaRoom extends Component
         }
     }
 
-    public function checkKick(array $event) {
+    public function kicked(array $event) {
         if (Auth::user()->id == $event["victim"]["id"]){
+            session()->flash('message', 'You were kicked from '.$this->room->name.' by '.$event['user']['username'].'.');
+            session()->flash('alert-class', 'alert-warning');
             return redirect()->route('home');
         }
     }
@@ -137,7 +168,8 @@ class MediaRoom extends Component
     public function dump(){
         //Auth::user()->friends()->attach(User::find(2));
         //User::find(2)->friends()->attach(Auth::user());
-        dd(Auth::user()->friends->doesntContain(2));
+        //Auth::user()->banned_from()->attach($this->room);
+        dd($this->room->banned_users);
     }
 
     public function sendRequest(int $recipient_id) {
@@ -266,6 +298,8 @@ class MediaRoom extends Component
         $this->standard_level = Gate::allows('standard-action', $this->room->id);
         $this->videos = Auth::user()->files->where('type', 'video');
         $this->audios = Auth::user()->files->where('type', 'audio');
+        $this->user = Auth::user();
+        
         return view('livewire.media-room', ['videos' => $this->videos->sortByDesc('created_at')], 
                                            ['audios' => $this->audios->sortByDesc('created_at')], 
                                            ['room' => $this->room],

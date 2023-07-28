@@ -66,4 +66,8 @@ class User extends Authenticatable
     public function friends() {
         return $this->belongsToMany(User::class, 'user_user', 'user1_id', 'user2_id');
     }
+
+    public function banned_from() {
+        return $this->belongsToMany(Room::class);
+    }
 }

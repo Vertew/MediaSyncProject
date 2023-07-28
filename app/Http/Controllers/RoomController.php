@@ -62,7 +62,14 @@ class RoomController extends Controller
     public function show(string $key)
     {
         $room = Room::where('key',$key)->firstOrFail();
-        return view('rooms.show', ['room' => $room]);
+
+        if(Auth::user()->banned_from->contains($room)){
+            session()->flash('message', 'You are banned from this room.');
+            session()->flash('alert-class', 'alert-danger');
+            return redirect()->route('home');
+        }else{
+            return view('rooms.show', ['room' => $room]);
+        }
     }
 
     public function updateQueue(Request $request){

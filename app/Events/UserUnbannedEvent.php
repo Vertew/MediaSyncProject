@@ -10,23 +10,24 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
+use App\Models\Room;
 
-class KickUserEvent implements ShouldBroadcast
+class UserUnbannedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private User $victim;
+    private User $recipient;
     private User $user;
-    private int $room_id;
+    private Room $room;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, User $victim, int $room_id)
+    public function __construct(User $user, User $recipient, Room $room)
     {
         $this->user = $user;
-        $this->victim = $victim;
-        $this->room_id = $room_id;
+        $this->recipient = $recipient;
+        $this->room = $room;
     }
 
     /**
@@ -37,20 +38,21 @@ class KickUserEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('presence.chat.'.$this->room_id),
+            new PresenceChannel('presence.chat.0'),
         ];
     }
 
     public function broadcastAs(): string
     {
-        return 'kick-user';
+        return 'user-unbanned';
     }
 
     public function broadcastWith(): array
     {
         return [
             'user' => $this->user->only(['username', 'id']),
-            'victim' => $this->victim->only(['username','id'])
+            'recipient' => $this->recipient->only(['username','id']),
+            'room' => $this->room->only(['name','id']),
         ];
     }
 }

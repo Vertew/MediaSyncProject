@@ -4,11 +4,10 @@ namespace App\Http\Livewire;
 
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use App\Models\Room;
 use Pusher\Pusher;
 
-// This livewire component contains any dynamic functionality I need to be persistent across any page. Right now it just
-// implements the exit room function which boots users from rooms if the room is deleted while they're in it which of course
-// can't be done by the MediaRoom component itself since it's deleted along with the room.
+// This livewire component contains any dynamic functionality I need to be persistent across any page.
 
 class TopBar extends Component
 {

@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class KickUserEvent implements ShouldBroadcast
+class UserBannedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -43,7 +43,7 @@ class KickUserEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'kick-user';
+        return 'user-banned';
     }
 
     public function broadcastWith(): array

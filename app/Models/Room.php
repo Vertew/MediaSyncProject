@@ -17,4 +17,8 @@ class Room extends Model
     public function files(): BelongsToMany{
         return $this->belongsToMany(File::class)->withTimestamps()->withPivot('votes');
     }
+
+    public function banned_users() {
+        return $this->belongsToMany(User::class);
+    }
 }
