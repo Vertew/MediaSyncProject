@@ -29,7 +29,7 @@
 
         <script>
             // Getting the current user on the page
-            const AuthUser = {{ Js::from(Auth::user()->id) }};
+            const AuthUser = {{ Js::from(Auth::user()?->id) }};
         </script>
 
         <livewire:top-bar />
