@@ -161,11 +161,11 @@ function handleVolumeUpdate(username, volume) {
 function handleFullscreen() {
     if (document.fullscreenElement !== null) {
         document.exitFullscreen();
-        videoReduce(false);
+        // videoReduce(false);
         setFullscreenData(false);
     } else {
         mediaContainer.requestFullscreen();
-        videoEnlarge(true);
+        // videoEnlarge(true);
         setFullscreenData(true);
     }
 }
@@ -186,7 +186,7 @@ function videoReduce(state) {
 }
 
 function setFullscreenData(state) {
-    videoReduce(!!state);
+    // videoReduce(!!state);
     mediaContainer.setAttribute("data-fullscreen", !!state);
 }
 
@@ -246,7 +246,7 @@ function addAlert(username, message){
     alertContainer.scrollTop = 0;
 
     setTimeout(function() {
-        bootstrap.Alert.getOrCreateInstance(document.querySelector(".alert")).close();
+        bootstrap.Alert.getOrCreateInstance(div).close();
     }, 3000);
 }
 

@@ -81,7 +81,7 @@
             </div>
         @endif
 
-        <div class = "container-md mt-3 text-center" id="alert-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
+        <div class = "container-md mt-3 text-center" id="notification-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
             {{-- Alerts go here via js --}}
         </div>
 

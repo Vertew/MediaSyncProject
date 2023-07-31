@@ -2,7 +2,7 @@ import axios from 'axios';
 import './bootstrap';
 
 const form = document.getElementById('form1');
-const alertContainer = document.getElementById("alert-container");
+const alertContainer = document.getElementById("notification-container");
 
 const channel = Echo.join('presence.chat.0');
 

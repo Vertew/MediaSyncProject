@@ -122,15 +122,17 @@
         {{-- Media player bit --}}
         <div class = "col-md-8">
             <div class = "container-md mt-5 text-center" >
-                <h2 class='text-center'>{{$title}}</h2>
+                <h2>{{$title}}</h2>
             </div>
-            <div class = "container-md text-center bg-dark" id = "media-div">
-                <video id="media-player" class="w-100" preload="metadata" title={{$title}}>
-                    <source src="source" type="video/mp4, audio/mpeg">
-                    Your browser does not support the selected media format.
-                </video>
+            <div class = "container-lg text-center bg-dark" style="position: relative; padding-bottom: 5%;" id = "media-div">
+                <div class="ratio ratio-16x9">
+                    <video id="media-player" preload="metadata" title={{$title}}>
+                        <source src="source" type="video/mp4, audio/mpeg">
+                        Your browser does not support the selected media format.
+                    </video>
+                </div>
                 {{-- Defining custom media controls --}}
-                <div class = "row" id="media-controls" wire:ignore>
+                <div class = "row" id="media-controls" style="position: absolute; width: 100%; bottom: 0%" wire:ignore>
                     <div class = "col-md-1">
                         <button class="btn btn-light" id="playpause" type="button">&#x1F782;</button>
                     </div>
@@ -150,6 +152,27 @@
                         <button class="btn btn-light" id="fs" type="button"><b>&#x26F6;</b></button>
                     </div>
                 </div>
+                <ul class="list-group" style="position: absolute; left: 1%; top: 10%" wire:ignore>
+                    <div class="alert alert-light alert-dismissible fade show text-bg-primary">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        user1205 <h1>&#x1F600;</h1>
+                    </div>
+                    <div class="alert alert-light alert-dismissible fade show">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        kait092 <h1>&#x1F600;</h1>
+                    </div>
+                    <div class="alert alert-light alert-dismissible fade show">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        mike999 <h1>&#x1F600;</h1>
+                    </div>
+                </ul>
+                {{-- <div class = "container-sm" wire:ignore>
+                    <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">React</button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Tablet</a>
+                        <a class="dropdown-item" href="#">Smartphone</a>
+                    </div>
+                </div> --}}
             </div>
         </div>
         {{-- Chat message bit --}}
