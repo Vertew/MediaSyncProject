@@ -1,5 +1,6 @@
 import axios from 'axios';
 import './bootstrap';
+import { createPicker } from 'picmo'; // Picmo used for the emoji selection menu courtesy of Joe Attardi: https://github.com/joeattardi/picmo
 
 const form = document.getElementById('form1');
 const messageList = document.getElementById('message-list');
@@ -14,18 +15,28 @@ const timeText = document.getElementById("time-text");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
+const reactionList = document.getElementById("reaction-list");
+const emojiDropdown = document.getElementById("emoji-dropdown");
 const userList = document.getElementById("user-list");
 var currentRole;
 var currentUsers = [];
 
-// var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-// var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-//   return new bootstrap.Tooltip(tooltipTriggerEl)
-// })
-
 var current_id; // Keeping track of the current video in the player.
 
 const channel = Echo.join('presence.chat.' + currentRoom);
+
+const rootElement = document.querySelector('#picker');
+const picker = createPicker({
+  rootElement,
+});
+
+picker.addEventListener('emoji:select', event => {
+    bootstrap.Dropdown.getOrCreateInstance(emojiDropdown).toggle()
+    axios.post('/reaction-sent', {
+        message: event.emoji,
+        room_id: currentRoom
+    })
+});
 
 media.addEventListener("loadedmetadata", () => {
     progressBar.ariaValueMax = media.duration;
@@ -313,6 +324,31 @@ function muteUnmute(username,state){
     }
 }
 
+function addReaction(username, emoji){
+    const div = document.createElement('div');
+    div.classList.add('alert');
+    div.classList.add('alert-light');
+    div.classList.add('fade');
+    div.classList.add('show');
+
+    if(username == currentUser){
+        div.classList.add('text-bg-primary');
+    }
+
+    const h1 = document.createElement('h1');
+    h1.textContent = emoji;
+
+    div.textContent = username;
+    div.append(h1);
+
+    reactionList.append(div);
+
+    setTimeout(function() {
+        bootstrap.Alert.getOrCreateInstance(div).close();
+    }, 3000);
+
+}
+
 
 channel
     .here((users) => {
@@ -424,6 +460,14 @@ channel
             currentRole = event.role.role;
             console.log(currentRole);
         }
+    })
+
+    .listen('.reaction-sent', (event) => {
+        console.log(event);
+        const emoji = event.message;
+        const username = event.user.username;
+        addReaction(username, emoji);
+        addMessage(username,' reacted with ' + emoji, true);
     })
 
     // .listen('.update-queue', (event) => {

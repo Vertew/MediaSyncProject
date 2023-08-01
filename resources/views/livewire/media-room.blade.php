@@ -152,27 +152,20 @@
                         <button class="btn btn-light" id="fs" type="button"><b>&#x26F6;</b></button>
                     </div>
                 </div>
-                <ul class="list-group" style="position: absolute; left: 1%; top: 10%" wire:ignore>
-                    <div class="alert alert-light alert-dismissible fade show text-bg-primary">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        user1205 <h1>&#x1F600;</h1>
-                    </div>
-                    <div class="alert alert-light alert-dismissible fade show">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        kait092 <h1>&#x1F600;</h1>
-                    </div>
-                    <div class="alert alert-light alert-dismissible fade show">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        mike999 <h1>&#x1F600;</h1>
-                    </div>
-                </ul>
-                {{-- <div class = "container-sm" wire:ignore>
-                    <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">React</button>
+                {{-- Emoji reaction button+menu --}}
+                <div class = "dropdown dropstart" style="position: absolute; right: 1%; top: 1%;" wire:ignore>
+                    <button type="button" id="emoji-dropdown" class="btn btn-light dropdown-toggle" id = "react-button" data-bs-toggle="dropdown" data-bs-auto-close="false">React</button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Tablet</a>
-                        <a class="dropdown-item" href="#">Smartphone</a>
+                        <div class="dropdown-item" id="picker"></div>
                     </div>
-                </div> --}}
+                </div>
+                {{-- Emoji reaction list --}}
+                <ul class="list-group" id="reaction-list" style="position: absolute; left: 1%; top: 1%; max-height: 75%; overflow-y: auto;" wire:ignore>
+                    {{-- <div class="alert alert-light alert-dismissible fade show text-bg-primary">
+                        user1205 <h1>&#x1F600;</h1>
+                    </div> --}}
+                    {{-- New reactions (demo above) are added here by js --}}
+                </ul>
             </div>
         </div>
         {{-- Chat message bit --}}
