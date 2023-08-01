@@ -231,14 +231,13 @@ function pause(){
 function addAlert(username, message){
     const div = document.createElement('div');
     div.classList.add('alert');
+    div.classList.add('alert-light');
     div.classList.add('alert-dismissible');
     div.classList.add('fade');
     div.classList.add('show');
 
     if(username == currentUser){
-        div.classList.add('alert-primary');
-    }else{
-        div.classList.add('alert-light');
+        div.classList.add('text-bg-primary');
     }
 
     const userSpan = document.createElement('span');
