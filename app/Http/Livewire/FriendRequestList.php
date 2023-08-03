@@ -3,6 +3,8 @@
 namespace App\Http\Livewire;
 
 use Illuminate\Support\Facades\Auth;
+use App\Events\RequestAcceptedEvent;
+use App\Events\UserUnfriendedEvent;
 use Livewire\Component;
 use App\Models\User;
 
@@ -20,6 +22,9 @@ class FriendRequestList extends Component
         // that notification is deleted as well.
         $recipient->notifications()->firstWhere('id', $notificationId)->delete();
         $sender->notifications()->firstWhere('data->sender_id', $recipient->id)?->delete();
+
+        RequestAcceptedEvent::dispatch($sender->id, $recipient);
+
     }
 
     public function declineRequest(string $notificationId) {
@@ -31,6 +36,8 @@ class FriendRequestList extends Component
 
         $user->friends()->wherePivot('user2_id', $friend->id)->detach();
         $friend->friends()->wherePivot('user2_id', $user->id)->detach();
+
+        UserUnfriendedEvent::dispatch($friend->id, $user);
     }
 
     public function render()

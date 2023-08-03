@@ -20,7 +20,7 @@
             <ul class = "list-group" id="friend-list" style="max-height: 500px; overflow-y: auto;">
                 @foreach(Auth::user()->friends as $friend)
                     <li>
-                        <span class="list-group-item">{{$friend->username}}
+                        <span class="list-group-item">{{$friend->profile->name}} ({{$friend->username}})
                             <button class="btn btn-danger btn-sm" type="button" wire:click="unfriend({{$friend}})">Unfriend</button>
                         </span>
                     </li>

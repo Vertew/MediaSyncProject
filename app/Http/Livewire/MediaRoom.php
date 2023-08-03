@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Illuminate\Support\Facades\File as SystemFile;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Notifications\FriendRequest;
@@ -25,7 +26,7 @@ class MediaRoom extends Component
 
     public int $current_file;
     public int $active_file_id;
-    public array $currentUsers = [];
+    public Collection $userCollection;
     public $title = "Media player empty...";
     public $slctd_id;
     public $slctd_title = "";
@@ -46,6 +47,7 @@ class MediaRoom extends Component
         // Initialising
 
         $this->user = Auth::user();
+        $this->userCollection = new Collection();
 
         $this->videos = $this->user->files->where('type', 'video');
         $this->audios = $this->user->files->where('type', 'audio');
@@ -81,22 +83,22 @@ class MediaRoom extends Component
     }
 
     public function here(array $event) {
-        $this->currentUsers = $event;
+        foreach($event as $user){
+            $this->userCollection->push(User::find($user['id']));
+        }
         $user = Auth::user();
         RoleChangedEvent::dispatch($user, $this->room->id, $user->roles->firstWhere('pivot.room_id', $this->room->id));
     }
 
     public function joining(array $event) {
         //MediaRoom::resetVotes();
-        $this->currentUsers[] = $event;
+        $this->userCollection->push(User::find($event['id']));
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
     public function leaving(array $event) {
         //MediaRoom::resetVotes();
-        if(($key = array_search($event, $this->currentUsers)) !== false) {
-            unset($this->currentUsers[$key]);
-        }
+        $this->userCollection = $this->userCollection->whereNotIn('id', $event['id']);
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
     }
 
@@ -169,7 +171,7 @@ class MediaRoom extends Component
         //Auth::user()->friends()->attach(User::find(2));
         //User::find(2)->friends()->attach(Auth::user());
         //Auth::user()->banned_from()->attach($this->room);
-        dd($this->room->banned_users);
+        dd($this->userCollection);
     }
 
     public function sendRequest(int $recipient_id) {

@@ -17,13 +17,14 @@ const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
 const reactionList = document.getElementById("reaction-list");
 const emojiDropdown = document.getElementById("emoji-dropdown");
-const userList = document.getElementById("user-list");
 var currentRole;
 var currentUsers = [];
 
 var current_id; // Keeping track of the current video in the player.
 
 const channel = Echo.join('presence.chat.' + currentRoom);
+
+const privateChannel = Echo.private('private.user.' + currentUserId);
 
 const rootElement = document.querySelector('#picker');
 const picker = createPicker({
@@ -228,10 +229,10 @@ function pause(){
 }
 
 // Used for adding general alerts regarding media state changes e.g. play/pause
-function addAlert(username, message){
+function addAlert(username, message, colour='light'){
     const div = document.createElement('div');
     div.classList.add('alert');
-    div.classList.add('alert-light');
+    div.classList.add('alert-'+colour);
     div.classList.add('alert-dismissible');
     div.classList.add('fade');
     div.classList.add('show');
@@ -261,7 +262,7 @@ function addAlert(username, message){
 }
 
 // Used for adding chat messages
-function addMessage(username, message, auto){
+function addMessage(username, message, auto, name = username){
     const today = new Date();
     const li = document.createElement('li');
     li.classList.add('list-group-item');
@@ -271,6 +272,7 @@ function addMessage(username, message, auto){
 
     if(username == currentUser){
         li.classList.add('text-bg-primary');
+        username = name;
     }
 
     if(String(today.getMinutes()).length == 1){
@@ -285,6 +287,11 @@ function addMessage(username, message, auto){
     timeSpan.textContent = time + "        ";
     
     const span = document.createElement('span');
+
+    if(myFriends.includes(username)){
+        username = name;
+    }
+
     if (auto == true){
         span.textContent = username + message;
     }else{
@@ -348,6 +355,17 @@ function addReaction(username, emoji){
 
 }
 
+privateChannel
+    .listen('.request-accepted', (event) => {
+        myFriends.push(event.acceptee);
+        addAlert(event.acceptee,' accepted your friend request!', 'success');
+    })
+
+    .listen('.friend-removed', (event) => {
+        let indexToRemove = myFriends.indexOf(event.user);
+        myFriends.splice(indexToRemove,1);
+    })
+    
 
 channel
     .here((users) => {
@@ -406,7 +424,8 @@ channel
         console.log(event);
         const message = event.message;
         const username = event.user.username;
-        addMessage(username, message, false);
+        const name = event.name;
+        addMessage(username, message, false, name);
     })
 
     .listen('.media-set', (event) => {

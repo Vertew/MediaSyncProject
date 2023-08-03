@@ -11,22 +11,20 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class MessageEvent implements ShouldBroadcast
+class RequestAcceptedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private string $message;
-    private User $user;
-    private int $room_id;
+    public $id;
+    public $acceptee;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $message, User $user, int $room_id)
+    public function __construct(int $id, User $acceptee)
     {
-        $this->message = $message;
-        $this->user = $user;
-        $this->room_id = $room_id;
+        $this->id = $id;
+        $this->acceptee = $acceptee;
     }
 
     /**
@@ -37,22 +35,19 @@ class MessageEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('presence.chat.'.$this->room_id),
+            new PrivateChannel('private.user.'.$this->id),
         ];
     }
 
     public function broadcastAs(): string
     {
-        return 'message-sent';
+        return 'request-accepted';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message,
-            'user' => $this->user->only(['username','email']),
-            'name' => $this->user->profile->name,
+            'acceptee' => $this->acceptee->username,
         ];
     }
-
 }

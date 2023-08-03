@@ -11,25 +11,24 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class MessageEvent implements ShouldBroadcast
+class UserUnfriendedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private string $message;
-    private User $user;
-    private int $room_id;
+    public $id;
+    public $user;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $message, User $user, int $room_id)
+    public function __construct(int $id, User $user)
     {
-        $this->message = $message;
+        $this->id = $id;
         $this->user = $user;
-        $this->room_id = $room_id;
     }
 
-    /**
+
+   /**
      * Get the channels the event should broadcast on.
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
@@ -37,22 +36,19 @@ class MessageEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('presence.chat.'.$this->room_id),
+            new PrivateChannel('private.user.'.$this->id),
         ];
     }
 
     public function broadcastAs(): string
     {
-        return 'message-sent';
+        return 'friend-removed';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message,
-            'user' => $this->user->only(['username','email']),
-            'name' => $this->user->profile->name,
+            'user' => $this->user->username,
         ];
     }
-
 }

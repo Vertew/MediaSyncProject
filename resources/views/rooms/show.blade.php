@@ -11,9 +11,11 @@
 @section('content')
 
 <script>
-    // Getting the current user on the page
+    // Passing some important values to JS
     const currentUser = {{ Js::from(Auth::user()->username) }};
-    const currentRoom = {{ Js::from($room->id) }}
+    const currentUserId = {{ Js::from(Auth::user()->id) }};
+    const currentRoom = {{ Js::from($room->id) }};
+    var myFriends = {{ Js::from(Auth::user()->friends->pluck('username')) }};
 </script>
 
 <div class = "container-fluid mt-3">
