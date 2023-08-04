@@ -20,7 +20,7 @@
 
 <div class = "container-fluid mt-3">
 
-    <h1 class='display-5 text-center'>{{$room->name}}</h1>
+    <h1 class='display-5 text-center' id="title">{{$room->name}} 🔓</h1>
 
     <livewire:media-room :room="$room" :queue="$room->files">
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Notifications\FriendRequest;
 use App\Events\UserUnbannedEvent;
 use App\Events\UpdateQueueEvent;
+use App\Events\LockToggledEvent;
 use App\Events\RoleChangedEvent;
 use App\Events\UserBannedEvent;
 use App\Events\ChangeModeEvent;
@@ -100,6 +101,21 @@ class MediaRoom extends Component
         //MediaRoom::resetVotes();
         $this->userCollection = $this->userCollection->whereNotIn('id', $event['id']);
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
+    }
+
+    public function toggleLock(){
+        if (Gate::allows('admin-action', $this->room->id)) {
+            $this->room->refresh();
+            if($this->room->locked == 1){
+                $this->room->locked = 0;
+                $this->room->save();
+                LockToggledEvent::dispatch(Auth::user(), false, $this->room->id);
+            }else{
+                $this->room->locked = 1;
+                $this->room->save();
+                LockToggledEvent::dispatch(Auth::user(), true, $this->room->id);
+            }
+        }
     }
 
     public function ban(int $victim_id) {

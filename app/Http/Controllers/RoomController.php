@@ -67,6 +67,10 @@ class RoomController extends Controller
             session()->flash('message', 'You are banned from this room.');
             session()->flash('alert-class', 'alert-danger');
             return redirect()->route('home');
+        }elseif($room->locked){
+            session()->flash('message', 'This room is currently locked.');
+            session()->flash('alert-class', 'alert-warning');
+            return redirect()->route('home');
         }else{
             return view('rooms.show', ['room' => $room]);
         }

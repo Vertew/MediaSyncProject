@@ -17,6 +17,8 @@ const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
 const reactionList = document.getElementById("reaction-list");
 const emojiDropdown = document.getElementById("emoji-dropdown");
+const lockButton = document.getElementById("lock-button");
+const title = document.getElementById("title");
 var currentRole;
 var currentUsers = [];
 
@@ -102,6 +104,20 @@ progress.addEventListener("click", (e) => {
     video.currentTime = pos * video.duration;
 });
 */
+
+function toggleLock(){
+    if(lockButton.innerText == "Lock Room"){
+        lockButton.innerText = "Unlock Room";
+        lockButton.classList.replace("btn-danger","btn-success");
+        lockButton.title = "Allow users to join the room";
+        title.innerText = title.innerText.replace("🔓", "🔒");
+    }else{
+        lockButton.innerText = "Lock Room";
+        lockButton.classList.replace("btn-success","btn-danger");
+        lockButton.title = "Prevent users from joining the room";
+        title.innerText = title.innerText.replace("🔒", "🔓");
+    }
+}
 
 progress.addEventListener("click", scrub);
 let mousedown = false;
@@ -486,6 +502,19 @@ channel
         const username = event.user.username;
         addReaction(username, emoji);
         addMessage(username,' reacted with ' + emoji, true);
+    })
+
+    .listen('.lock-toggled', (event) => {
+        console.log(event);
+        const username = event.user.username;
+        const type = event.type;
+        toggleLock();
+        if(type){
+            addAlert(username, " locked the room");
+        }else{
+            addAlert(username, " unlocked the room");
+        }
+        
     })
 
     // .listen('.update-queue', (event) => {

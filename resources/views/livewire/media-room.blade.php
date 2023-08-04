@@ -51,8 +51,9 @@
                             </div>
                         @endforeach
                     </ul>
-                    <div class="container-sm mt-3">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-banlist">Banned Users</button>
+                    <div class="container-sm mt-3" wire:ignore>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-banlist" title="View all banned users">Banned Users</button>
+                        <button type="button" class="btn btn-danger" id="lock-button" title="Prevent users from joining the room" wire:click="toggleLock">Lock Room</button>
                     </div>
                     {{-- Banned users modal --}}
                     <div class="modal" id="modal-banlist" wire:ignore.self>
@@ -223,7 +224,7 @@
 
             <div class = "container-md mt-3 text-center">
                 {{--<button class="btn btn-light" type="button" onclick="setSrc('video_player',{{ Js::from($current_file) }},{{ Js::from($slctd_title_vid) }},'video')">Add to video player</button>--}}
-                <button class="btn btn-success {{$video_slctd && $moderator_level  ? "" : "disabled"}}" type="button" id="add-video" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-success {{$video_slctd && $moderator_level  ? "" : "disabled"}}" type="button" id="add-video" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to player</button>
                 <button class="btn btn-primary {{$video_slctd && $standard_level  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
                 <button class="btn btn-danger {{$video_slctd  ? "" : "disabled"}}" type="button" id="dlt-video" wire:click="delete({{ $current_file ?? -1 }})">Delete</button>
             </div>
@@ -248,7 +249,7 @@
             </div>
 
             <div class = "container-md mt-3 text-center">
-                <button class="btn btn-success {{$audio_slctd && $moderator_level  ? "" : "disabled"}}" type="button" id="add-audio" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to media player</button>
+                <button class="btn btn-success {{$audio_slctd && $moderator_level  ? "" : "disabled"}}" type="button" id="add-audio" onclick= "sendIdSet({{ Js::from($current_file) }})">Add to player</button>
                 <button class="btn btn-primary {{$audio_slctd && $standard_level  ? "" : "disabled"}}" type="button" id="dlt-audio" onclick= "sendIdQueue({{ Js::from($current_file) }})">Add to queue</button>
                 <button class="btn btn-danger {{$audio_slctd  ? "" : "disabled"}}" type="button" id="dlt-audio" wire:click="delete({{ $current_file ?? -1 }})">Delete</button>
             </div>
