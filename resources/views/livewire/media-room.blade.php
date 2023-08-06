@@ -129,11 +129,15 @@
                 <h2>{{$title}}</h2>
             </div>
             <div class = "container-lg text-center bg-dark" style="position: relative; padding-bottom: 5%;" id = "media-div">
-                <div class="ratio ratio-16x9">
+                <div class="ratio ratio-16x9" id = "video-container">
                     <video id="media-player" preload="metadata" title={{$title}}>
                         <source src="source" type="video/mp4, audio/mpeg">
                         Your browser does not support the selected media format.
                     </video>
+                    {{-- Play/Pause alert --}}
+                    <div id="play-alert-div" style="position: absolute; left: 47%; top: 45%; width: 7%; height: 7%" wire:ignore>
+                        {{-- Play/Pause symbols get shown here when the video is played or paused --}}
+                    </div>
                 </div>
                 {{-- Defining custom media controls --}}
                 <div class = "row" id="media-controls" style="position: absolute; width: 100%; bottom: 0%" wire:ignore>

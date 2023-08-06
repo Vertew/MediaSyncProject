@@ -6,6 +6,7 @@ const form = document.getElementById('form1');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
 const mediaContainer = document.getElementById("media-div");
+const videoContainer = document.getElementById("video-container");
 const media = document.getElementById("media-player");
 const playpause = document.getElementById("playpause");
 const progress = document.getElementById("progress");
@@ -19,6 +20,7 @@ const reactionList = document.getElementById("reaction-list");
 const emojiDropdown = document.getElementById("emoji-dropdown");
 const lockButton = document.getElementById("lock-button");
 const title = document.getElementById("title");
+const playAlertDiv = document.getElementById("play-alert-div");
 var currentRole;
 var currentUsers = [];
 
@@ -70,6 +72,12 @@ video.addEventListener('play', (e) => {
 */
 
 playpause.addEventListener('click', (e) => {
+    axios.post('/play-pause', {
+        room_id: currentRoom
+    })
+});
+
+videoContainer.addEventListener('click', (e) => {
     axios.post('/play-pause', {
         room_id: currentRoom
     })
@@ -223,10 +231,12 @@ function playPause(username){
         media.play();
         playpause.innerHTML = "❚❚";
         addAlert(username, "Pressed play.");
+        playPauseAlert("&#x1F782;");
     } else {
         media.pause();
         playpause.innerHTML = "&#x1F782;";
         addAlert(username, "Pressed pause.");
+        playPauseAlert("❚❚");
     }
 }
 
@@ -240,8 +250,31 @@ function play(username){
 function pause(){
     if (!(media.paused || media.ending)) {
         media.pause();
-        playpause.innerHTML = "&#x1F782;";
+        playpause.innerHTML = "&#x1F782; ";
     }
+}
+
+function playPauseAlert(message) {
+    const div = document.createElement('div');
+    div.classList.add('alert');
+    div.classList.add('alert-light');
+    div.classList.add('fade');
+    div.classList.add('show');
+
+    const h1 = document.createElement('h1');
+    h1.innerHTML = message;
+    div.append(h1);
+
+    while (playAlertDiv.firstChild) {
+        playAlertDiv.removeChild(playAlertDiv.firstChild);
+    }
+
+    playAlertDiv.append(div);
+
+    setTimeout(function() {
+        bootstrap.Alert.getOrCreateInstance(div).close();
+    }, 1000);
+
 }
 
 // Used for adding general alerts regarding media state changes e.g. play/pause
