@@ -130,7 +130,7 @@
             </div>
             <div class = "container-lg text-center bg-dark" style="position: relative; padding-bottom: 5%;" id = "media-div">
                 <div class="ratio ratio-16x9" id = "video-container">
-                    <video id="media-player" preload="metadata" title={{$title}}>
+                    <video id="media-player" preload="metadata" {{-- title={{$title}} Leaving this commented in case removing it breaks something--}}>
                         <source src="source" type="video/mp4, audio/mpeg">
                         Your browser does not support the selected media format.
                     </video>
