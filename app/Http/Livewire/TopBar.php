@@ -12,10 +12,20 @@ use Pusher\Pusher;
 class TopBar extends Component
 {
 
+    public $notifCount;
+    public $user;
+
+    public function mount() {
+        $this->user = Auth::user();
+        $this->notifCount = Auth::user()->unreadNotifications->count();
+    }
+
     public function getListeners()
     {
         return [
             "echo-presence:presence.chat.0,.room-deleted" => 'exitRoom',
+            "echo-private:private.user.{$this->user->id},.request-recieved" => 'updateBadge',
+            "friendsUpdated" => "updateBadge",
         ];
     }
 
@@ -41,6 +51,10 @@ class TopBar extends Component
                 }
             }
         }
+    }
+
+    public function updateBadge() {
+        $this->notifCount = Auth::user()->unreadNotifications->count();
     }
 
 

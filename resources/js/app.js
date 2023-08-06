@@ -374,7 +374,6 @@ function addReaction(username, emoji){
 privateChannel
     .listen('.request-accepted', (event) => {
         myFriends.push(event.acceptee);
-        addAlert(event.acceptee,' accepted your friend request!', 'success');
     })
 
     .listen('.friend-removed', (event) => {

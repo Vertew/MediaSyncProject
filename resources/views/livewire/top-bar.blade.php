@@ -1,5 +1,1 @@
-<div>
-    {{-- There has to be something in here for the livewire scripts to run --}}
-    <p hidden></p>
-
-</div>
+<span class="badge bg-success rounded-pill">{{$notifCount}}</span>

@@ -1,16 +1,14 @@
-import axios from 'axios';
 import './bootstrap';
 
-const form = document.getElementById('form1');
 const alertContainer = document.getElementById("notification-container");
 
-const channel = Echo.join('presence.chat.0');
+const myChannel = Echo.private('private.user.' + AuthUser);
 
-function addAlert(message){
+function addAlert(message, colour='light'){
     const div = document.createElement('div');
     div.classList.add('alert');
     div.classList.add('alert-dismissible');
-    div.classList.add('alert-success');
+    div.classList.add('alert-'+colour);
     div.classList.add('fade');
     div.classList.add('show');
 
@@ -28,15 +26,20 @@ function addAlert(message){
     alertContainer.scrollTop = 0;
 
     setTimeout(function() {
-        bootstrap.Alert.getOrCreateInstance(document.querySelector(".alert")).close();
+        bootstrap.Alert.getOrCreateInstance(div).close();
     }, 6000);
 }
 
-channel
+myChannel
 
     .listen('.user-unbanned', (event) => {
-        if(AuthUser == event.recipient.id){
-            console.log(event);
-            addAlert('You have been unbanned from ' + event.room.name + ' by ' + event.user.username + '!');
-        }
+        addAlert('You have been unbanned from ' + event.room.name + ' by ' + event.user.username + '!', 'success');
+    })
+
+    .listen('.request-accepted', (event) => {
+        addAlert(event.acceptee + ' accepted your friend request!', 'success');
+    })
+
+    .listen('.request-recieved', (event) => {
+        addAlert('You have a new friend request from ' + event.sender, 'success');
     })

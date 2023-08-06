@@ -24,11 +24,12 @@ class FriendRequestList extends Component
         $sender->notifications()->firstWhere('data->sender_id', $recipient->id)?->delete();
 
         RequestAcceptedEvent::dispatch($sender->id, $recipient);
-
+        $this->emitTo('top-bar', 'friendsUpdated');
     }
 
     public function declineRequest(string $notificationId) {
         Auth::user()->notifications()->firstWhere('id', $notificationId)->delete();
+        $this->emitTo('top-bar', 'friendsUpdated');
     }
 
     public function unfriend(User $friend) {

@@ -87,8 +87,6 @@ Route::post('/update-queue', [RoomController::class, 'updateQueue']) -> name('ro
 
 Route::get('/', function () {return redirect()->route('login');});
 
-Route::get('/home', function() {return view('home');}) -> name('home');
-
 Route::fallback(function () {return redirect()->route('home');});
 
 Route::get('/login', [LoginController::class, 'show']) -> name('login');
@@ -96,6 +94,8 @@ Route::get('/login', [LoginController::class, 'show']) -> name('login');
 Route::post('/login', [LoginController::class, 'authenticate']) -> name('login.authenticate');
 
 Route::post('/login/logout', [LoginController::class, 'logout']) -> name('login.logout') -> middleware('auth');
+
+Route::get('/home', function() {return view('home');}) -> name('home') -> middleware('auth');
 
 Route::get('/users/create', [UserController::class, 'create']) -> name('users.create');
 

@@ -32,8 +32,6 @@
             const AuthUser = {{ Js::from(Auth::user()?->id) }};
         </script>
 
-        <livewire:top-bar />
-
         <div class= "container-fluid p-5 bg-primary text-white">
             <h1 class = "text-center display-1">MediaSync @yield('title')</h1>
 
@@ -44,7 +42,7 @@
                 </form>
                 @if(Auth::user()->guest!=true)
                     <a href="{{route('users.show', ['id'=> Auth::id()])}}">
-                        <button class="btn btn-light mr-2" type="button">My Account</button>
+                        <button class="btn btn-light mr-2" type="button">My Account <livewire:top-bar /></button>
                     </a>
                 @else
                     <a href="{{route('users.create')}}">

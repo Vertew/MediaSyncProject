@@ -10,24 +10,21 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
-use App\Models\Room;
 
-class UserUnbannedEvent implements ShouldBroadcast
+class RequestRecievedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private User $recipient;
-    private User $user;
-    private Room $room;
+    public $id;
+    public $sender;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, User $recipient, Room $room)
+    public function __construct(int $id, User $sender)
     {
-        $this->user = $user;
-        $this->recipient = $recipient;
-        $this->room = $room;
+        $this->id = $id;
+        $this->sender = $sender;
     }
 
     /**
@@ -38,21 +35,21 @@ class UserUnbannedEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('private.user.'.$this->recipient->id),
+            new PrivateChannel('private.user.'.$this->id),
         ];
     }
 
     public function broadcastAs(): string
     {
-        return 'user-unbanned';
+        return 'request-recieved';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'user' => $this->user->only(['username']),
-            'recipient' => $this->recipient->only(['username']),
-            'room' => $this->room->only(['name']),
+            'sender' => $this->sender->username,
         ];
     }
+
+
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Notifications\FriendRequest;
+use App\Events\RequestRecievedEvent;
 use App\Events\UserUnbannedEvent;
 use App\Events\UpdateQueueEvent;
 use App\Events\LockToggledEvent;
@@ -196,6 +197,7 @@ class MediaRoom extends Component
         // Only sends a request if the recipient doesn't already have one from the same source.
         if(is_null($recipient->notifications()->firstWhere('data->sender_id', Auth::user()->id))){
             $recipient->notify(new FriendRequest(Auth::user()));
+            RequestRecievedEvent::dispatch($recipient->id, $this->user);
         }
     }
 

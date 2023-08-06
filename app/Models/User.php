@@ -12,6 +12,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'private.user.'.$this->id;
+    }
+
     /**
      * The attributes that are mass assignable.
      *
