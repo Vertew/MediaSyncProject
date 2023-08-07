@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use App\Events\RoomDeletedEvent;
 use App\Events\UpdateQueueEvent;
@@ -26,7 +27,13 @@ class RoomController extends Controller
      */
     public function create()
     {
-        return view('rooms.create');
+        if(Gate::allows('full-account') || Auth::user()->rooms->count() == 0){
+            return view('rooms.create');
+        }else{
+            session()->flash('message', 'Guest users can only have one room at a time.');
+            session()->flash('alert-class', 'alert-warning');
+            return redirect()->route('home');
+        }
     }
 
     /**
@@ -105,7 +112,7 @@ class RoomController extends Controller
      */
     public function destroy(string $id)
     {
-        RoomDeletedEvent::dispatch($id); // Currently non-functional
+        RoomDeletedEvent::dispatch($id);
         $room = Room::findOrFail($id);
         $room->delete();
         session()->flash('message', 'Room deleted.');

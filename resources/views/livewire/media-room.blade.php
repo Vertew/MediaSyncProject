@@ -12,13 +12,15 @@
                         @foreach($userCollection as $user)
                             <li id="list-{{$user->username}}">
                                 <span class="list-group-item {{Auth::user()->id==$user->id ? "text-bg-primary" : "text-bg-light"}}">
-                                    @if($user->id != Auth::user()->id && Auth::user()->friends->doesntContain($user->id))
+                                    @if($user->id == Auth::user()->id)
+                                        Me ({{$user->username}})
+                                    @elseif(Auth::user()->friends->contains($user->id))
+                                        {{$user->profile->name ?? ""}} ({{$user->username}}) <button class="btn btn-success btn-sm">Friend</button>
+                                    @elseif($user->guest == true || Auth::user()->guest == true)
+                                        {{$user->username}}
+                                    @else
                                         {{$user->username}}
                                         <button class="btn btn-success btn-sm" type="button" wire:click="sendRequest({{$user->id}})">Add Friend</button>
-                                    @elseif($user->id != Auth::user()->id)
-                                        {{$user->profile->name}} ({{$user->username}}) <button class="btn btn-success btn-sm">Friend</button>
-                                    @else
-                                        Me ({{$user->username}})
                                     @endif
                                     <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$user->username}}">{{$user->roles->firstWhere('pivot.room_id', $this->room->id)->role}}</button>
                                     <button class="btn btn-danger btn-sm {{Gate::allows('moderator-action', $this->room->id) && $user->roles->firstWhere('pivot.room_id', $this->room->id)->role!='Admin'  ? "" : "disabled"}}" type="button" wire:click="kick({{$user->id}})">Kick</button>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Profile;
@@ -47,7 +48,13 @@ class ProfileController extends Controller
     public function edit(string $id)
     {
         $profile = Profile::findOrFail($id);
-        return view('profiles.edit', ['profile' => $profile]);
+        if(Gate::allows('private', $profile->user->id)){
+            return view('profiles.edit', ['profile' => $profile]);
+        }else{
+            session()->flash('message', 'You do not have permission to edit this profile.');
+            session()->flash('alert-class', 'alert-danger');
+            return redirect()->route('profiles.show', ['id'=> $id]);
+        }
     }
 
     /**

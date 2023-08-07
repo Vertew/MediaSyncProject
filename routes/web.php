@@ -85,7 +85,7 @@ Route::post('/update-queue', [RoomController::class, 'updateQueue']) -> name('ro
 // }) -> name('room.add-queue');
 // --- EVENTS ---
 
-Route::get('/', function () {return redirect()->route('login');});
+Route::get('/', function () {return redirect()->route('home');});
 
 Route::fallback(function () {return redirect()->route('home');});
 

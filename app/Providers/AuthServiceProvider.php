@@ -37,5 +37,13 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('standard-action', function (User $user, int $room_id) {
             return $user->roles->where('pivot.room_id', $room_id)->where('id', '<', 4)->isNotEmpty();
         });
+
+        Gate::define('full-account', function (User $user) {
+            return !($user->guest);
+        });
+
+        Gate::define('private', function (User $user, int $id) {
+            return $user->id == $id;
+        });
     }
 }

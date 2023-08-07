@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Profile;
@@ -50,6 +51,13 @@ class UserController extends Controller
         $profile->user_id = $user->id;
         $profile->save();
 
+        // If the user is creating a new account while logged in as a guest, the guest account is deleted.
+        if (Auth::check()) {
+            if(Auth::user()->guest){
+                UserController::destroy(Auth::id());
+            }
+        }
+
         session()->flash('message', 'New account created!');
 
         // Login the user upon account creation
@@ -62,19 +70,28 @@ class UserController extends Controller
     // Creation of a temporary guest account with no email, password or profile.
     public function storeGuest(Request $request){
 
-        $user = new User;
-        $user->username = "Guest-" . Str::random(6);
-        $user->guest = true;
-        $user->remember_token = Str::random(10);
-        $user->save();
 
-        session()->flash('message', 'Logged in as guest! This account will last until your session expires.');
-
-        // There's no need for credential validation on a guest account so we log the guest in via their ID.
-        if (Auth::loginUsingId($user->id)) {
-            $request->session()->regenerate();
+        // Making sure people can't keep creating loads of new guest accounts and filling up the database.
+        if (Auth::check()) {
+            session()->flash('message', "You're already logged in.");
+            session()->flash('alert-class', 'alert-warning');
             return redirect()->route('home');
+        }else{
+            $user = new User;
+            $user->username = "Guest-" . Str::random(6);
+            $user->guest = true;
+            $user->remember_token = Str::random(10);
+            $user->save();
+
+            session()->flash('message', 'Logged in as a guest. This account is only temporary, for the full experience register your own full account!');
+
+            // There's no need for credential validation on a guest account so we log the guest in via their ID.
+            if (Auth::loginUsingId($user->id)) {
+                $request->session()->regenerate();
+                return redirect()->route('home');
+            }
         }
+        
     }
 
     /**
@@ -83,7 +100,15 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-        return view('users.show', ['user' => $user]);
+
+        // Guests can't look at user account pages
+        if (Gate::allows('full-account')) {
+            return view('users.show', ['user' => $user]);
+        }else{
+            session()->flash('message', 'Guest users do not have access to the account page.');
+            session()->flash('alert-class', 'alert-warning');
+            return redirect()->route('home');
+        }
     }
 
     /**
