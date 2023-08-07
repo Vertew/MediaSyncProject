@@ -21,10 +21,12 @@ const emojiDropdown = document.getElementById("emoji-dropdown");
 const lockButton = document.getElementById("lock-button");
 const title = document.getElementById("title");
 const playAlertDiv = document.getElementById("play-alert-div");
+const mediaControls = document.getElementById("media-controls");
 var currentRole;
 var currentUsers = [];
 
 var current_id; // Keeping track of the current video in the player.
+var timeOutID;
 
 const channel = Echo.join('presence.chat.' + currentRoom);
 
@@ -83,6 +85,26 @@ videoContainer.addEventListener('click', (e) => {
     })
 });
 
+mediaContainer.addEventListener("mousemove", (e) => {
+    showControls();
+});
+
+mediaContainer.addEventListener("mouseleave", (e) => {
+    if (media.paused != true){
+        clearTimeout(timeOutID);
+        mediaControls.style.opacity = 0;
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if(e.code == 'Space' && e.target == document.body) {
+        e.preventDefault();
+        axios.post('/play-pause', {
+            room_id: currentRoom
+        })
+    }
+});
+
 fullscreen.addEventListener("click", (e) => {
     handleFullscreen();
 });
@@ -112,6 +134,17 @@ progress.addEventListener("click", (e) => {
     video.currentTime = pos * video.duration;
 });
 */
+
+function showControls(){
+    clearTimeout(timeOutID);
+    mediaControls.style.opacity = 1;
+    if (media.paused != true){
+        timeOutID = setTimeout(function() {
+            mediaControls.style.opacity = 0;
+        }, 4000);
+    }
+}
+
 
 function toggleLock(){
     if(lockButton.innerText == "Lock Room"){
@@ -207,19 +240,19 @@ function handleFullscreen() {
 }
 
 
-function videoEnlarge(state) {
-    if (state) {
-        media.width = window.innerWidth;
-        media.height = window.innerHeight;
-    }
-}
+// function videoEnlarge(state) {
+//     if (state) {
+//         media.width = window.innerWidth;
+//         media.height = window.innerHeight;
+//     }
+// }
 
-function videoReduce(state) {
-    if (!state) {
-        media.width = 1280;
-        media.height = 720;
-    }
-}
+// function videoReduce(state) {
+//     if (!state) {
+//         media.width = 1280;
+//         media.height = 720;
+//     }
+// }
 
 function setFullscreenData(state) {
     // videoReduce(!!state);
@@ -238,6 +271,7 @@ function playPause(username){
         addAlert(username, "Pressed pause.");
         playPauseAlert("❚❚");
     }
+    showControls();
 }
 
 // Seperate pause and plays functions for certain situations where toggle is bad
