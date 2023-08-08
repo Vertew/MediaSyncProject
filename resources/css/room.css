@@ -1,0 +1,11 @@
+#message-container {
+    min-height: 300px; 
+    max-height: 680px; 
+    overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+
+#message-container::-webkit-scrollbar{
+    display: none;
+}

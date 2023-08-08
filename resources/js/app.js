@@ -3,6 +3,7 @@ import './bootstrap';
 import { createPicker } from 'picmo'; // Picmo used for the emoji selection menu courtesy of Joe Attardi: https://github.com/joeattardi/picmo
 
 const form = document.getElementById('form1');
+const chatInput = document.getElementById('input');
 const messageList = document.getElementById('message-list');
 const container = document.getElementById('message-container');
 const mediaContainer = document.getElementById("media-div");
@@ -18,13 +19,15 @@ const volumeToggle = document.getElementById("volume-toggle");
 const alertContainer = document.getElementById("alert-container");
 const reactionList = document.getElementById("reaction-list");
 const emojiDropdown = document.getElementById("emoji-dropdown");
+const emojiDropdown2 = document.getElementById("emoji-dropdown-2");
 const lockButton = document.getElementById("lock-button");
 const title = document.getElementById("title");
 const playAlertDiv = document.getElementById("play-alert-div");
 const mediaControls = document.getElementById("media-controls");
-var currentRole;
-var currentUsers = [];
 
+var currentUsers = [];
+var previousMessager;
+var currentRole;
 var current_id; // Keeping track of the current video in the player.
 var timeOutID;
 
@@ -32,7 +35,7 @@ const channel = Echo.join('presence.chat.' + currentRoom);
 
 const privateChannel = Echo.private('private.user.' + currentUserId);
 
-const rootElement = document.querySelector('#picker');
+var rootElement = document.querySelector('#picker');
 const picker = createPicker({
   rootElement,
 });
@@ -44,6 +47,17 @@ picker.addEventListener('emoji:select', event => {
         room_id: currentRoom
     })
 });
+
+rootElement = document.querySelector('#picker-2');
+const picker2 = createPicker({
+  rootElement,
+});
+
+picker2.addEventListener('emoji:select', event => {
+    bootstrap.Dropdown.getOrCreateInstance(emojiDropdown2).toggle()
+    chatInput.value+=event.emoji;
+});
+
 
 media.addEventListener("loadedmetadata", () => {
     progressBar.ariaValueMax = media.duration;
@@ -115,12 +129,15 @@ document.addEventListener("fullscreenchange", (e) => {
 
 form.addEventListener('submit', function(event){
     event.preventDefault();
-    const inputValue = document.getElementById('input');
-    const userInput = inputValue.value;
-    axios.post('/input-message', {
-        message: userInput,
-        room_id: currentRoom
-    })
+    let userInput = chatInput.value;
+    if(currentRole != 'Restricted'){
+        axios.post('/input-message', {
+            message: userInput,
+            room_id: currentRoom
+        })
+    }else{
+        addMessage(currentUser, 'You do not have permission to type in chat.', true);
+    }
     form.reset();
 });
 
@@ -346,16 +363,36 @@ function addAlert(username, message, colour='light'){
 
 // Used for adding chat messages
 function addMessage(username, message, auto, name = username){
+
+    let displayname = username;
+    if(myFriends.includes(username)){
+        displayname = name;
+    }
+
     const today = new Date();
     const li = document.createElement('li');
+    const liHeader = document.createElement('li');
+
     li.classList.add('list-group-item');
     li.classList.add('d-flex');
     li.classList.add('justify-content-between');
     li.classList.add('align-items-center');
+    li.classList.add('border-0');
+
+    liHeader.classList.add('list-group-item');
+    liHeader.classList.add('d-flex');
+    liHeader.classList.add('justify-content-between');
+    liHeader.classList.add('align-items-center');
+    liHeader.classList.add('border-top');
+    liHeader.classList.add('border-bottom-0');
+    liHeader.classList.add('border-end-0');
+    liHeader.classList.add('border-start-0');
+    
 
     if(username == currentUser){
         li.classList.add('text-bg-primary');
-        username = name;
+        liHeader.classList.add('text-bg-primary');
+        displayname = name;
     }
 
     if(String(today.getMinutes()).length == 1){
@@ -367,27 +404,39 @@ function addMessage(username, message, auto, name = username){
     var time = today.getHours() + ":" + minutes;
 
     const timeSpan = document.createElement('span');
+    timeSpan.classList.add('small');
     timeSpan.textContent = time + "        ";
     
     const span = document.createElement('span');
+    const spanHeader = document.createElement('span');
+    const strong = document.createElement('strong');
 
-    if(myFriends.includes(username)){
-        username = name;
-    }
-
-    if (auto == true){
-        span.textContent = username + message;
+    if(auto){
+        let reactionText = document.createElement('strong');
+        reactionText.textContent = message;
+        span.append(reactionText);
+        span.classList.add('small');
     }else{
-        span.textContent = username + ': ' + message;
+        span.textContent = message;
     }
-    
-    
+
+    strong.textContent = displayname;
+
+    spanHeader.append(strong);
+    liHeader.append(spanHeader);
 
     li.append(span, timeSpan);
 
-    messageList.append(li);
+    if(previousMessager == username){
+        messageList.append(li);
+    }else{
+        messageList.append(liHeader);
+        messageList.append(li);
+    }
 
     container.scrollTop = container.scrollHeight;
+
+    previousMessager = username;
 }
 
 function setTime(username, time) {
@@ -459,7 +508,7 @@ channel
 
     .joining((user) => {
         console.log(user.username, 'joined')
-        addMessage(user.username, ' joined the room.', true);
+        addMessage(user.username, ' User joined the room.', true);
         //addUserList(user.username);
         // When someone new joins the room, we want to broadcast the current  media file again to make sure
         // they have the current file in their player. If there is no current file of course, this 
@@ -498,7 +547,7 @@ channel
 
     .leaving((user) => {
         console.log({user}, 'left')
-        addMessage(user.username, ' left the room.', true);
+        addMessage(user.username, 'User left the room.', true);
         //removeUserList(user.username);
     })
 
@@ -567,7 +616,7 @@ channel
         const emoji = event.message;
         const username = event.user.username;
         addReaction(username, emoji);
-        addMessage(username,' reacted with ' + emoji, true);
+        addMessage(username,'User reacted with ' + emoji, true);
     })
 
     .listen('.lock-toggled', (event) => {

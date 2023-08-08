@@ -164,9 +164,9 @@
                 </div>
                 {{-- Emoji reaction button+menu --}}
                 <div class = "dropdown dropstart" style="position: absolute; right: 1%; top: 1%;" wire:ignore>
-                    <button type="button" id="emoji-dropdown" class="btn btn-light dropdown-toggle" id = "react-button" data-bs-toggle="dropdown" data-bs-auto-close="false">React</button>
+                    <button type="button" id="emoji-dropdown" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">React</button>
                     <div class="dropdown-menu">
-                        <div class="dropdown-item" id="picker"></div>
+                        <div class="dropdown-item-text" id="picker"></div>
                     </div>
                 </div>
                 {{-- Emoji reaction list --}}
@@ -179,27 +179,31 @@
             </div>
         </div>
         {{-- Chat message bit --}}
-        <div class = "col-md-2">
-            <div class = "container-md mt-5 text-center" wire:ignore>
+        <div class = "col-md-2 px-0" wire:ignore>
+            <div class = "container mt-5">
                 <h2 class='text-center'>Chat</h2>
             </div>
-
-            <div class = "container-md">
-                <div id="message-container" class = "container-md mt-3" style="min-height: 300px; max-height: 680px; overflow-y: auto;" wire:ignore>
-                    <ul class="list-group" id ="message-list">
-                        {{-- Bit of a hacky dumb way to get the list items to start drawing from the bottom of the container --}}
-                        <li style="min-height: 680px">
-                    </ul>
+            <div class = "container px-0">
+                <div class="card bg-light">
+                    <div id="message-container" class = "mt-1 px-0">
+                        <ul class="list-group" id ="message-list">
+                            {{-- Bit of a hacky dumb way to get the list items to start drawing from the bottom of the container --}}
+                            <li style="min-height: 680px">
+                        </ul>
+                    </div>
                 </div>
-
-                <div class = "container-md mt-3 text-center">
-                    <form id='form1'>
-                        <div class="container-md">
-                            @if($standard_level)
-                                <input id="input" type = "text" class="form-control" placeholder="Start typing..." name = "title">
-                            @endif
+                <div class = "container mt-3 d-flex px-0">
+                    <form id='form1' class="flex-grow-1">
+                        <div class="container px-1">
+                            <input id="input" type = "text" class="form-control" placeholder="Start typing..." name = "title">
                         </div>
                     </form>
+                    <div class = "dropdown dropstart">
+                        <button type="button" id="emoji-dropdown-2" class="btn btn-light p-0" data-bs-toggle="dropdown" data-bs-auto-close="false"><h3 class="pb-1 m-0">&#x263A;</h3></button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item-text" id="picker-2"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

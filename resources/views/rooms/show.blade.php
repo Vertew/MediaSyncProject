@@ -5,6 +5,7 @@
 @section('head')
 
 @vite('resources/js/app.js')
+@vite('resources/css/room.css')
 
 @endsection
 
