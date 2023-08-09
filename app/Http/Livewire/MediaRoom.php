@@ -27,7 +27,7 @@ class MediaRoom extends Component
 {
 
     public int $current_file;
-    public int $active_file_id;
+    public int $active_file_id = -1;
     public Collection $userCollection;
     public $title = "Media player empty...";
     public $slctd_id;
@@ -303,8 +303,8 @@ class MediaRoom extends Component
             $this->emit('file-deleted');
 
             if($fileid == $this->active_file_id){
-                // If the current file in the player is deleted then set the file
-                // to be the default file in the player.
+                // If the current file in the player is deleted then set the default file
+                // to be the file in the player.
                 SetEvent::dispatch(Auth::user(), 1, $this->room->id);
             }
         }else{

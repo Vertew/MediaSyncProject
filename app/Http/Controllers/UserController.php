@@ -132,7 +132,14 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+
         $user = User::findOrFail($id);
+
+        //Deleting user files from storage when the account is deleted.
+        foreach($user->files as $file){
+            SystemFile::delete('storage/media/'.$file->type.'s/'.$file->title);
+        }
+
         $user->delete();
 
         session()->flash('message', 'User was deleted.');

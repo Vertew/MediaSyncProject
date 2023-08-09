@@ -44,12 +44,10 @@ class LoginController extends Controller
         $id = Auth::id();
         $user = User::findOrFail($id);
 
-        // Guest user accounts and their associated rooms/files are deleted upon logging out.
-        if($user->guest == true){
-            $user->rooms->each->delete();
+        // Guest user accounts are deleted upon logging out.
+        if($user->guest){
             foreach($user->files as $file){
                 SystemFile::delete('storage/media/'.$file->type.'s/'.$file->title);
-                $file->delete();
             }
             $user->delete();
         }
