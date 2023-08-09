@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Console\Scheduling\Schedule;
+use App\Models\User;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -12,7 +14,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // This task deletes guest accounts 24 hours after they were created. Run via cron.
+        $schedule->call(function () {
+            $time = now()->subDay();
+            User::where('guest', true)->where('created_at', '<=', $time)->delete();
+        })->everyMinute();
     }
 
     /**
