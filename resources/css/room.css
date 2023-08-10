@@ -9,3 +9,14 @@
 #message-container::-webkit-scrollbar{
     display: none;
 }
+
+#alert-container {
+    height: 150px; 
+    overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+
+#alert-container::-webkit-scrollbar{
+    display: none;
+}
