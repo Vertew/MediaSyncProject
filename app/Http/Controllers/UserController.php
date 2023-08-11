@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RequestRecievedEvent;
+use App\Notifications\FriendRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -109,6 +111,27 @@ class UserController extends Controller
             session()->flash('alert-class', 'alert-warning');
             return redirect()->route('home');
         }
+    }
+
+    public function sendRequest(string $id) {
+        $recipient =  User::find($id);
+        $user = Auth::user();
+
+        if($user->friends->contains($id)){
+            session()->flash('message', "You're already friends with this user.");
+            session()->flash('alert-class', 'alert-warning');
+        }
+        // Only sends a request if the recipient doesn't already have one from the same source.
+        elseif(is_null($recipient->notifications()->firstWhere('data->sender_id', $user->id))){
+            $recipient->notify(new FriendRequest($user));
+            RequestRecievedEvent::dispatch($recipient->id, $user);
+            session()->flash('message', 'Friend request sent!');
+        }
+        else{
+            session()->flash('message', "You've already sent a friend request to this user.");
+            session()->flash('alert-class', 'alert-warning');
+        }
+        return redirect()->route('users.show', ['id'=> $id]);
     }
 
     /**

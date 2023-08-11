@@ -241,7 +241,7 @@ function handleVolumeUpdate(username, volume) {
     }else{
         volumeToggle.innerHTML = "&#128266;";
     }
-    addAlert(username, 'Set volume to ' + volume*100 + "%");
+    addAlert(username, 'set volume to ' + volume*100 + "%");
 }
 
 function handleFullscreen() {
@@ -280,12 +280,12 @@ function playPause(username){
     if (media.paused || media.ended) {
         media.play();
         playpause.innerHTML = "❚❚";
-        addAlert(username, "Pressed play.");
+        addAlert(username, "pressed play.");
         playPauseAlert("&#x1F782;");
     } else {
         media.pause();
         playpause.innerHTML = "&#x1F782;";
-        addAlert(username, "Pressed pause.");
+        addAlert(username, "pressed pause.");
         playPauseAlert("❚❚");
     }
     showControls();
@@ -345,7 +345,7 @@ function addAlert(username, message, colour='light'){
     const msgSpan = document.createElement('span');
     const strong = document.createElement('strong');
     
-    strong.textContent = username + ": ";
+    strong.textContent = username + " ";
     userSpan.append(strong);
     
     msgSpan.textContent = message;
@@ -440,7 +440,7 @@ function addMessage(username, message, auto, name = username){
 }
 
 function setTime(username, time) {
-    addAlert(username, 'Set time to ' + timeTextFormat(time));
+    addAlert(username, 'set time to ' + timeTextFormat(time));
     media.currentTime = time;
 }
 
@@ -454,10 +454,10 @@ function formatTime(number){
 function muteUnmute(username,state){
     media.muted = state;
     if (media.muted && media.volume != 0){
-        addAlert(username, 'Muted the video.');
+        addAlert(username, 'muted the video.');
         volumeToggle.innerHTML = "&#128264;";
     }else if (!media.muted && media.volume != 0){
-        addAlert(username, 'Unmuted the video.');
+        addAlert(username, 'unmuted the video.');
         volumeToggle.innerHTML = "&#128266;"; 
     }
 }
@@ -573,7 +573,7 @@ channel
             setSrc(newSrc,title,type);
         }
         // Sending the alert regardless so everyone is on the same page (Might change this)   
-        addAlert(username,'Set the ' + type + ' to ' + title);
+        addAlert(username,'set the ' + type + ' to ' + title);
     })
 
     .listen('.play-pause', (event) => {
@@ -625,9 +625,9 @@ channel
         const type = event.type;
         toggleLock();
         if(type){
-            addAlert(username, " locked the room");
+            addAlert(username, "locked the room");
         }else{
-            addAlert(username, " unlocked the room");
+            addAlert(username, "unlocked the room");
         }
         
     })

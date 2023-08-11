@@ -51,9 +51,11 @@
                                     @if(isset($user_array[$room->id]))
                                         <ul class="list-group">
                                             @foreach ($user_array[$room->id]->users as $user)
-                                                <p hidden>{{$username = App\Models\User::find($user->id)->username}}</p>
-                                                @if($username != Auth::user()->username)
-                                                    <li class="list-group-item">{{$username}}</li>
+                                                @if(App\Models\User::find($user->id)->username != Auth::user()->username)
+                                                    <li class="list-group-item text-bg-light">
+                                                        <strong>{{App\Models\User::find($user->id)->username}}</strong>
+                                                        <a href="{{route('users.show', ['id'=> $user->id])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
+                                                    </li>
                                                 @endif
                                             @endforeach
                                         </ul>
@@ -124,9 +126,11 @@
                                             @foreach ($user_array[$room->id]->users as $user)
                                                 {{-- This if statement is a bit of a cheaty way to get around the fact that the websocket channel doesn't update
                                                     all clients quick enough to avoid displaying your name in the list of online users if you just left the room. --}}
-                                                <p hidden>{{$username = App\Models\User::find($user->id)->username}}</p>
-                                                @if($username != Auth::user()->username)
-                                                    <li class="list-group-item">{{$username}}</li>
+                                                @if(App\Models\User::find($user->id)->username != Auth::user()->username)
+                                                    <li class="list-group-item text-bg-light">
+                                                        <strong>{{App\Models\User::find($user->id)->username}}</strong>
+                                                        <a href="{{route('users.show', ['id'=> $user->id])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
+                                                    </li>
                                                 @endif
                                             @endforeach
                                         </ul>

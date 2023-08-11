@@ -10,21 +10,52 @@
             </div>
             <div class = "col-md-4">
                 <div class="container">
-                    <h1 class="display-6">Online Users</h1>
+                    <h1 class="display-6">Online Users 
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-banlist" title="View all banned users">Banned Users</button>
+                    </h1>
+                    {{-- Banned users modal --}}
+                    <div class="modal" id="modal-banlist" wire:ignore.self>
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Banned Users</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                        
+                                <div class="modal-body">
+                                    <ul class="list-group">
+                                        @forelse($room->banned_users as $user)
+                                            <li class="list-group-item text-bg-light"><strong>{{$user->username}}</strong>
+                                                <button class="btn btn-success btn-sm {{Gate::allows('admin-action', $this->room->id) ? "" : "disabled"}}" type="button" wire:click="unban({{$user}})">Unban</button>
+                                            </li>
+                                        @empty
+                                            <p>No users are currently banned from this room.</p>
+                                        @endforelse
+                                    </ul>           
+                                </div>
+                        
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <ul class = "list-group" id="user-list" style="height: 150px; overflow-y: auto;">
                         @foreach($userCollection as $user)
                             <li id="list-{{$user->username}}">
                                 {{-- <span class="list-group-item d-flex justify-content-start align-items-center {{Auth::user()->id==$user->id ? "text-bg-primary" : (Auth::user()->friends->contains($user->id) ? "text-bg-success" : "text-bg-light")}}"> --}}
                                 <span class="list-group-item d-flex justify-content-start align-items-center {{Auth::user()->id==$user->id ? "text-bg-primary" : "text-bg-light"}}">
                                     @if($user->id == Auth::user()->id)
-                                        <span class="mx-1"><strong>Me ({{$user->username}})</strong></span>
+                                        <span class="mx-1"><strong>{{$user->profile->name ?? "Me"}} <small>({{$user->username}})</small></strong></span>
                                     @elseif(Auth::user()->friends->contains($user->id))
-                                        <span class="mx-1"><strong>{{$user->profile->name ?? ""}} ({{$user->username}})</strong></span> 
+                                        <span class="mx-1"><strong>{{$user->profile->name ?? "Annonymous"}} <small>({{$user->username}})</small></strong></span> 
+                                        <a href="{{route('users.show', ['id'=> $user->id])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
                                         {{-- <button class="btn btn-success btn-sm mx-1">Friend</button> --}}
                                     @elseif($user->guest == true || Auth::user()->guest == true)
                                         <span class="mx-1"><strong>{{$user->username}}</strong></span>
                                     @else
                                         <span class="mx-1"><strong>{{$user->username}}</strong></span>
+                                        <a href="{{route('users.show', ['id'=> $user->id])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
                                         <button class="btn btn-success btn-sm mx-1" type="button" wire:click="sendRequest({{$user->id}})">Add Friend</button>
                                     @endif
                                     <button type="button" class="btn btn-warning btn-sm mx-1" data-bs-toggle="modal" data-bs-target="#modal-{{$user->username}}">{{$user->roles->firstWhere('pivot.room_id', $this->room->id)->role}}</button>
@@ -58,36 +89,6 @@
                             </div>
                         @endforeach
                     </ul>
-                    <div class="container-sm mt-3" wire:ignore>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-banlist" title="View all banned users">Banned Users</button>
-                    </div>
-                    {{-- Banned users modal --}}
-                    <div class="modal" id="modal-banlist" wire:ignore.self>
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Banned Users</h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                        
-                                <div class="modal-body">
-                                    <ul class="list-group">
-                                        @forelse($room->banned_users as $user)
-                                            <li class="list-group-item">{{$user->username}}
-                                                <button class="btn btn-success btn-sm {{Gate::allows('admin-action', $this->room->id) ? "" : "disabled"}}" type="button" wire:click="unban({{$user}})">Unban</button>
-                                            </li>
-                                        @empty
-                                            <p>No users are currently banned from this room.</p>
-                                        @endforelse
-                                    </ul>           
-                                </div>
-                        
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class = "col-md-4">
