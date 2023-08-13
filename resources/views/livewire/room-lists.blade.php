@@ -16,27 +16,34 @@
                     <div class="list-group">
                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}">
                             <b>{{$room->name}}</b>
-                            @if(isset($user_array[$room->id]))
-                                @foreach ($user_array[$room->id]->users as $user)
-                                    @if($user->id == Auth::user()->id)
-                                        <p hidden>{{$inList=true}}</p>
-                                        @break
+                            <div class="d-flex justify-content-end">
+                                @if($room->locked)
+                                    <span class="badge bg-danger rounded-pill mx-1">Locked</span>
+                                @else
+                                    <span class="badge bg-success rounded-pill mx-1">Unlocked</span>
+                                @endif
+                                @if(isset($user_array[$room->id]))
+                                    @foreach ($user_array[$room->id]->users as $user)
+                                        @if($user->id == Auth::user()->id)
+                                            <p hidden>{{$inList=true}}</p>
+                                            @break
+                                        @else
+                                            <p hidden>{{$inList=false}}</p>
+                                        @endif
+                                    @endforeach
+                                    @if($inList)
+                                        @if(count($user_array[$room->id]->users) - 1 == 0)
+                                            <span class="badge bg-primary rounded-pill mx-1">{{count($user_array[$room->id]->users) - 1}}</span>
+                                        @else
+                                            <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users) - 1}}</span>
+                                        @endif
                                     @else
-                                        <p hidden>{{$inList=false}}</p>
-                                    @endif
-                                @endforeach
-                                @if($inList)
-                                    @if(count($user_array[$room->id]->users) - 1 == 0)
-                                        <span class="badge bg-primary rounded-pill">{{count($user_array[$room->id]->users) - 1}}</span>
-                                    @else
-                                        <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users) - 1}}</span>
+                                        <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users)}}</span>
                                     @endif
                                 @else
-                                    <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users)}}</span>
+                                    <span class="badge bg-primary rounded-pill mx-1">0</span>
                                 @endif
-                            @else
-                                <span class="badge bg-primary rounded-pill">0</span>
-                            @endif
+                            </div>
                         </a>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-room-{{$room->id}}">Online Users</button>
                     </div>
@@ -93,23 +100,32 @@
                     <div class="list-group">
                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}"--}}>
                             <b>{{$room->name}} - {{$room->user->username}}</b>
-                            @if(isset($user_array[$room->id]))
-                                @foreach ($user_array[$room->id]->users as $user)
-                                    @if($user->id == Auth::user()->id)
-                                        <p hidden>{{$inList=true}}</p>
-                                        @break
-                                    @else
-                                        <p hidden>{{$inList=false}}</p>
-                                    @endif
-                                @endforeach
-                                @if($inList)
-                                    <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users) - 1}}</span>
+                            <div class="d-flex justify-content-end">
+                                @if($room->locked)
+                                    <span class="badge bg-danger rounded-pill mx-1">Locked</span>
                                 @else
-                                    <span class="badge bg-success rounded-pill">{{count($user_array[$room->id]->users)}}</span>
+                                    <span class="badge bg-success rounded-pill mx-1">Unlocked</span>
                                 @endif
-                            @else
-                                <span class="badge bg-primary rounded-pill">0</span>
-                            @endif
+                                @if(isset($user_array[$room->id]))
+                                    @foreach ($user_array[$room->id]->users as $user)
+                                        @if($user->id == Auth::user()->id)
+                                            <p hidden>{{$inList=true}}</p>
+                                            @break
+                                        @else
+                                            <p hidden>{{$inList=false}}</p>
+                                        @endif
+                                    @endforeach
+                                    
+                                        @if($inList)
+                                            <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users) - 1}}</span>
+                                        @else
+                                            <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users)}}</span>
+                                        @endif
+                                    
+                                @else
+                                    <span class="badge bg-primary rounded-pill mx-1">0</span>
+                                @endif
+                            </div>
                         </a>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-room-{{$room->id}}">Online Users</button>
                     </div>

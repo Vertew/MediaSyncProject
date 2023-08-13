@@ -43,7 +43,7 @@ class UserController extends Controller
         $user = new User;
         $user->username = $validatedData['username'];
         $user->email = $validatedData['email'];
-        $user->email_verified_at = now(); // The email isn't actually verified currently, this is just demonstrative.
+        $user->email_verified_at = now(); // The email isn't actually verified since the site isn't going into live service, this is just demonstrative.
         $user->password = $validatedData['password'];
         $user->guest = false;
         $user->remember_token = Str::random(10);

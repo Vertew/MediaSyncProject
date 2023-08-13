@@ -3,7 +3,7 @@
     {{-- User list bit --}}
     <div class = "container-fluid text-center">
         <div class="container-sm text-center mb-5" wire:ignore>
-            <button type="button" class="btn btn-danger" id="lock-button" title="Prevent users from joining the room" wire:click="toggleLock">Lock Room</button>
+            <button type="button" class="btn btn-{{$room->locked ? "success" : "danger"}}" id="lock-button" title="Prevent users from joining the room" wire:click="toggleLock">{{$room->locked ? "Unlock Room" : "Lock Room"}}</button>
         </div>
         <div class = "row">
             <div class = "col-md-4">

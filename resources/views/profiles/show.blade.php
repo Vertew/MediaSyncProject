@@ -4,15 +4,15 @@
 
 @section('content')
 
+<div class = "container mb-5">
     <div class="row text-center">
         <div class="col-4">
         </div>
         <div class="col-4">
             <div class="card bg-light">
-                <div class="card-header"><h3>Profile information</h3></div>
-                <div class="card-body"></div>
-                    <ul class = 'list-group list-group-flush'>
-                        @if ($profile->name != null)
+                <div class="card-header"><h1 class="display-6">Profile information</h1></div>
+                    <ul class = 'list-group list-group-flush text-start'>
+                        @if ($profile->name != null) 
                             <li class="list-group-item"><strong>Name: </strong>{{$profile->name ?? 'Anonymous'}}</li>
                         @endif
                         @if ($profile->status != null)
@@ -26,14 +26,19 @@
                         @endif  
                         <li class="list-group-item"><strong>Email: </strong>{{$profile->user->email}}</li>
                     </ul>
-                    <a href="{{route('profiles.edit', ['id'=> $profile->id])}}">
-                        <button class="btn btn-primary my-3" type="button">Edit profile</button>
-                    </a>
+                    <div class="card-footer">
+                        <a href="{{route('profiles.edit', ['id'=> $profile->id])}}">
+                            <div class="d-flex flex-column mx-2">
+                                <button class="btn btn-primary m-1" type="button">Edit profile</button>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-4">
         </div>
     </div>
+</div>
 
 @endsection

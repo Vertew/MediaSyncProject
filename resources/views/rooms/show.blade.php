@@ -21,7 +21,7 @@
 
 <div class = "container-fluid mt-3 text-center">
 
-    <h1 class='display-2' id="title">{{$room->name}} 🔓</h1>
+    <h1 class='display-2' id="title">{{$room->name}} {{$room->locked ? "🔒" : "🔓"}}</h1>
 
     <livewire:media-room :room="$room" :queue="$room->files">
 

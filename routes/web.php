@@ -105,6 +105,8 @@ Route::post('/users/guest', [UserController::class, 'storeGuest']) -> name('user
 
 Route::get('/users/{id}', [UserController::class, 'show']) -> name('users.show') -> middleware('auth');
 
+Route::delete('/users/{id}', [UserController::class, 'destroy']) -> name('users.destroy') -> middleware('auth');
+
 Route::post('/users/friend-request/{id}', [UserController::class, 'sendRequest']) -> name('users.sendRequest') -> middleware('auth');
 
 Route::get('/profiles/{id}', [ProfileController::class, 'show']) -> name('profiles.show') -> middleware('auth');

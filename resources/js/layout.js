@@ -4,6 +4,13 @@ const alertContainer = document.getElementById("notification-container");
 
 const myChannel = Echo.private('private.user.' + AuthUser);
 
+if(document.contains(document.querySelector(".alert-success"))){
+    setTimeout(function() {
+        bootstrap.Alert.getOrCreateInstance(document.querySelector(".alert-success")).close();
+    }, 6000);
+}
+
+
 function addAlert(message, colour='light'){
     const div = document.createElement('div');
     div.classList.add('alert');

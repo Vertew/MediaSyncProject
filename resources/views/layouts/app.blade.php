@@ -62,22 +62,24 @@
 
         </div>
 
-        @if ($errors->any())
-            <div class="alert alert-danger mt-3 container-md">
-                Submit failed due to the following:
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li><strong>{{$error}}</strong></li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        <div class="container my-3">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    Submit failed due to the following:
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li><strong>{{$error}}</strong></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        @if (session('message'))
-            <div class="alert alert {{ session('alert-class', 'alert-success') }} mt-3 container-md">
-                <p><strong>{{session('message')}}</strong></p>
-            </div>
-        @endif
+            @if (session('message'))
+                <div class="alert {{ session('alert-class', 'alert-success') }} fade show">
+                    <p><strong>{{session('message')}}</strong></p>
+                </div>
+            @endif
+        </div>
 
         <div class = "container-md mt-3 text-center" id="notification-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
             {{-- Alerts go here via js --}}
