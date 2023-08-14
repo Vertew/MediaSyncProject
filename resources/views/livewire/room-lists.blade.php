@@ -10,7 +10,7 @@
             <h3 class='display-6'>Your rooms</h3>
         </div>
 
-        <div style="max-height: 500px; overflow-y: auto;">
+        <div style="max-height: 500px; overflow-y: auto;" wire:poll>
             @forelse ($my_rooms as $room)
                 <div class="container-sm mt-3">
                     <div class="list-group">
@@ -20,26 +20,10 @@
                                 @if($room->locked)
                                     <span class="badge bg-danger rounded-pill mx-1">Locked</span>
                                 @else
-                                    <span class="badge bg-success rounded-pill mx-1">Unlocked</span>
+                                    <span class="badge bg-success rounded-pill mx-1">Open</span>
                                 @endif
                                 @if(isset($user_array[$room->id]))
-                                    @foreach ($user_array[$room->id]->users as $user)
-                                        @if($user->id == Auth::user()->id)
-                                            <p hidden>{{$inList=true}}</p>
-                                            @break
-                                        @else
-                                            <p hidden>{{$inList=false}}</p>
-                                        @endif
-                                    @endforeach
-                                    @if($inList)
-                                        @if(count($user_array[$room->id]->users) - 1 == 0)
-                                            <span class="badge bg-primary rounded-pill mx-1">{{count($user_array[$room->id]->users) - 1}}</span>
-                                        @else
-                                            <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users) - 1}}</span>
-                                        @endif
-                                    @else
-                                        <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users)}}</span>
-                                    @endif
+                                    <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id])}}</span>
                                 @else
                                     <span class="badge bg-primary rounded-pill mx-1">0</span>
                                 @endif
@@ -57,13 +41,11 @@
                                 <div class="modal-body">
                                     @if(isset($user_array[$room->id]))
                                         <ul class="list-group">
-                                            @foreach ($user_array[$room->id]->users as $user)
-                                                @if(App\Models\User::find($user->id)->username != Auth::user()->username)
-                                                    <li class="list-group-item text-bg-light">
-                                                        <strong>{{App\Models\User::find($user->id)->username}}</strong>
-                                                        <a href="{{route('users.show', ['id'=> $user->id])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
-                                                    </li>
-                                                @endif
+                                            @foreach ($user_array[$room->id] as $user)
+                                                <li class="list-group-item text-bg-light">
+                                                    <strong>{{$user['username']}}</strong>
+                                                    <a href="{{route('users.show', ['id'=> $user['id']])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
+                                                </li>
                                             @endforeach
                                         </ul>
                                     @else
@@ -98,30 +80,16 @@
             @forelse ($rooms as $room)
                 <div class="container-sm mt-3">
                     <div class="list-group">
-                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}"--}}>
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}">
                             <b>{{$room->name}} - {{$room->user->username}}</b>
                             <div class="d-flex justify-content-end">
                                 @if($room->locked)
                                     <span class="badge bg-danger rounded-pill mx-1">Locked</span>
                                 @else
-                                    <span class="badge bg-success rounded-pill mx-1">Unlocked</span>
+                                    <span class="badge bg-success rounded-pill mx-1">Open</span>
                                 @endif
                                 @if(isset($user_array[$room->id]))
-                                    @foreach ($user_array[$room->id]->users as $user)
-                                        @if($user->id == Auth::user()->id)
-                                            <p hidden>{{$inList=true}}</p>
-                                            @break
-                                        @else
-                                            <p hidden>{{$inList=false}}</p>
-                                        @endif
-                                    @endforeach
-                                    
-                                        @if($inList)
-                                            <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users) - 1}}</span>
-                                        @else
-                                            <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id]->users)}}</span>
-                                        @endif
-                                    
+                                    <span class="badge bg-success rounded-pill mx-1">{{count($user_array[$room->id])}}</span>
                                 @else
                                     <span class="badge bg-primary rounded-pill mx-1">0</span>
                                 @endif
@@ -139,15 +107,11 @@
                                 <div class="modal-body">
                                     @if(isset($user_array[$room->id]))
                                         <ul class="list-group">
-                                            @foreach ($user_array[$room->id]->users as $user)
-                                                {{-- This if statement is a bit of a cheaty way to get around the fact that the websocket channel doesn't update
-                                                    all clients quick enough to avoid displaying your name in the list of online users if you just left the room. --}}
-                                                @if(App\Models\User::find($user->id)->username != Auth::user()->username)
-                                                    <li class="list-group-item text-bg-light">
-                                                        <strong>{{App\Models\User::find($user->id)->username}}</strong>
-                                                        <a href="{{route('users.show', ['id'=> $user->id])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
-                                                    </li>
-                                                @endif
+                                            @foreach ($user_array[$room->id] as $user)
+                                                <li class="list-group-item text-bg-light">
+                                                    <strong>{{$user['username']}}</strong>
+                                                    <a href="{{route('users.show', ['id'=> $user['id']])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
+                                                </li>
                                             @endforeach
                                         </ul>
                                     @else

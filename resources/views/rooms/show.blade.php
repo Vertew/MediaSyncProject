@@ -12,7 +12,7 @@
 @section('content')
 
 <script>
-    // Passing some important values to JS
+    // Setting some values in JS
     const currentUser = {{ Js::from(Auth::user()->username) }};
     const currentUserId = {{ Js::from(Auth::user()->id) }};
     const currentRoom = {{ Js::from($room->id) }};
@@ -21,7 +21,10 @@
 
 <div class = "container-fluid mt-3 text-center">
 
-    <h1 class='display-2' id="title">{{$room->name}} {{$room->locked ? "🔒" : "🔓"}}</h1>
+    <div class ="d-flex align-items-end justify-content-center">
+        <h1 class='display-2'>{{$room->name}}</h1>
+        <h1 class='display-5'><span id="title" class="badge {{$room->locked ? "bg-danger" : "bg-success"}} rounded-pill mx-1">{{$room->locked ? "Locked" : "Open"}}</span></h1>
+    </div>
 
     <livewire:media-room :room="$room" :queue="$room->files">
 

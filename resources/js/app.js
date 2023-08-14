@@ -168,12 +168,14 @@ function toggleLock(){
         lockButton.innerText = "Unlock Room";
         lockButton.classList.replace("btn-danger","btn-success");
         lockButton.title = "Allow users to join the room";
-        title.innerText = title.innerText.replace("🔓", "🔒");
+        title.innerText = title.innerText.replace("Open", "Locked");
+        title.classList.replace("bg-success","bg-danger");
     }else{
         lockButton.innerText = "Lock Room";
         lockButton.classList.replace("btn-success","btn-danger");
         lockButton.title = "Prevent users from joining the room";
-        title.innerText = title.innerText.replace("🔒", "🔓");
+        title.classList.replace("bg-danger","bg-success");
+        title.innerText = title.innerText.replace("Locked", "Open");
     }
 }
 
@@ -625,9 +627,9 @@ channel
         const type = event.type;
         toggleLock();
         if(type){
-            addAlert(username, "locked the room");
+            addAlert(username, "locked the room.");
         }else{
-            addAlert(username, "unlocked the room");
+            addAlert(username, "unlocked the room.");
         }
         
     })
