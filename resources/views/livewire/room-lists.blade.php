@@ -6,14 +6,11 @@
 <div class = "row">
     <div class = "col-md-6">
 
-        <div class="container-md mt-5">
-            <h3 class='display-6'>Your rooms</h3>
-        </div>
-
-        <div style="max-height: 500px; overflow-y: auto;" wire:poll>
-            @forelse ($my_rooms as $room)
-                <div class="container-sm mt-3">
-                    <div class="list-group">
+        <div class="card bg-light mt-5" style="max-height: 500px; overflow-y: auto;" wire:poll>
+            <div class="card-header"><h3 class='display-6'>Your rooms</h3></div>
+            <div class="container pb-3">
+                @forelse ($my_rooms as $room)
+                    <div class="list-group mt-3">
                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}">
                             <b>{{$room->name}}</b>
                             <div class="d-flex justify-content-end">
@@ -58,28 +55,23 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <p>Create a room to get started!</p>
-            @endforelse
-        </div>
-
-        <div class="container-md mt-3 text-center">
-            <a href="{{route('rooms.create')}}">
-                <button class="btn btn-success" type="button">Create room</button>
-            </a>
-        </div>
+                @empty
+                    <p>Create a room to get started!</p>
+                @endforelse
+            </div>
+            <div class="card-footer">
+                <a href="{{route('rooms.create')}}">
+                    <button class="btn btn-success" type="button">Create room</button>
+                </a>
+            </div>
+        </div> 
     </div>
     <div class = "col-md-6">
-
-        <div class="container-md mt-5">
-            <h3 class='display-6 text-center'>Friends' rooms</h3>
-        </div>
-
-        <div style="max-height: 500px; overflow-y: auto;">
-            @forelse ($rooms as $room)
-                <div class="container-sm mt-3">
-                    <div class="list-group">
+        <div class="card bg-light mt-5" style="max-height: 500px; overflow-y: auto;">
+            <div class="card-header"><h3 class='display-6 text-center'>Friends' rooms</h3></div>
+            <div class="container pb-3">
+                @forelse ($rooms as $room)
+                    <div class="list-group mt-3">
                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href = "{{route('rooms.show', ['key'=> $room->key])}}">
                             <b>{{$room->name}} - {{$room->user->username}}</b>
                             <div class="d-flex justify-content-end">
@@ -124,10 +116,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <p>Add some friends to see this fill out.</p>
-            @endforelse
+                @empty
+                    <p>Add some friends to see this fill out.</p>
+                @endforelse
+            </div>
         </div>
     </div>
     {{-- <button class="btn btn-light mt-3" id="dump" type="button" wire:click="dump"><b>Dump</b></button> --}}

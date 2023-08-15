@@ -14,10 +14,10 @@ class FileTableSeeder extends Seeder
     public function run(): void
     {
         $file = new File;
-        $file->path = "storage/media/videos/LuxeaRec2023-01-01_12-58-08.mp4";
+        $file->path = "storage/media/videos/1907632_AppDemo.mp4";
         $file->type = 'video';
-        $file->url = "http://127.0.0.1:8080/media/videos/LuxeaRec2023-01-01_12-58-08.mp4";
-        $file->title = "LuxeaRec2023-01-01_12-58-08.mp4";
+        $file->url = "http://127.0.0.1:8080/media/videos/1907632_AppDemo.mp4";
+        $file->title = "1907632_AppDemo.mp4";
         $file->user_id = 1;
         $file->save();
     }

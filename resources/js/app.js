@@ -379,6 +379,7 @@ function addMessage(username, message, auto, name = username){
     li.classList.add('d-flex');
     li.classList.add('justify-content-between');
     li.classList.add('align-items-center');
+    li.classList.add('rounded-0');
     li.classList.add('border-0');
 
     liHeader.classList.add('list-group-item');
