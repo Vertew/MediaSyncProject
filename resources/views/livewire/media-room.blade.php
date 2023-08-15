@@ -295,6 +295,25 @@
                 </div>
             </div>
         </div>
+        <div class = "container-md mt-5 text-center">
+            <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>
+        </div>
+
+        <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none" wire:ignore.self>
+            <div class = "container-md mt-3 text-center">
+                <form wire:submit.prevent="save">
+                    @csrf
+                    <div class="container-md mt-3">
+                        <input type="file" class="form-control" wire:model="input" >
+                    </div>
+                    @error("input") <span class="error">{{ $message }}</span> @enderror
+                    <div class="container-md mt-3">
+                        <button type="submit" onclick="reset('upload-div')" class="btn btn-success">Upload</button>
+                        <button type="reset" onclick="showhide('upload-div')" class="btn btn-secondary">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script> 

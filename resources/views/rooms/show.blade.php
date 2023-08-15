@@ -28,13 +28,13 @@
 
     <livewire:media-room :room="$room" :queue="$room->files">
 
-    <div class = "container-md mt-5 text-center">
+    {{-- <div class = "container-md mt-5 text-center">
         <button class="btn btn-primary" onclick="showhide('upload-div')"> Upload media</button>
     </div>
     
     <div class = "container-md mt-3 text-center" id = "upload-div" style="display: none">
         <livewire:file-upload />
-    </div>
+    </div> --}}
 
     @if(Auth::user()->roles->where('role', 'Admin')->contains('pivot.room_id', $room->id))
         <div class = "container-md mt-5 text-center">

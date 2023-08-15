@@ -14,6 +14,7 @@ use App\Events\LockToggledEvent;
 use App\Events\RoleChangedEvent;
 use App\Events\UserBannedEvent;
 use App\Events\ChangeModeEvent;
+use Livewire\WithFileUploads;
 use App\Events\KickUserEvent;
 use App\Events\SetEvent;
 use Livewire\Component;
@@ -25,6 +26,7 @@ use App\Models\Role;
 
 class MediaRoom extends Component
 {
+    use WithFileUploads;
 
     public int $current_file;
     public int $active_file_id = -1;
@@ -43,6 +45,7 @@ class MediaRoom extends Component
     public $room;
     public $queue;
     public $user;
+    public $input;
 
     public function mount()
     {
@@ -291,6 +294,41 @@ class MediaRoom extends Component
 
     public function set_title(String $title, String $type){
         $this->title = $title;
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'input' => 'required|file|mimetypes:video/mp4,audio/mpeg',
+        ]);
+        
+        $this->fileName = $this->input->getClientOriginalName();
+        $this->extension = $this->input->getClientOriginalExtension();
+
+        if($this->extension == 'mp4'){
+            $this->storePath = 'public/media/videos/';
+            $this->accessPath = 'storage/media/videos/' . $this->fileName;
+            $this->url = 'http://127.0.0.1:8080/media/videos/' . $this->fileName;
+            $this->type = 'video';
+        }else{
+            $this->storePath = 'public/media/audios/';
+            $this->accessPath = 'storage/media/audios/' . $this->fileName;
+            $this->url = 'http://127.0.0.1:8080/media/audios/' . $this->fileName;
+            $this->type = 'audio';
+        }
+        
+        $this->isFileUploaded = $this->input->storeAs($this->storePath, $this->fileName);
+
+        if ($this->isFileUploaded) {
+            $this->file = new File();
+            $this->file->path = $this->accessPath;
+            $this->file->type = $this->type;
+            $this->file->url = $this->url;
+            $this->file->title = $this->fileName;
+            $this->file->user_id = Auth::id();;
+            $this->file->save();
+            $this->emit('fileUploaded');
+        }
     }
 
     public function delete($fileid)

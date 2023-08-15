@@ -15,6 +15,7 @@ class RoomLists extends Component
     public Collection $rooms;
     public Collection $my_rooms;
     public $user_array = [];
+    public $channels = [];
     public $connection;
 
     public function mount(){
@@ -33,7 +34,7 @@ class RoomLists extends Component
         $allChannels = ($this->pusher->get_channels()->channels);
         foreach ($allChannels as $channel => $object){
             if(str_contains($channel, 'presence-presence.chat.')){
-                $channels[] =  $channel;
+                $this->channels[] =  $channel;
             }
         }
 
@@ -42,7 +43,7 @@ class RoomLists extends Component
         foreach(Auth::user()->friends as $friend){
             foreach($friend->rooms as $room){
                 $this->rooms->push($room);
-                if(in_array('presence-presence.chat.'.$room->id, $channels)) {
+                if(in_array('presence-presence.chat.'.$room->id, $this->channels)) {
                     $userCollection = new Collection();
                     foreach($this->pusher->get('/channels/presence-presence.chat.'.$room->id.'/users')->users as $user){
                         $userCollection->push(User::find($user->id));
@@ -54,7 +55,7 @@ class RoomLists extends Component
 
         foreach(Auth::user()->rooms as $room){
             $this->my_rooms->push($room);
-            if(in_array('presence-presence.chat.'.$room->id, $channels)) {
+            if(in_array('presence-presence.chat.'.$room->id, $this->channels)) {
                 $userCollection = new Collection();
                 foreach($this->pusher->get('/channels/presence-presence.chat.'.$room->id.'/users')->users as $user){
                     $userCollection->push(User::find($user->id));
@@ -77,17 +78,19 @@ class RoomLists extends Component
             $this->connection['options'] ?? []
         );
 
+        $this->channels = [];
+
 
         $allChannels = ($this->pusher->get_channels()->channels);
         foreach ($allChannels as $channel => $object){
             if(str_contains($channel, 'presence-presence.chat.')){
-                $channels[] =  $channel;
+                $this->channels[] =  $channel;
             }
         }
 
         
         foreach($this->my_rooms as $room){
-            if(in_array('presence-presence.chat.'.$room->id, $channels)) {
+            if(in_array('presence-presence.chat.'.$room->id, $this->channels)) {
                 $userCollection = new Collection();
                 foreach($this->pusher->get('/channels/presence-presence.chat.'.$room->id.'/users')->users as $user){
                     $userCollection->push(User::find($user->id));
@@ -103,7 +106,7 @@ class RoomLists extends Component
                 if(!$this->rooms->contains($room)){
                     $this->rooms->push($room);
                 }
-                if(in_array('presence-presence.chat.'.$room->id, $channels)) {
+                if(in_array('presence-presence.chat.'.$room->id, $this->channels)) {
                     $userCollection = new Collection();
                     foreach($this->pusher->get('/channels/presence-presence.chat.'.$room->id.'/users')->users as $user){
                         $userCollection->push(User::find($user->id));
