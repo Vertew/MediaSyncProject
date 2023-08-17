@@ -124,7 +124,8 @@ class MediaRoom extends Component
     }
 
     public function ban(int $victim_id) {
-        if (Gate::allows('admin-action', $this->room->id)) {
+        // Only admins can ban, can't ban self, can't ban room owner
+        if (Gate::allows('admin-action', $this->room->id) && $victim_id != Auth::id() && $victim_id != $this->room->user->id) {
             $victim = User::find($victim_id);
             $victim->banned_from()->attach($this->room);
             UserBannedEvent::dispatch(Auth::user(), $victim, $this->room->id);
@@ -149,7 +150,11 @@ class MediaRoom extends Component
 
     public function kick(int $victim_id) {
         $victim = User::find($victim_id);
-        if (Gate::allows('moderator-action', $this->room->id)) {
+
+        // Admins can kick other admins but mods can't kick admins
+        if (Gate::allows('admin-action', $this->room->id)) {
+            KickUserEvent::dispatch(Auth::user(), $victim, $this->room->id);
+        }elseif (Gate::allows('moderator-action', $this->room->id)){
             if($victim->roles->firstWhere('pivot.room_id', $this->room->id)->id != 1) {
                 KickUserEvent::dispatch(Auth::user(), $victim, $this->room->id);
             }
@@ -166,8 +171,8 @@ class MediaRoom extends Component
 
     public function toggleRole(int $newRole, int $userId) {
 
-        // Make sure user is allowed to change roles
-        if (Gate::allows('admin-action', $this->room->id)) {
+        // Make sure user is allowed to change roles (owner's roles cannot be changed from admin)
+        if (Gate::allows('admin-action', $this->room->id) && ($userId != $this->room->user->id)) {
             $user = User::find($userId);
             // Check if user already as the new role
             if(!($user->roles->where('pivot.room_id', $this->room->id)->first()?->id == $newRole)){

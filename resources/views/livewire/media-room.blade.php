@@ -31,7 +31,7 @@
                                             <button class="btn btn-success btn-sm mx-1" type="button" wire:click="sendRequest({{$user->id}})">Add Friend</button>
                                         @endif
                                         <button type="button" class="btn btn-warning btn-sm mx-1" data-bs-toggle="modal" data-bs-target="#modal-{{$user->username}}">{{$user->roles->firstWhere('pivot.room_id', $this->room->id)->role}}</button>
-                                        <button class="btn btn-danger btn-sm mx-1 {{Gate::allows('moderator-action', $this->room->id) && $user->roles->firstWhere('pivot.room_id', $this->room->id)->role!='Admin'  ? "" : "disabled"}}" type="button" wire:click="kick({{$user->id}})">Kick</button>
+                                        <button class="btn btn-danger btn-sm mx-1 {{(Gate::allows('moderator-action', $this->room->id) && $user->roles->firstWhere('pivot.room_id', $this->room->id)->role!='Admin') || Gate::allows('admin-action', $this->room->id)  ? "" : "disabled"}}" type="button" wire:click="kick({{$user->id}})">Kick</button>
                                         <button class="btn btn-dark btn-sm mx-1 {{Gate::allows('admin-action', $this->room->id) ? "" : "disabled"}}" type="button" wire:click="ban({{$user->id}})"><b>Ban</b></button>
                                     </span>
                                 </li>
