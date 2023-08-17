@@ -246,12 +246,10 @@ class MediaRoom extends Component
     }
 
     public function changeMode(array $event){
-        if (Gate::allows('moderator-action', $this->room->id)) {
-            $this->queue_mode = $event["newMode"];
-            $this->shuffle_array = $event["shuffle_array"];
-            MediaRoom::resetVotes();
-            UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
-        }
+        $this->queue_mode = $event["newMode"];
+        $this->shuffle_array = $event["shuffle_array"];
+        MediaRoom::resetVotes();
+        UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
     public function broadcastMode(string $newMode){
