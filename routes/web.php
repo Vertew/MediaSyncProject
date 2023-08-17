@@ -35,12 +35,7 @@ Route::post('/input-message', function(Request $request){
     return null;
 });
 
-Route::post('/media-set', function(Request $request){
-    if(Gate::allows('standard-action', $request->room_id)){
-        SetEvent::dispatch(auth()->user(), $request->file, $request->room_id);
-    }
-    return null;
-}) -> name('media.set');
+Route::post('/media-set', [RoomController::class, 'setMedia']) -> name('media.set');
 
 Route::post('/play-pause', function(Request $request){
     if(Gate::allows('standard-action', $request->room_id)){

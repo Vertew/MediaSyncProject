@@ -8,6 +8,7 @@ use App\Events\RoomDeletedEvent;
 use App\Events\UpdateQueueEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Events\SetEvent;
 use App\Models\Room;
 use App\Models\File;
 use App\Models\Role;
@@ -88,6 +89,16 @@ class RoomController extends Controller
         $file = File::findOrFail($request->file);
         $room->files()->attach($file);
         UpdateQueueEvent::dispatch(auth()->user(), $request->room_id);
+        return null;
+    }
+
+    public function setMedia(Request $request){
+        if(Gate::allows('standard-action', $request->room_id)){
+            $room = Room::findOrFail($request->room_id);
+            $room->file_id = $request->file;
+            $room->save();
+            SetEvent::dispatch(auth()->user(), $request->file, $request->room_id);
+        }
         return null;
     }
 

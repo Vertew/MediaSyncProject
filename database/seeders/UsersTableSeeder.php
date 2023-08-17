@@ -16,7 +16,14 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles = Role::Get();
+        $user = new User;
+        $user->username = "ST";
+        $user->email = "sam@tudberry.net";
+        $user->email_verified_at = now();
+        $user->password = "password0";
+        $user->guest = false;
+        $user->remember_token = Str::random(10);
+        $user->save();
 
         $user = new User;
         $user->username = "user1205";
@@ -27,14 +34,6 @@ class UsersTableSeeder extends Seeder
         $user->remember_token = Str::random(10);
         $user->save();
 
-        $room = new Room;
-        $room->user_id = $user->id;
-        $room->name = "Joe's Room";
-        $room->key = Str::random(16);
-        $room->save();
-
-        $role = $roles->find(1);
-        $user->roles()->attach($role, ['room_id' => $room->id]);
         //$user->roles()->updateExistingPivot($role->id, ['room_id' => $room->id]);
 
         $user = new User;

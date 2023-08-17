@@ -16,6 +16,7 @@
     const currentUser = {{ Js::from(Auth::user()->username) }};
     const currentUserId = {{ Js::from(Auth::user()->id) }};
     const currentRoom = {{ Js::from($room->id) }};
+    const initialFile = {{ Js::from($room->file) }};
     var myFriends = {{ Js::from(Auth::user()->friends->pluck('username')) }};
 </script>
 

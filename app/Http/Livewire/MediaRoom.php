@@ -83,7 +83,8 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
             "echo-presence:presence.chat.{$this->room->id},here" => 'here',
-            'fileUploaded' => '$refresh'
+            'fileUploaded' => '$refresh',
+            'roleChanged' => '$refresh'
         ];
     }
 
@@ -179,6 +180,7 @@ class MediaRoom extends Component
                 $user->roles()->attach($role, ['room_id' => $this->room->id]);
 
                 RoleChangedEvent::dispatch($user, $this->room->id, $role);
+                $this->emitSelf('roleChanged');
             }   
         }
     }
@@ -191,7 +193,7 @@ class MediaRoom extends Component
         //Auth::user()->friends()->attach(User::find(2));
         //User::find(2)->friends()->attach(Auth::user());
         //Auth::user()->banned_from()->attach($this->room);
-        dd($this->userCollection);
+        dd($this->input);
     }
 
     public function sendRequest(int $recipient_id) {
@@ -244,10 +246,12 @@ class MediaRoom extends Component
     }
 
     public function changeMode(array $event){
-        $this->queue_mode = $event["newMode"];
-        $this->shuffle_array = $event["shuffle_array"];
-        MediaRoom::resetVotes();
-        UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+        if (Gate::allows('moderator-action', $this->room->id)) {
+            $this->queue_mode = $event["newMode"];
+            $this->shuffle_array = $event["shuffle_array"];
+            MediaRoom::resetVotes();
+            UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+        }
     }
 
     public function broadcastMode(string $newMode){
@@ -262,9 +266,11 @@ class MediaRoom extends Component
     }
 
     public function removeFromQueue(int $file_id){
-        $this->room->files()->detach($file_id);
-        MediaRoom::resetVotes();
-        UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+        if (Gate::allows('moderator-action', $this->room->id)) {
+            $this->room->files()->detach($file_id);
+            MediaRoom::resetVotes();
+            UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+        }
     }
 
     public function playNext(){
@@ -272,6 +278,8 @@ class MediaRoom extends Component
             $this->file = $this->queue->first();
             if ($this->file != null){
                 $this->room->files()->detach($this->file->id);
+                $this->room->file_id = $this->file->id;
+                $this->room->save();
                 MediaRoom::resetVotes();
                 UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
                 SetEvent::dispatch(Auth::user(), $this->file->id, $this->room->id);
@@ -334,17 +342,21 @@ class MediaRoom extends Component
     public function delete($fileid)
     {
         if ($fileid != -1){
+            if($fileid == $this->active_file_id){
+                // If the current file in the player is deleted then set the default file
+                // to be the file in the player.
+                SetEvent::dispatch(Auth::user(), 1, $this->room->id);
+                $this->room->file_id = 1;
+                $this->room->save();
+            }
+
             $this->file = File::findOrFail($fileid);
             SystemFile::delete('storage/media/'.$this->file->type.'s/'.$this->file->title);
             $this->file->delete();
             session()->flash('message', 'File deleted.');
             $this->emit('file-deleted');
 
-            if($fileid == $this->active_file_id){
-                // If the current file in the player is deleted then set the default file
-                // to be the file in the player.
-                SetEvent::dispatch(Auth::user(), 1, $this->room->id);
-            }
+            
         }else{
             session()->flash('message', 'Select a file to delete');
         }

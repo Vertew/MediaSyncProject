@@ -13,6 +13,8 @@ class FriendRequestList extends Component
 {
     public $user;
 
+    protected $listeners = ['friendsUpdated' => '$refresh'];
+
     public function acceptRequest(int $sender_id, string $notificationId) {
         if(Gate::allows('private', $this->user->id)){
             $recipient = Auth::user();
@@ -28,6 +30,7 @@ class FriendRequestList extends Component
 
             RequestAcceptedEvent::dispatch($sender->id, $recipient);
             $this->emitTo('top-bar', 'friendsUpdated');
+            $this->emitSelf('friendsUpdated');
         }
     }
 
@@ -46,6 +49,7 @@ class FriendRequestList extends Component
             $friend->friends()->wherePivot('user2_id', $user->id)->detach();
 
             UserUnfriendedEvent::dispatch($friend->id, $user);
+            $this->emitSelf('friendsUpdated');
         }
     }
     

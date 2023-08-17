@@ -304,6 +304,7 @@ function pause(){
     if (!(media.paused || media.ending)) {
         media.pause();
         playpause.innerHTML = "&#x1F782; ";
+        playPauseAlert("❚❚");
     }
 }
 
@@ -506,26 +507,22 @@ channel
         console.log('Subscribed to room channel ' + currentRoom + '!');
         console.log({users});
         currentUsers = [...users];
+
+        // Setting the file in the media player upon loading the page.
+        current_id = initialFile.id;
+        console.log(initialFile);
+        setSrc(initialFile.url,initialFile.title,initialFile.type);
+
         //populateUserList();
     })
 
     .joining((user) => {
         console.log(user.username, 'joined')
         addMessage(user.username, ' User joined the room.', true);
-        //addUserList(user.username);
-        // When someone new joins the room, we want to broadcast the current  media file again to make sure
-        // they have the current file in their player. If there is no current file of course, this 
-        // will not occur as no file is the default state when entering the room.
-        if (current_id != null){
-            axios.post('/media-set', {
-                file: current_id,
-                room_id: currentRoom
-            })
-        }
-        // If a new user joins we want to broadcast the current time of the other users to them so they're caught up.
+
+        // If a new user joins we want to broadcast the current video time to them so they're caught up with the others.
         // Of course, the default is to be at time 0 so there's no point doing this if the current time for everyone
-        // else is 0. The Broadcasts below are essentially the same thing but for the other values we want joining users
-        // to be updated with.
+        // else is 0. The other broadcasts below are essentially the same thing but for the sound.
         if(media.currentTime != 0){
             axios.post('/change-time', {
                 time: media.currentTime,
@@ -570,13 +567,12 @@ channel
         const username = event.user.username;
 
         // Preventing the same media source from being set again if it's already set.
-        // This is mainly for when new users join and the set-video broadcast goes out.
+        // Arguably not necessary but it's here for now.
         if (event.file.id != current_id){
             current_id = event.file.id;
             setSrc(newSrc,title,type);
+            addAlert(username,'set the ' + type + ' to ' + title);
         }
-        // Sending the alert regardless so everyone is on the same page (Might change this)   
-        addAlert(username,'set the ' + type + ' to ' + title);
     })
 
     .listen('.play-pause', (event) => {
