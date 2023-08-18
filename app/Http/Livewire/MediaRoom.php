@@ -16,6 +16,7 @@ use App\Events\UserBannedEvent;
 use App\Events\ChangeModeEvent;
 use Livewire\WithFileUploads;
 use App\Events\KickUserEvent;
+use Illuminate\Support\Str;
 use App\Events\SetEvent;
 use Livewire\Component;
 use App\Models\File;
@@ -83,7 +84,7 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},joining" => 'joining',
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
             "echo-presence:presence.chat.{$this->room->id},here" => 'here',
-            'fileUploaded' => '$refresh',
+            'fileUploaded' => 'resestInput',
             'roleChanged' => '$refresh'
         ];
     }
@@ -106,6 +107,12 @@ class MediaRoom extends Component
         //MediaRoom::resetVotes();
         $this->userCollection = $this->userCollection->whereNotIn('id', $event['id']);
         ChangeModeEvent::dispatch(Auth::user(), $this->queue_mode, $this->room->id, $this->shuffle_array);
+    }
+
+    // We reset the input value when a file is uploaded so the user isn't able to keep 
+    // uploading the same file despite the form appearing empty.
+    public function resestInput() {
+        $this->input = null;
     }
 
     public function toggleLock(){
@@ -313,33 +320,50 @@ class MediaRoom extends Component
             'input' => 'required|file|mimetypes:video/mp4,audio/mpeg',
         ]);
         
-        $this->fileName = $this->input->getClientOriginalName();
-        $this->extension = $this->input->getClientOriginalExtension();
+        $fileName = $this->input->getClientOriginalName();
+        $extension = $this->input->getClientOriginalExtension();
 
-        if($this->extension == 'mp4'){
-            $this->storePath = 'public/media/videos/';
-            $this->accessPath = 'storage/media/videos/' . $this->fileName;
-            $this->url = 'http://127.0.0.1:8080/media/videos/' . $this->fileName;
-            $this->type = 'video';
+        $originalName = $fileName;
+
+        $username = Auth::user()->username;
+
+        $title = Str::of($fileName)->basename('.'.$extension);
+
+        // Files with the same name uploaded by the same user need to have their filenames modified to avoid conflicts.
+        // This also accounts for situations where a file with the new modified filename as it's original name already exists,
+        // as unlikely an event as that might be.
+        $i = 0;
+        while(Auth::user()->files->contains('title',$fileName)){
+            $fileName = $title.'-'.Auth::user()->files->where('original_title', $fileName)->count()+$i.'.'.$extension;
+            $i++;
+        }
+
+        if($extension == 'mp4'){
+            $storePath = 'public/media/videos/'. $username;
+            $accessPath = 'storage/media/videos/' . $username .'/'. $fileName;
+            $url = 'http://127.0.0.1:8080/media/videos/' . $username .'/' . $fileName;
+            $type = 'video';
         }else{
-            $this->storePath = 'public/media/audios/';
-            $this->accessPath = 'storage/media/audios/' . $this->fileName;
-            $this->url = 'http://127.0.0.1:8080/media/audios/' . $this->fileName;
-            $this->type = 'audio';
+            $storePath = 'public/media/audios/'. $username;
+            $accessPath = 'storage/media/audios/' . $username .'/'. $fileName;
+            $url = 'http://127.0.0.1:8080/media/audios/' . $username .'/' . $fileName;
+            $type = 'audio';
         }
         
-        $this->isFileUploaded = $this->input->storeAs($this->storePath, $this->fileName);
+        $isFileUploaded = $this->input->storeAs($storePath, $fileName);
 
-        if ($this->isFileUploaded) {
-            $this->file = new File();
-            $this->file->path = $this->accessPath;
-            $this->file->type = $this->type;
-            $this->file->url = $this->url;
-            $this->file->title = $this->fileName;
-            $this->file->user_id = Auth::id();;
-            $this->file->save();
-            $this->emit('fileUploaded');
+        if ($isFileUploaded) {
+            $file = new File();
+            $file->path = $accessPath;
+            $file->type = $type;
+            $file->url = $url;
+            $file->title = $fileName;
+            $file->original_title = $originalName;
+            $file->user_id = Auth::id();;
+            $file->save();
+            $this->emitSelf('fileUploaded');
         }
+
     }
 
     public function delete($fileid)
@@ -353,9 +377,9 @@ class MediaRoom extends Component
                 $this->room->save();
             }
 
-            $this->file = File::findOrFail($fileid);
-            SystemFile::delete('storage/media/'.$this->file->type.'s/'.$this->file->title);
-            $this->file->delete();
+            $file = File::findOrFail($fileid);
+            SystemFile::delete($file->path);
+            $file->delete();
             session()->flash('message', 'File deleted.');
             $this->emit('file-deleted');
 

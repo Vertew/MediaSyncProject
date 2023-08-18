@@ -316,15 +316,15 @@
             <div class = "collapse" id = "upload-div" wire:ignore.self>
                 <div class="card bg-light my-3">
                     <div class="card-header"><h1 class='display-6'>File Upload</h1></div>
-                    <form wire:submit.prevent="save">
+                    <form id="upload-form" wire:submit.prevent="save">
                         @csrf
                         <div class="container mt-3">
-                            <input type="file" class="form-control" wire:model="input" >
+                            <input type="file" id="upload-input" class="form-control" wire:model="input" >
                         </div>
                         @error("input") <span class="error">{{ $message }}</span> @enderror
                         <div class="container my-3">
-                            <button type="submit" onclick="reset('upload-div')" class="btn btn-success">Upload</button>
-                            <button type="reset" data-bs-toggle="collapse" data-bs-target="#upload-div" class="btn btn-secondary">Close</button>
+                            <button type="submit" onclick="reset('upload-form')" class="btn btn-success">Upload</button>
+                            <button type="reset" data-bs-toggle="collapse" data-bs-target="#upload-div" wire:click="resestInput" class="btn btn-secondary">Close</button>
                         </div>
                     </form>
                 </div>

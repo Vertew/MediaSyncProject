@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\File;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -35,17 +36,32 @@ class FileController extends Controller
         ]);
 
         $fileName = $request->file->getClientOriginalName();
-        $extension= $request->file->getClientOriginalExtension();
+        $extension = $request->file->getClientOriginalExtension();
+
+        $originalName = $fileName;
+
+        $username = Auth::user()->username;
+
+        $title = Str::of($fileName)->basename('.'.$extension);
+
+        // Files with the same name uploaded by the same user need to have their filenames modified to avoid conflicts.
+        // This also accounts for situations where a file with the new modified filename as it's original name already exists,
+        // as unlikely an event as that might be.
+        $i = 0;
+        while(Auth::user()->files->contains('title',$fileName)){
+            $fileName = $title.'-'.Auth::user()->files->where('original_title', $fileName)->count()+$i.'.'.$extension;
+            $i++;
+        }
 
         if($extension == 'mp4'){
-            $storePath = 'media/videos/' . $fileName;
-            $accessPath = 'storage/media/videos/' . $fileName;
-            $url = 'http://127.0.0.1:8080/media/videos/' . $fileName;
+            $storePath = 'public/media/videos/'. $username;
+            $accessPath = 'storage/media/videos/' . $username .'/'. $fileName;
+            $url = 'http://127.0.0.1:8080/media/videos/' . $username .'/' . $fileName;
             $type = 'video';
         }else{
-            $storePath = 'media/audios/' . $fileName;
-            $accessPath = 'storage/media/audios/' . $fileName;
-            $url = 'http://127.0.0.1:8080/media/audios/' . $fileName;
+            $storePath = 'public/media/audios/'. $username;
+            $accessPath = 'storage/media/audios/' . $username .'/'. $fileName;
+            $url = 'http://127.0.0.1:8080/media/audios/' . $username .'/' . $fileName;
             $type = 'audio';
         }
         
@@ -59,6 +75,7 @@ class FileController extends Controller
             $file->type = $type;
             $file->url = $url;
             $file->title = $fileName;
+            $file->original_title = $originalName;
             $file->user_id = Auth::id();;
             $file->save();
  

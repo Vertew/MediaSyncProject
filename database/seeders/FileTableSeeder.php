@@ -18,6 +18,7 @@ class FileTableSeeder extends Seeder
         $file->type = 'video';
         $file->url = "http://127.0.0.1:8080/media/videos/1907632_AppDemo.mp4";
         $file->title = "1907632_AppDemo.mp4";
+        $file->original_title = "1907632_AppDemo.mp4";
         $file->user_id = 1;
         $file->save();
     }
