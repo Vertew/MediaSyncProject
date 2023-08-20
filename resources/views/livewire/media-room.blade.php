@@ -143,19 +143,19 @@
             <div class = "container" >
                 <h1 class="display-6">{{$title}}</h1>
             </div>
-            <div class = "container-lg text-center bg-dark" style="position: relative; padding-bottom: 5%;" id = "media-div" wire:ignore.self>
+            <div class = "container-lg text-center bg-dark" style="position: relative; padding-bottom: 5%;" id = "media-div" wire:ignore>
                 <div class="ratio ratio-16x9" id = "video-container">
                     <video id="media-player" preload="metadata" {{-- title={{$title}} Leaving this commented in case removing it breaks something--}}>
                         <source src="source" type="video/mp4, audio/mpeg">
                         Your browser does not support the selected media format.
                     </video>
                     {{-- Play/Pause alert --}}
-                    <div id="play-alert-div" style="position: absolute; left: 47%; top: 45%; width: 7%; height: 7%" wire:ignore>
+                    <div id="play-alert-div" style="position: absolute; left: 47%; top: 45%; width: 7%; height: 7%">
                         {{-- Play/Pause symbols get shown here when the video is played or paused --}}
                     </div>
                 </div>
                 {{-- Defining custom media controls --}}
-                <div class = "row" id="media-controls" style="position: absolute; width: 100%; bottom: 0%; opacity: 1; transition: opacity 0.3s;" wire:ignore>
+                <div class = "row" id="media-controls" style="position: absolute; width: 100%; bottom: 0%; opacity: 1; transition: opacity 0.3s;">
                     <div class = "col-md-1">
                         <button class="btn btn-light" id="playpause" type="button">&#x1F782;</button>
                     </div>
@@ -176,19 +176,22 @@
                     </div>
                 </div>
                 {{-- Emoji reaction button+menu --}}
-                <div class = "dropdown dropstart" style="position: absolute; right: 1%; top: 1%;" wire:ignore>
+                <div class = "dropdown dropstart" style="position: absolute; right: 1%; top: 1%;">
                     <button type="button" id="emoji-dropdown" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false">React</button>
                     <div class="dropdown-menu">
                         <div class="dropdown-item-text" id="picker"></div>
                     </div>
                 </div>
                 {{-- Emoji reaction list --}}
-                <ul class="list-group" id="reaction-list" style="position: absolute; left: 1%; top: 1%; max-height: 75%; overflow-y: auto;" wire:ignore>
+                <ul class="list-group" id="reaction-list" style="position: absolute; left: 1%; top: 1%; max-height: 75%; overflow-y: auto;">
                     {{-- <div class="alert alert-light alert-dismissible fade show text-bg-primary">
                         user1205 <h1>&#x1F600;</h1>
                     </div> --}}
                     {{-- New reactions (demo above) are added here by js --}}
                 </ul>
+            </div>
+            <div class = "container mt-3 text-center p-0" id="alert-container" wire:ignore>
+                {{-- Alerts go here via js --}}
             </div>
         </div>
         {{-- Chat message bit --}}
@@ -222,10 +225,6 @@
                 
             </div>
         </div>
-    </div>
-
-    <div class = "container-md mt-3 text-center" id="alert-container" wire:ignore>
-        {{-- Alerts go here via js --}}
     </div>
     
     {{-- Video and audio selection bit --}}

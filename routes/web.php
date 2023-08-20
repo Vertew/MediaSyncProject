@@ -46,7 +46,7 @@ Route::post('/play-pause', function(Request $request){
 
 Route::post('/change-time', function(Request $request){
     if(Gate::allows('standard-action', $request->room_id)){
-        ChangeTimeEvent::dispatch(auth()->user(), $request->time, $request->room_id);
+        ChangeTimeEvent::dispatch(auth()->user(), $request->time, $request->symbol, $request->room_id);
     }
     return null;
 }) -> name('media.change-time');

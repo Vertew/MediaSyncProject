@@ -181,7 +181,8 @@ function toggleLock(){
 
 progress.addEventListener("click", scrub);
 let mousedown = false;
-progress.addEventListener("mousedown", () => (mousedown = true));
+let originalTime = 0;
+progress.addEventListener("mousedown", () => (mousedown = true) && (originalTime = media.currentTime));
 progress.addEventListener("mousemove", (e) => mousedown && scrub(e));
 progress.addEventListener("mouseup", (e) => broadcastTime(e));
 
@@ -197,8 +198,19 @@ function scrub(e) {
 function broadcastTime(e){
     mousedown = false;
     const time = (e.offsetX / progress.offsetWidth) * media.duration;
+
+    if(time > originalTime){
+        var symbol='⏩';
+    }else if(time < originalTime){
+        var symbol='⏪';
+    }else{
+        // This doesn't work in chrome because chrome rounds the media.currentTime value down for some reason unlike firefox
+        var symbol='noAlert'
+    }
+
     axios.post('/change-time', {
         time: time,
+        symbol: symbol,
         room_id: currentRoom
     })
 }
@@ -236,6 +248,11 @@ function broadcastMute(){
 }
 
 function handleVolumeUpdate(username, volume) {
+    if (media['volume'] >= volume){
+        var symbol = '🔉';
+    }else{
+        var symbol = '🔊';
+    }
     media['volume'] = volume;
     volumeSlider.value = volume;
     if (volume == 0 || media.muted){
@@ -243,7 +260,7 @@ function handleVolumeUpdate(username, volume) {
     }else{
         volumeToggle.innerHTML = "&#128266;";
     }
-    addAlert(username, 'set volume to ' + volume*100 + "%");
+    addAlert(username, 'set volume to ' + Math.round(volume*100) + "% " + symbol);
 }
 
 function handleFullscreen() {
@@ -282,12 +299,12 @@ function playPause(username){
     if (media.paused || media.ended) {
         media.play();
         playpause.innerHTML = "❚❚";
-        addAlert(username, "pressed play.");
+        addAlert(username, "pressed play 🞂");
         playPauseAlert("&#x1F782;");
     } else {
         media.pause();
         playpause.innerHTML = "&#x1F782;";
-        addAlert(username, "pressed pause.");
+        addAlert(username, "pressed pause ❚❚");
         playPauseAlert("❚❚");
     }
     showControls();
@@ -339,6 +356,9 @@ function addAlert(username, message, colour='light'){
     div.classList.add('alert-dismissible');
     div.classList.add('fade');
     div.classList.add('show');
+    div.classList.add('m-0');
+    div.classList.add('py-1');
+    div.classList.add('px-0');
 
     if(username == currentUser){
         div.classList.add('text-bg-primary');
@@ -443,8 +463,10 @@ function addMessage(username, message, auto, name = username){
     previousMessager = username;
 }
 
-function setTime(username, time) {
-    addAlert(username, 'set time to ' + timeTextFormat(time));
+function setTime(username, time , symbol) {
+    if(symbol != 'noAlert'){
+        addAlert(username, 'set time to ' + timeTextFormat(time) + ' ' + symbol);
+    }
     media.currentTime = time;
 }
 
@@ -458,10 +480,10 @@ function formatTime(number){
 function muteUnmute(username,state){
     media.muted = state;
     if (media.muted && media.volume != 0){
-        addAlert(username, 'muted the video.');
+        addAlert(username, 'muted the video 🔈');
         volumeToggle.innerHTML = "&#128264;";
     }else if (!media.muted && media.volume != 0){
-        addAlert(username, 'unmuted the video.');
+        addAlert(username, 'unmuted the video 🔊');
         volumeToggle.innerHTML = "&#128266;"; 
     }
 }
@@ -526,6 +548,7 @@ channel
         if(media.currentTime != 0){
             axios.post('/change-time', {
                 time: media.currentTime,
+                symbol: 'noAlert',
                 room_id: currentRoom
             })
         }
@@ -585,7 +608,8 @@ channel
         console.log(event);
         const username = event.user.username;
         const time = event.time;
-        setTime(username,time);
+        const symbol = event.symbol;
+        setTime(username,time,symbol);
     })
 
     .listen('.volume-change', (event) => {

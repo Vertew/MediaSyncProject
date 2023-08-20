@@ -17,15 +17,17 @@ class ChangeTimeEvent implements ShouldBroadcast
 
     private User $user;
     private float $time;
+    private string $symbol;
     private int $room_id;
-
+    
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, float $time, int $room_id)
+    public function __construct(User $user, float $time, string $symbol ,int $room_id)
     {
-        $this->time = $time;
         $this->user = $user;
+        $this->time = $time;
+        $this->symbol = $symbol;
         $this->room_id = $room_id;
     }
 
@@ -50,9 +52,8 @@ class ChangeTimeEvent implements ShouldBroadcast
     {
         return [
             'user' => $this->user->only(['username']),
-            'time' => $this->time
+            'time' => $this->time,
+            'symbol' => $this->symbol,
         ];
     }
-
-
 }

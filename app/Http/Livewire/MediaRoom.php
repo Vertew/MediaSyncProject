@@ -85,7 +85,7 @@ class MediaRoom extends Component
             "echo-presence:presence.chat.{$this->room->id},leaving" => 'leaving',
             "echo-presence:presence.chat.{$this->room->id},here" => 'here',
             'fileUploaded' => 'resestInput',
-            'roleChanged' => '$refresh'
+            'refresh' => '$refresh'
         ];
     }
 
@@ -134,8 +134,11 @@ class MediaRoom extends Component
         // Only admins can ban, can't ban self, can't ban room owner
         if (Gate::allows('admin-action', $this->room->id) && $victim_id != Auth::id() && $victim_id != $this->room->user->id) {
             $victim = User::find($victim_id);
-            $victim->banned_from()->attach($this->room);
-            UserBannedEvent::dispatch(Auth::user(), $victim, $this->room->id);
+            // Make sure the user isn't already banned from this room (you can spam the button since there's a short delay when the user is banned).
+            if($victim->banned_from->doesntContain($this->room->id)){
+                $victim->banned_from()->attach($this->room);
+                UserBannedEvent::dispatch(Auth::user(), $victim, $this->room->id);
+            }
         }
     }
 
@@ -192,7 +195,7 @@ class MediaRoom extends Component
                 $user->roles()->attach($role, ['room_id' => $this->room->id]);
 
                 RoleChangedEvent::dispatch($user, $this->room->id, $role);
-                $this->emitSelf('roleChanged');
+                $this->emitSelf('refresh');
             }   
         }
     }
@@ -205,7 +208,7 @@ class MediaRoom extends Component
         //Auth::user()->friends()->attach(User::find(2));
         //User::find(2)->friends()->attach(Auth::user());
         //Auth::user()->banned_from()->attach($this->room);
-        dd($this->input);
+        dd(User::find(3)->banned_from->contains(1));
     }
 
     public function sendRequest(int $recipient_id) {
