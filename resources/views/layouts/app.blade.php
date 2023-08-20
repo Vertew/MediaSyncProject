@@ -33,6 +33,7 @@
         </script>
 
         <div class= "container-fluid p-5 bg-primary text-white">
+
             <h1 class = "text-center display-1">MediaSync @yield('title')</h1>
 
             @auth
@@ -51,7 +52,7 @@
                 @endif
                 @if(request()->route()->uri != 'home')
                     <a href="{{route('home')}}">
-                        <button class="btn btn-light" type="button">Home</button>
+                        <button class="btn btn-light mr-2" type="button">Home</button>
                     </a>
                 @endif
             @endauth
@@ -62,7 +63,7 @@
 
         </div>
 
-        <div class="container my-3">
+        <div class="sticky-md-top text-center">
             @if ($errors->any())
                 <div class="alert alert-danger">
                     Submit failed due to the following:
@@ -81,9 +82,12 @@
             @endif
         </div>
 
-        <div class = "container-md mt-3 text-center" id="notification-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
+        <div class = "sticky-md-top text-center" id="notification-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
             {{-- Alerts go here via js --}}
         </div>
+
+        <div class = "container my-3"></div>
+
 
         @yield('content')
 

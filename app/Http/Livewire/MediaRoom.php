@@ -212,7 +212,7 @@ class MediaRoom extends Component
         $recipient =  User::find($recipient_id);
 
         // Only sends a request if the recipient doesn't already have one from the same source.
-        if(is_null($recipient->notifications()->firstWhere('data->sender_id', Auth::user()->id))){
+        if(is_null($recipient->notifications()->firstWhere('data->sender_id', Auth::user()->id)) && $recipient->guest == false){
             $recipient->notify(new FriendRequest(Auth::user()));
             RequestRecievedEvent::dispatch($recipient->id, $this->user);
         }
