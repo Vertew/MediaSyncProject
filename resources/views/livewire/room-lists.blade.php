@@ -102,7 +102,9 @@
                                             @foreach ($user_array[$room->id] as $user)
                                                 <li class="list-group-item text-bg-light">
                                                     <strong>{{$user['username']}}</strong>
-                                                    <a href="{{route('users.show', ['id'=> $user['id']])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
+                                                    @if(!$user['guest'])
+                                                        <a href="{{route('users.show', ['id'=> $user['id']])}}" class="btn btn-sm btn-primary mx-1">View Profile</a>
+                                                    @endif
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -117,7 +119,11 @@
                         </div>
                     </div>
                 @empty
-                    <p  class="mt-3">Add some friends to see this fill out.</p>
+                    @if(Auth::user()->guest)
+                        <p class="mt-3">Create an account to add friends.</p>   
+                    @else
+                        <p class="mt-3">Add some friends to see this fill out.</p>
+                    @endif
                 @endforelse
             </div>
         </div>

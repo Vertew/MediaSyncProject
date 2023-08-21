@@ -82,7 +82,7 @@
             @endif
         </div>
 
-        <div class = "sticky-md-top text-center" id="notification-container" style="max-height: 300px; overflow-y: auto;" wire:ignore>
+        <div class = "sticky-md-top text-center" id="notification-container" style="max-height: 150px; overflow-y: auto;" wire:ignore>
             {{-- Alerts go here via js --}}
         </div>
 

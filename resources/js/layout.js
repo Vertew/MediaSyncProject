@@ -18,6 +18,8 @@ function addAlert(message, colour='light'){
     div.classList.add('alert-'+colour);
     div.classList.add('fade');
     div.classList.add('show');
+    div.classList.add('my-0');
+    div.classList.add('rounded-0');
 
     const msgSpan = document.createElement('span');
     const strong = document.createElement('strong');
@@ -36,6 +38,16 @@ function addAlert(message, colour='light'){
         bootstrap.Alert.getOrCreateInstance(div).close();
     }, 6000);
 }
+
+Livewire
+    .on('requestSent', (event) => {
+        addAlert('Friend request sent to ' + event + '!', 'success');
+    })
+
+Livewire
+    .on('requestSendFail', (event) => {
+        addAlert('You cannot send another request to ' + event + '.', 'warning');
+    })
 
 myChannel
 

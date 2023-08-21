@@ -1,5 +1,5 @@
 <div class = "container-fluid my-3">
-    <button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button>
+    {{-- <button class="btn btn-light" id="dump" type="button" wire:click="dump"><b>Dump</b></button> --}}
     {{-- User list bit --}}
     <div class = "container-fluid text-center">
         <div class="container-sm text-center mb-5" wire:ignore>

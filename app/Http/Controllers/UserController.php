@@ -105,10 +105,10 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         // Guests can't look at user account pages
-        if (Gate::allows('full-account')) {
+        if (Gate::allows('full-account') && !($user->guest)) {
             return view('users.show', ['user' => $user]);
-        }else{
-            session()->flash('message', 'Guest users do not have access to the account page.');
+        }else {
+            session()->flash('message', 'Guest users do not have access to account page functionality.');
             session()->flash('alert-class', 'alert-warning');
             return redirect()->route('home');
         }
@@ -120,6 +120,10 @@ class UserController extends Controller
 
         if($user->friends->contains($id)){
             session()->flash('message', "You're already friends with this user.");
+            session()->flash('alert-class', 'alert-warning');
+        }
+        elseif($recipient->guest){
+            session()->flash('message', "You cannot friend a guest user.");
             session()->flash('alert-class', 'alert-warning');
         }
         // Only sends a request if the recipient doesn't already have one from the same source.
