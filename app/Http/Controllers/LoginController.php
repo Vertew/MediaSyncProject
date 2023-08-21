@@ -42,14 +42,16 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        $id = Auth::id();
-        $user = User::findOrFail($id);
+        // You need to do it this way even though it looks dumb.
+        // For some reason, trying to delete Auth::user() doesn't
+        // work.
+        $user = User::findOrFail(Auth::id());
 
         // Guest user accounts are deleted upon logging out.
         if($user->guest){
-            foreach($user->files as $file){
-                SystemFile::delete('storage/media/'.$file->type.'s/'.$file->title);
-            }
+            SystemFile::deleteDirectory('storage/media/videos/'.$user->username);
+            SystemFile::deleteDirectory('storage/media/audios/'.$user->username);
+            $user->rooms()->delete();
             $user->delete();
         }
 

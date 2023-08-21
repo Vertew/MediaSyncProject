@@ -208,3 +208,60 @@
 
   2023-08-13 13:14:02 Running [Callback] ........................... 59ms DONE
 
+
+  2023-08-21 12:58:02 Running [Callback] ........................... 42ms FAIL
+
+
+  2023-08-21 12:59:02 Running [Callback] ........................... 47ms DONE
+
+
+  2023-08-21 13:04:02 Running [Callback] ........................... 37ms FAIL
+
+
+  2023-08-21 13:05:02 Running [Callback] ........................... 50ms DONE
+
+
+  2023-08-21 13:06:02 Running [Callback] ........................... 98ms FAIL
+
+
+  2023-08-21 13:07:02 Running [Callback] ........................... 41ms FAIL
+
+
+  2023-08-21 13:08:02 Running [Callback] ........................... 56ms FAIL
+
+
+  2023-08-21 13:09:02 Running [Callback] .......................... 105ms DONE
+
+
+  2023-08-21 13:10:02 Running [Callback] ........................... 53ms DONE
+
+
+  2023-08-21 13:11:03 Running [Callback] ........................... 38ms DONE
+
+
+  2023-08-21 13:12:02 Running [Callback] ........................... 33ms DONE
+
+
+  2023-08-21 13:13:02 Running [Callback] .......................... 849ms DONE
+
+
+  2023-08-21 13:14:02 Running [Callback] ........................... 34ms DONE
+
+
+  2023-08-21 13:15:03 Running [Callback] ........................... 73ms DONE
+
+
+  2023-08-21 13:16:02 Running [Callback] ........................... 36ms DONE
+
+
+  2023-08-21 13:17:02 Running [Callback] ........................... 34ms DONE
+
+
+  2023-08-21 13:18:02 Running [Callback] "Guest-nD0NqB" // app/Console/Kernel.php:27
+
+  2023-08-21 13:19:03 Running [Callback] "Guest-nD0NqB" // app/Console/Kernel.php:27
+
+  2023-08-21 13:20:02 Running [Callback] "storage/media/audios/Guest-nD0NqB" // app/Console/Kernel.php:27
+
+  2023-08-21 13:28:02 Running [Callback] ........................... 75ms DONE
+

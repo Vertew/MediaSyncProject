@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Models\User;
 
@@ -17,7 +18,16 @@ class Kernel extends ConsoleKernel
         // This task deletes guest accounts 24 hours after they were created. Run via cron.
         $schedule->call(function () {
             $time = now()->subDay();
-            User::where('guest', true)->where('created_at', '<=', $time)->delete();
+            $users = User::where('guest', true)->where('created_at', '<=', $time);
+
+            $users->each(function ($user, $key) {
+                SystemFile::deleteDirectory('storage/app/public/media/videos/'.$user->username);
+                SystemFile::deleteDirectory('storage/app/public/media/audios/'.$user->username);
+                $user->rooms()->delete();
+            });
+
+            $users->delete();
+
         })->everyMinute();
     }
 

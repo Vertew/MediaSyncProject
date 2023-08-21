@@ -56,7 +56,7 @@
                         </div>
                     </div>
                 @empty
-                    <p>Create a room to get started!</p>
+                    <p class="mt-3">Create a room to get started!</p>
                 @endforelse
             </div>
             <div class="card-footer">
@@ -117,7 +117,7 @@
                         </div>
                     </div>
                 @empty
-                    <p>Add some friends to see this fill out.</p>
+                    <p  class="mt-3">Add some friends to see this fill out.</p>
                 @endforelse
             </div>
         </div>

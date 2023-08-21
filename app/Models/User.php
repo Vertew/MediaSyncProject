@@ -3,8 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -48,31 +51,31 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function profile(){
+    public function profile(): HasOne{
         return $this->hasOne(Profile::class);
     }
 
-    public function videos(){
+    public function videos(): HasMany{
         return $this->hasMany(Video::class);
     }
 
-    public function files(){
+    public function files(): HasMany{
         return $this->hasMany(File::class);
     }
 
-    public function rooms(){
+    public function rooms(): HasMany{
         return $this->hasMany(Room::class);
     }
 
-    public function roles(){
+    public function roles(): BelongsToMany{
         return $this->belongsToMany(Role::class)->withPivot('room_id');
     }
 
-    public function friends() {
+    public function friends(): BelongsToMany{
         return $this->belongsToMany(User::class, 'user_user', 'user1_id', 'user2_id');
     }
 
-    public function banned_from() {
+    public function banned_from(): BelongsToMany{
         return $this->belongsToMany(Room::class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\File as SystemFile;
 use App\Events\RequestRecievedEvent;
 use App\Notifications\FriendRequest;
 use Illuminate\Support\Facades\Auth;
@@ -159,13 +160,17 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         //Deleting user files from storage when the account is deleted.
-        foreach($user->files as $file){
-            SystemFile::delete('storage/media/'.$file->type.'s/'.$file->title);
-        }
+        SystemFile::deleteDirectory('storage/media/videos/'.$user->username);
+        SystemFile::deleteDirectory('storage/media/audios/'.$user->username);
 
+        // Due to the way the Laravel handles the creation/deletion of tables, and the fact
+        // that the rooms table doesn't get cascade deleted when a file it is associated with gets
+        // deleted, we need to delete the rooms belonging to the user manually when an account is 
+        // deleted to prevent a constraint violation. Fortunately this is easy to do. 
+        $user->rooms()->delete();
         $user->delete();
 
-        session()->flash('message', 'User was deleted.');
+        session()->flash('message', 'Account deleted.');
         return redirect()->route('login.logout');
 
     }
