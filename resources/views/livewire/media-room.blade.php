@@ -125,8 +125,9 @@
                                     </label>
                                 @else
                                     <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}}/>    
-                                    <label class="btn btn-outline-primary btn-block d-flex align-items-center" for={{"queuebutton".$file->id}}>
-                                        <span class="flex-grow-1">{{$file->title}}</span>
+                                    <label class="btn btn-outline-primary btn-block d-flex align-items-center py-0 ps-0 pe-2" for={{"queuebutton".$file->id}}>
+                                        <div style="height: 100%; width: 50%;"><img class="img-fluid rounded-start" src="{{url('storage/media/videos/Terraria-Logo.jpg')}}" alt="thumbnail"></div>
+                                        <span class="d-flex align-items-center justify-content-center" style="height: 100%; width: 80%;"><small>{{$file->title}}</small></span>
                                         <button class="btn btn-danger btn-sm" type="button" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
                                     </label>
                                 @endif
@@ -244,7 +245,11 @@
                                 @forelse ($videos->reverse() as $video)
                                     <div class="container my-1 d-flex">
                                         <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"vidbutton".$video->id}} wire:click="set_media({{$video}})"/>    
-                                        <label class="btn btn-outline-primary flex-grow-1" for={{"vidbutton".$video->id}}>{{$video->title}}</label>
+                                        {{-- <label class="btn btn-outline-primary flex-grow-1" for={{"vidbutton".$video->id}}>{{$video->title}}</label> --}}
+                                        <label class="btn btn-outline-primary btn-block d-flex align-items-center py-0 ps-0 pe-2" for={{"vidbutton".$video->id}}>
+                                            <div style="height: 100%; width: 35%;"><img class="img-fluid rounded-start" src="{{url('storage/media/videos/Terraria-Logo.jpg')}}" alt="thumbnail"></div>
+                                            <span class="d-flex align-items-center justify-content-center flex-grow-1" style="height: 100%; width: 100%;">{{$video->title}}</span>
+                                        </label>
                                     </div>
                                 @empty
                                     <div class="container">
@@ -282,8 +287,11 @@
                             <div class="btn-group-vertical d-flex" role="group" id="btngrp-audio" aria-label="Basic radio toggle button group">
                                 @forelse ($audios->reverse() as $audio)
                                     <div class="container my-1 d-flex">
-                                        <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"sndbutton".$audio->id}} wire:click="set_media({{$audio}})"/>    
-                                        <label class="btn btn-outline-primary flex-grow-1" for={{"sndbutton".$audio->id}}>{{$audio->title}}</label>
+                                        <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"sndbutton".$audio->id}} wire:click="set_media({{$audio}})"/>
+                                        <label class="btn btn-outline-primary btn-block d-flex align-items-center py-0 ps-0 pe-2" for={{"sndbutton".$audio->id}}>
+                                            <div style="height: 100%; width: 35%;"><img class="img-fluid rounded-start" src="{{url('storage/media/videos/Terraria-Logo.jpg')}}" alt="thumbnail"></div>
+                                            <span class="d-flex align-items-center justify-content-center flex-grow-1" style="height: 100%; width: 100%;">{{$audio->title}}</span>
+                                        </label>
                                     </div>
                                 @empty
                                     <div class="container">

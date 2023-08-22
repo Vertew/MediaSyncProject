@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+require '../vendor/autoload.php';
 
+use FFMpeg\FFMpeg;
 use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -70,6 +72,10 @@ class FileController extends Controller
         //$url = Storage::disk('public')->url($accessPath);
 
         if ($isFileUploaded) {
+            
+            $ffmpeg = FFMpeg::create();
+            $video = $ffmpeg->open($accessPath);
+
             $file = new File();
             $file->path = $accessPath;
             $file->type = $type;
