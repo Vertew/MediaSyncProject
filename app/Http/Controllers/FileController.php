@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 require '../vendor/autoload.php';
 
-use FFMpeg\FFMpeg;
 use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+
+use FFMpeg\Filters\Frame\CustomFrameFilter;
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFProbe;
+use FFMpeg\FFMpeg;
 
 class FileController extends Controller
 {
@@ -72,9 +76,20 @@ class FileController extends Controller
         //$url = Storage::disk('public')->url($accessPath);
 
         if ($isFileUploaded) {
-            
+
+            $ffprobe = FFProbe::create();
             $ffmpeg = FFMpeg::create();
-            $video = $ffmpeg->open($accessPath);
+
+            if($type == 'video'){  
+                $thumbnail = 'storage/media/videos/' . $username .'/'. Str::of($fileName)->basename('.'.$extension).'.jpg';
+                
+                $duration = $ffprobe->format($accessPath)->get('duration');
+
+                $video = $ffmpeg->open($accessPath);
+                $video->frame(TimeCode::fromSeconds(floor($duration/2)))->addFilter(new CustomFrameFilter('scale=1920x938'))->save($thumbnail);
+            }else{
+                $thumbnail = 'storage/media/audios/audio_icon.png';
+            }
 
             $file = new File();
             $file->path = $accessPath;
@@ -82,6 +97,7 @@ class FileController extends Controller
             $file->url = $url;
             $file->title = $fileName;
             $file->original_title = $originalName;
+            $file->thumbnail = $thumbnail;
             $file->user_id = Auth::id();;
             $file->save();
  

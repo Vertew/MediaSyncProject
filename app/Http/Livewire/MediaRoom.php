@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Livewire;
+require '../vendor/autoload.php';
 
 use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,6 +24,11 @@ use App\Models\File;
 use App\Models\User;
 use App\Models\Room;
 use App\Models\Role;
+
+use FFMpeg\Filters\Frame\CustomFrameFilter;
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFProbe;
+use FFMpeg\FFMpeg;
 
 
 class MediaRoom extends Component
@@ -345,28 +351,46 @@ class MediaRoom extends Component
             $i++;
         }
 
+        // I only have mp4 files for testing, but other types could easily be supported as well just by adding more parts
+        // to this if statement.
         if($extension == 'mp4'){
             $storePath = 'public/media/videos/'. $username;
             $accessPath = 'storage/media/videos/' . $username .'/'. $fileName;
             $url = 'http://127.0.0.1:8080/media/videos/' . $username .'/' . $fileName;
             $type = 'video';
+            $thumbnail = 'storage/media/videos/' . $username .'/'. Str::of($fileName)->basename('.'.$extension).'.jpg';
         }else{
             $storePath = 'public/media/audios/'. $username;
             $accessPath = 'storage/media/audios/' . $username .'/'. $fileName;
             $url = 'http://127.0.0.1:8080/media/audios/' . $username .'/' . $fileName;
             $type = 'audio';
+
+            // Unfortunately as of now, PHP-ffmpeg doesn't support extraction of audio file
+            // artwork from the metadata so we have to go with a default thumbnail.
+            $thumbnail = 'storage/media/audios/audio_icon.png';
         }
         
         $isFileUploaded = $this->input->storeAs($storePath, $fileName);
 
         if ($isFileUploaded) {
+
+            $ffprobe = FFProbe::create();
+            $ffmpeg = FFMpeg::create();
+
+            if($type == 'video'){     
+                $duration = $ffprobe->format($accessPath)->get('duration');
+                $video = $ffmpeg->open($accessPath);
+                $video->frame(TimeCode::fromSeconds(floor($duration/2)))->addFilter(new CustomFrameFilter('scale=1920x938'))->save($thumbnail);
+            }
+
             $file = new File();
             $file->path = $accessPath;
             $file->type = $type;
             $file->url = $url;
             $file->title = $fileName;
             $file->original_title = $originalName;
-            $file->user_id = Auth::id();;
+            $file->thumbnail = $thumbnail;
+            $file->user_id = Auth::id();
             $file->save();
             $this->emitSelf('fileUploaded');
         }
@@ -385,12 +409,15 @@ class MediaRoom extends Component
             }
 
             $file = File::findOrFail($fileid);
+
+            // Need to delete the actual file and the thumbnail if it's a video.
             SystemFile::delete($file->path);
+            if($file->type=='video'){
+                SystemFile::delete($file->thumbnail);
+            }
             $file->delete();
             session()->flash('message', 'File deleted.');
             $this->emit('file-deleted');
-
-            
         }else{
             session()->flash('message', 'Select a file to delete');
         }

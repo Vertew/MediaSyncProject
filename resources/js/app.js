@@ -442,6 +442,7 @@ function addMessage(username, message, auto, name = username){
         span.classList.add('small');
     }else{
         span.textContent = message;
+        span.classList.add('text-break');
     }
 
     strong.textContent = displayname;
