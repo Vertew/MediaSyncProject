@@ -17,6 +17,7 @@
                                 <li id="list-{{$user->username}}">
                                     {{-- <span class="list-group-item d-flex justify-content-start align-items-center {{Auth::user()->id==$user->id ? "text-bg-primary" : (Auth::user()->friends->contains($user->id) ? "text-bg-success" : "text-bg-light")}}"> --}}
                                     <span class="list-group-item d-flex justify-content-start align-items-center {{Auth::user()->id==$user->id ? "text-bg-primary" : "text-bg-light"}}">
+                                        <img class="img-fluid rounded-circle me-1" style="height: 40px; width: 40px;" src="{{url($user->picture)}}" alt="Profile Image">
                                         @if($user->id == Auth::user()->id)
                                             <span class="mx-1"><strong>{{$user->profile->name ?? "Me"}} <small>({{$user->username}})</small></strong></span>
                                         @elseif(Auth::user()->friends->contains($user->id))

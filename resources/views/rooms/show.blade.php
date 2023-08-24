@@ -15,6 +15,7 @@
     // Setting some values in JS
     const currentUser = {{ Js::from(Auth::user()->username) }};
     const currentUserId = {{ Js::from(Auth::user()->id) }};
+    const currentUserPicture = {{ Js::from(Auth::user()->picture) }}; //This is only needed in one instance.
     const currentRoom = {{ Js::from($room->id) }};
     const initialFile = {{ Js::from($room->file) }};
     var myFriends = {{ Js::from(Auth::user()->friends->pluck('username')) }};

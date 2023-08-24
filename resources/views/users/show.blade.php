@@ -10,7 +10,7 @@
         </div>
         <div class = "col-4 text-center">
             <div class="card bg-light">
-                <div class="card-header"><h1 class="display-6">{{$user->username}}</h1></div>
+                <div class="card-header d-flex align-items-center justify-content-center overflow-hidden"><img class="img-fluid rounded-circle me-2" style="height: 75px; width: 75px;" src="{{url($user->picture)}}" alt="Profile Picture"><h1 class="display-6">{{$user->username}}</h1></div>
                     <ul class = 'list-group list-group-flush text-start'>
                         <li class = "list-group-item"><strong>Email: </strong>{{$user->email}}</li>
                         <li class = "list-group-item"><strong>Joined: </strong> {{$user->created_at}}</li>

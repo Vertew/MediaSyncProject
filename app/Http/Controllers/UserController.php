@@ -38,7 +38,7 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'username' => 'required|unique:users|max:30',
             'email' => 'required|unique:users|email',
-            'password' => 'required|max:255',
+            'password' => 'required|unique:users|max:255',
         ]);
 
         $user = new User;

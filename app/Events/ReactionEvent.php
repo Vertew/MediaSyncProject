@@ -50,7 +50,8 @@ class ReactionEvent implements ShouldBroadcast
     {
         return [
             'message' => $this->message,
-            'user' => $this->user->only(['username'])
+            'user' => $this->user->only(['username']),
+            'picture' => $this->user->picture
         ];
     }
 }

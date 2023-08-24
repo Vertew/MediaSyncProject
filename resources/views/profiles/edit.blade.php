@@ -29,6 +29,14 @@
                         <label for="date"><strong>Date of Birth</strong></label>
                         <input class="form-control" type = "date" name = "date_of_birth" id='date' value = "{{$profile->date_of_birth}}">
                     </div>
+                    <div class="container my-3">
+                        <label for="picture"><strong>Add/change profile picture</strong></label>
+                        <input class="form-control" type = "file" name = "picture" id='picture'>
+                    </div>
+                    <div class="container-md mb-3 mt-3">
+                        <label for="checkbox"><strong>Remove profile picture</strong></label>
+                        <input type="checkbox" id="checkbox" name = "checkbox">
+                    </div>
                     <div class="card-footer">
                         <div class="d-flex flex-column mx-2">
                             <input class="btn btn-primary m-1" type = "submit" value = "Update">

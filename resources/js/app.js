@@ -136,7 +136,7 @@ form.addEventListener('submit', function(event){
             room_id: currentRoom
         })
     }else{
-        addMessage(currentUser, 'You do not have permission to type in chat.', true);
+        addMessage(currentUser, 'You do not have permission to type in chat.', true, currentUserPicture);
     }
     form.reset();
 });
@@ -204,7 +204,7 @@ function broadcastTime(e){
     }else if(time < originalTime){
         var symbol='⏪';
     }else{
-        // This doesn't work in chrome because chrome rounds the media.currentTime value down for some reason unlike firefox
+        // This doesn't work in chrome because chrome truncates the media.currentTime value for some reason unlike other browsers.
         var symbol='noAlert'
     }
 
@@ -385,7 +385,7 @@ function addAlert(username, message, colour='light'){
 }
 
 // Used for adding chat messages
-function addMessage(username, message, auto, name = username){
+function addMessage(username, message, auto, picture, name = username){
 
     let displayname = username;
     if(myFriends.includes(username)){
@@ -405,7 +405,7 @@ function addMessage(username, message, auto, name = username){
 
     liHeader.classList.add('list-group-item');
     liHeader.classList.add('d-flex');
-    liHeader.classList.add('justify-content-between');
+    liHeader.classList.add('justify-content-start');
     liHeader.classList.add('align-items-center');
     liHeader.classList.add('border-top');
     liHeader.classList.add('border-bottom-0');
@@ -432,8 +432,6 @@ function addMessage(username, message, auto, name = username){
     timeSpan.textContent = time + "        ";
     
     const span = document.createElement('span');
-    const spanHeader = document.createElement('span');
-    const strong = document.createElement('strong');
 
     if(auto){
         let reactionText = document.createElement('strong');
@@ -445,21 +443,35 @@ function addMessage(username, message, auto, name = username){
         span.classList.add('text-break');
     }
 
-    strong.textContent = displayname;
-
-    spanHeader.append(strong);
-    liHeader.append(spanHeader);
-
     li.append(span, timeSpan);
 
     if(previousMessager == username){
         messageList.append(li);
+        container.scrollTop = container.scrollHeight;
     }else{
-        messageList.append(liHeader);
-        messageList.append(li);
-    }
+        const spanHeader = document.createElement('span');
 
-    container.scrollTop = container.scrollHeight;
+        const strong = document.createElement('strong');
+        strong.textContent = displayname;
+
+        const image = document.createElement('img');
+        image.classList.add('me-2');
+        image.classList.add('rounded-circle');
+        image.src = "http://localhost/" + picture;
+        image.style.height = "40px";
+        image.style.width = "40px";
+
+        spanHeader.append(strong);
+        liHeader.append(image, spanHeader);
+        messageList.append(liHeader, li);
+
+        // The javascript runs a bit too fast for the HTML to keep up so we need to set a short delay
+        // otherwise the autoscroll won't keep up.
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        },50)
+    }
+    
 
     previousMessager = username;
 }
@@ -541,7 +553,7 @@ channel
 
     .joining((user) => {
         console.log(user.username, 'joined')
-        addMessage(user.username, ' User joined the room.', true);
+        addMessage(user.username, ' User joined the room.',true, user.picture);
 
         // If a new user joins we want to broadcast the current video time to them so they're caught up with the others.
         // Of course, the default is to be at time 0 so there's no point doing this if the current time for everyone
@@ -571,7 +583,7 @@ channel
 
     .leaving((user) => {
         console.log({user}, 'left')
-        addMessage(user.username, 'User left the room.', true);
+        addMessage(user.username, 'User left the room.', true, user.picture);
         //removeUserList(user.username);
     })
 
@@ -580,7 +592,8 @@ channel
         const message = event.message;
         const username = event.user.username;
         const name = event.name;
-        addMessage(username, message, false, name);
+        const picture = event.picture;
+        addMessage(username, message, false, picture, name);
     })
 
     .listen('.media-set', (event) => {
@@ -639,8 +652,9 @@ channel
         console.log(event);
         const emoji = event.message;
         const username = event.user.username;
+        const picture = event.picture;
         addReaction(username, emoji);
-        addMessage(username,'User reacted with ' + emoji, true);
+        addMessage(username,'User reacted with ' + emoji, true, picture);
     })
 
     .listen('.lock-toggled', (event) => {

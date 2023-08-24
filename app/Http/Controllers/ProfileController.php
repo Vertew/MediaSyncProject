@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\File as SystemFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Profile;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -67,16 +70,44 @@ class ProfileController extends Controller
             'date_of_birth' => 'nullable|date',
             'status' => 'nullable|max:100',
             'location' => 'nullable|max:30',
+            'picture' => 'nullable|image',
         ]);
 
         $profile = Profile::findOrFail($id);
+        $user = User::findOrFail($profile->user->id);
+
+        $default = "storage/media/images/DefaultProfileIcon.png";
 
         $profile->name = $validatedData['name'];
         $profile->date_of_birth = $validatedData['date_of_birth'];
         $profile->status = $validatedData['status'];
         $profile->location = $validatedData['location'];
 
+        if($request->picture != null){
+
+            if($user->picture != $default){
+                SystemFile::delete($user->picture);
+            }
+
+            $fileName = $request->picture->getClientOriginalName();
+
+            $storePath = 'public/media/images/'. $user->username;
+            $isImageUploaded = $request->picture->storeAs($storePath, $fileName);
+
+            if($isImageUploaded){
+
+                $user->picture = 'storage/media/images/' . $user->username .'/'. $fileName;
+            }
+        }
+        if($request['checkbox'] && $user->picture != $default){
+            SystemFile::delete($user->picture);
+            $user->picture = $default;
+        }
+
         $profile->save();
+        $user->save();
+
+        session()->flash('message', 'Profile was updated.');
         return redirect()->route('profiles.show', ['id'=> $profile->id]);
     }
 

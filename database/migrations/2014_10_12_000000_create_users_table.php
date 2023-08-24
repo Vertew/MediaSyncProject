@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('username')->unique();
             $table->string('email')->unique()->nullable();
+            $table->string('picture')->default('storage/media/images/DefaultProfileIcon.png');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->boolean('guest');

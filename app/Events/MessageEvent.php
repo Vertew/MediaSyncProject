@@ -52,6 +52,7 @@ class MessageEvent implements ShouldBroadcast
             'message' => $this->message,
             'user' => $this->user->only(['username','email']),
             'name' => $this->user->profile?->name ?? $this->user->username,
+            'picture' => $this->user->picture,
         ];
     }
 
