@@ -34,6 +34,8 @@ class FileController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * This isn't actually used but it is essentially the same thing as the
+     * save function in the media room livewire component.
      */
     public function store(Request $request)
     {
@@ -72,7 +74,8 @@ class FileController extends Controller
         }
         
 
-        $isFileUploaded = Storage::disk('public')->put($storePath, file_get_contents($request->file));
+        // $isFileUploaded = Storage::disk('public')->put($storePath, file_get_contents($request->file));
+        $isFileUploaded = $request->file->storeAs($storePath, $fileName);
         //$url = Storage::disk('public')->url($accessPath);
 
         if ($isFileUploaded) {

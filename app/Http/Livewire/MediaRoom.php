@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\File as SystemFile;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+
+use FFMpeg\Filters\Frame\CustomFrameFilter;
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFProbe;
+use FFMpeg\FFMpeg;
+
 use App\Notifications\FriendRequest;
 use App\Events\RequestRecievedEvent;
 use App\Events\UserUnbannedEvent;
@@ -15,22 +22,18 @@ use App\Events\LockToggledEvent;
 use App\Events\RoleChangedEvent;
 use App\Events\UserBannedEvent;
 use App\Events\ChangeModeEvent;
-use Livewire\WithFileUploads;
 use App\Events\KickUserEvent;
-use Illuminate\Support\Str;
 use App\Events\SetEvent;
+
+use Livewire\WithFileUploads;
 use Livewire\Component;
+
 use App\Models\File;
 use App\Models\User;
 use App\Models\Room;
 use App\Models\Role;
 
-use FFMpeg\Filters\Frame\CustomFrameFilter;
-use FFMpeg\Coordinate\TimeCode;
-use FFMpeg\FFProbe;
-use FFMpeg\FFMpeg;
-
-
+// This class handles the bulk of the backend work involved with the media room page.
 class MediaRoom extends Component
 {
     use WithFileUploads;
@@ -39,8 +42,8 @@ class MediaRoom extends Component
     public int $active_file_id = -1;
     public Collection $userCollection;
     public $title = "Media player empty...";
-    public $slctd_id;
-    public $slctd_title = "";
+    // public $slctd_id;
+    // public $slctd_title = "";
     public $audio_slctd = false;
     public $video_slctd = false;
     public $moderator_level;
@@ -56,8 +59,7 @@ class MediaRoom extends Component
 
     public function mount()
     {
-        // Initialising
-
+        // Initialising various values when this class is first loaded.
         $this->user = Auth::user();
         $this->userCollection = new Collection();
 
@@ -121,6 +123,7 @@ class MediaRoom extends Component
         $this->input = null;
     }
 
+    // Toggle the lock state of the room. Fairly straightforward.
     public function toggleLock(){
         if (Gate::allows('admin-action', $this->room->id)) {
             $this->room->refresh();
@@ -136,6 +139,7 @@ class MediaRoom extends Component
         }
     }
 
+    // Broadcast a ban event.
     public function ban(int $victim_id) {
         // Only admins can ban, can't ban self, can't ban room owner
         if (Gate::allows('admin-action', $this->room->id) && $victim_id != Auth::id() && $victim_id != $this->room->user->id) {
@@ -148,6 +152,7 @@ class MediaRoom extends Component
         }
     }
 
+    // Carry out the ban action on the user to be banned.
     public function banned(array $event) {
         if (Auth::user()->id == $event["victim"]["id"]){
             session()->flash('message', 'You have been banned from '.$this->room->name.' by '.$event['user']['username'].'.');
@@ -156,6 +161,8 @@ class MediaRoom extends Component
         }
     }
 
+    // Broadcast unban event. This uses private channels so that the users can be notified
+    // anywhere in the website.
     public function unban(User $user) {
         if (Gate::allows('admin-action', $this->room->id)) {
             $user->banned_from()->detach($this->room);
@@ -164,6 +171,8 @@ class MediaRoom extends Component
         }
     }
 
+    // Broadcast a kick user event. This could be done with a private channel instead
+    // although whether that would be better or not is debatable.
     public function kick(int $victim_id) {
         $victim = User::find($victim_id);
 
@@ -177,14 +186,18 @@ class MediaRoom extends Component
         }
     }
 
+    // Function for kicking a user.
     public function kicked(array $event) {
+        // Check if current user is to be kicked
         if (Auth::user()->id == $event["victim"]["id"]){
             session()->flash('message', 'You were kicked from '.$this->room->name.' by '.$event['user']['username'].'.');
             session()->flash('alert-class', 'alert-warning');
+            // Redirect them back to the home page.
             return redirect()->route('home');
         }
     }
 
+    // Function for toggling roles.
     public function toggleRole(int $newRole, int $userId) {
 
         // Make sure user is allowed to change roles (owner's roles cannot be changed from admin)
@@ -200,6 +213,7 @@ class MediaRoom extends Component
                 $role = $this->roles->find($newRole);
                 $user->roles()->attach($role, ['room_id' => $this->room->id]);
 
+                // Dispatch event to update javascript
                 RoleChangedEvent::dispatch($user, $this->room->id, $role);
                 $this->emitSelf('refresh');
             }   
@@ -207,9 +221,12 @@ class MediaRoom extends Component
     }
 
     public function updateValues(array $event) {
+        // Updating the active file.
         $this->active_file_id = $event["file"]["id"];
     }
 
+    // Function for use in conjunction with a button for performing dying dumps
+    // Used for testing only.
     public function dump(){
         //Auth::user()->friends()->attach(User::find(2));
         //User::find(2)->friends()->attach(Auth::user());
@@ -217,6 +234,7 @@ class MediaRoom extends Component
         dd(User::find(3)->banned_from->contains(1));
     }
 
+    // Send a friend request
     public function sendRequest(int $recipient_id) {
         $recipient =  User::find($recipient_id);
 
@@ -231,37 +249,48 @@ class MediaRoom extends Component
         }
     }
 
+    // Function for placing a vote.
     public function placeVote(File $file){
         if ($this->myVote->id != null){
             if($this->myVote != $file){
+                // If the user has already placed a vote, we need to take away their vote from the file they voted for previously while also
+                // adding one to their new choice.
                 $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes += 1]);
                 $this->room->files()->updateExistingPivot($this->myVote->id, ['votes' => $this->room->files->find($this->myVote->id)->pivot->votes -= 1]);
                 $this->myVote = $file;
                 UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
             }  
         }else{
+            // If the user hasn't already placed a vote on another item in the queue, we simply add one to the
+            // vote field of the selected item. We also store the previously voted for item in the myVote variable.
             $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes += 1]);
             $this->myVote = $file;
             UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
         } 
     }
 
+    // Reset all the vote values of queue items to 0.
     public function resetVotes() {
         foreach ($this->queue as $file) {
             $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes = 0]);
         }
+        // Empty the my vote variable since the voting process has been reset.
         $this->myVote = new File;
         UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
+    // Function for upadting the queue based on the mode selected.
     public function updateQueue(){
         $this->room->refresh();
         if($this->queue_mode == "sequential")
+            // Sort the queue by the order the files were added.
             $this->queue = $this->room->files->sortBy('pivot.created_at');
         else if($this->queue_mode == "vote"){
+            // Sort the queue by the number of votes.
             $this->queue = $this->room->files->sortByDesc('pivot.votes');
         }else if($this->queue_mode == "random"){
             $i = 1;
+            // Here, we shuffle the queue based on the shuffle array generated in broadcastMode
             foreach($this->room->files as $file){
                 $this->room->files()->updateExistingPivot($file->id, ['votes' => $this->room->files->find($file->id)->pivot->votes = $this->shuffle_array[$i]]);
                 $i++;
@@ -270,6 +299,7 @@ class MediaRoom extends Component
         }
     }
 
+    // Changing the mode according to the values from the associated event.
     public function changeMode(array $event){
         $this->queue_mode = $event["newMode"];
         $this->shuffle_array = $event["shuffle_array"];
@@ -277,17 +307,24 @@ class MediaRoom extends Component
         UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
+    // Broadcast the a queue mode change on the presence channel.
     public function broadcastMode(string $newMode){
         if (Gate::allows('moderator-action', $this->room->id)) {
+
+            // If the mode is set to random, the client making the change generates
+            // a random order for the queue to be shuffled in which is then broadcast
+            // to the other users.
             if ($newMode == "random"){
                 for ($i = 1; $i <= count($this->room->files); $i++) {
                     $this->shuffle_array[$i] = rand(1,count($this->room->files));
                 }
             }
+            // Dispatching the change mode event.
             ChangeModeEvent::dispatch(Auth::user(), $newMode, $this->room->id, $this->shuffle_array);
         }
     }
 
+    // Remove a file from the queue, fairly self explanatory
     public function removeFromQueue(int $file_id){
         if (Gate::allows('moderator-action', $this->room->id)) {
             $this->room->files()->detach($file_id);
@@ -296,24 +333,39 @@ class MediaRoom extends Component
         }
     }
 
+    // Play the next item in the playlist
     public function playNext(){
         if(Gate::allows('standard-action', $this->room->id)) {
+
+            // Getting the first file in the queue
             $this->file = $this->queue->first();
+
+            // Making sure there actually is a file to play
             if ($this->file != null){
+
+                // Updating the queue on the backend first
                 $this->room->files()->detach($this->file->id);
                 $this->room->file_id = $this->file->id;
                 $this->room->save();
+
+                // We reset the votes when the new item is played
                 MediaRoom::resetVotes();
+
+                // We also send an update queue event since the queue has been changed
                 UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
+
+                // Since we're also setting a new file to play in the media player, we send 
+                // a set event as well
                 SetEvent::dispatch(Auth::user(), $this->file->id, $this->room->id);
             }
         }
     }
 
+    // Update the values concerning which file is currently selected.
     public function set_media(File $file){
         //$this->current_file = $file->url;
         $this->current_file = $file->id;
-        $this->slctd_title = $file->title;
+        // $this->slctd_title = $file->title;
         if($file->type == "video"){
             $this->video_slctd = true;
             $this->audio_slctd = false;
@@ -327,6 +379,7 @@ class MediaRoom extends Component
         $this->title = $title;
     }
 
+    // Save a newly chosen file
     public function save()
     {
         $this->validate([
@@ -377,12 +430,14 @@ class MediaRoom extends Component
             $ffprobe = FFProbe::create();
             $ffmpeg = FFMpeg::create();
 
+            // Using FFMpeg on videos to grab a frame from halfway through and set it as the thumbnail.
             if($type == 'video'){     
                 $duration = $ffprobe->format($accessPath)->get('duration');
                 $video = $ffmpeg->open($accessPath);
                 $video->frame(TimeCode::fromSeconds(floor($duration/2)))->addFilter(new CustomFrameFilter('scale=1920x938'))->save($thumbnail);
             }
 
+            // Saving the new file to the database.
             $file = new File();
             $file->path = $accessPath;
             $file->type = $type;
@@ -397,6 +452,7 @@ class MediaRoom extends Component
 
     }
 
+    // Delete an uploaded file.
     public function delete($fileid)
     {
         if ($fileid != -1){

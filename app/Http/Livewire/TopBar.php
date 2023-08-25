@@ -7,7 +7,7 @@ use Livewire\Component;
 use App\Models\Room;
 use Pusher\Pusher;
 
-// This livewire component contains any dynamic functionality I need to be persistent across any page.
+// This livewire component contains any dynamic functionality needed to be persistent across any page.
 
 class TopBar extends Component
 {
@@ -29,6 +29,9 @@ class TopBar extends Component
         ];
     }
 
+    // This function allows users to exit gracefully from the room they're in if it's deleted when
+    // they're in it.
+    
     public function exitRoom(array $event) {
         $room_id = $event['room_id'];
 

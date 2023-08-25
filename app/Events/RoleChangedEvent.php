@@ -40,6 +40,7 @@ class RoleChangedEvent implements ShouldBroadcast
     {
         return [
             new PresenceChannel('presence.chat.'.$this->room_id),
+            new PrivateChannel('private.user.'.$this->user->id),
         ];
     }
 

@@ -161,21 +161,26 @@ class UserController extends Controller
     public function destroy(string $id)
     {
 
-        $user = User::findOrFail($id);
+        if(Gate::allows('private', $id)){
+            $user = User::findOrFail($id);
 
-        //Deleting user files from storage when the account is deleted.
-        SystemFile::deleteDirectory('storage/media/videos/'.$user->username);
-        SystemFile::deleteDirectory('storage/media/audios/'.$user->username);
+            //Deleting user files from storage when the account is deleted.
+            SystemFile::deleteDirectory('storage/media/videos/'.$user->username);
+            SystemFile::deleteDirectory('storage/media/audios/'.$user->username);
 
-        // Due to the way the Laravel handles the creation/deletion of tables, and the fact
-        // that the rooms table doesn't get cascade deleted when a file it is associated with gets
-        // deleted, we need to delete the rooms belonging to the user manually when an account is 
-        // deleted to prevent a constraint violation. Fortunately this is easy to do. 
-        $user->rooms()->delete();
-        $user->delete();
+            // Due to the way the Laravel handles the creation/deletion of tables, and the fact
+            // that the rooms table doesn't get cascade deleted when a file it is associated with gets
+            // deleted, we need to delete the rooms belonging to the user manually when an account is 
+            // deleted to prevent a constraint violation. Fortunately this is easy to do. 
+            $user->rooms()->delete();
+            $user->delete();
 
-        session()->flash('message', 'Account deleted.');
-        return redirect()->route('login.logout');
-
+            session()->flash('message', 'Account deleted.');
+            return redirect()->route('login.logout');
+        }else{
+            session()->flash('message', 'You do not have permission to delete this account');
+            session()->flash('alert-class', 'alert-danger');
+            return redirect()->route('home');
+        }
     }
 }

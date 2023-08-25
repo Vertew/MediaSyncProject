@@ -7,6 +7,9 @@ use Livewire\WithFileUploads;
 use Livewire\Component;
 use App\Models\File;
 
+// This is a seperate component that was originally used for file uploads, however 
+// there were some strange errors that came about while doing it that way and so
+// this functionality was transferred to the media room component.
 
 class FileUpload extends Component
 {

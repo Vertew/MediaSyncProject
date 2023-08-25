@@ -30,7 +30,7 @@
 
     <livewire:media-room :room="$room" :queue="$room->files">
 
-    @if(Auth::user()->roles->where('role', 'Admin')->contains('pivot.room_id', $room->id))
+    @if($room->user->id == Auth::id())
         <div class = "container-md mt-5 text-center">
             <form method="POST" action="{{ route('rooms.destroy', ['id'=> $room->id])}}">
                 @csrf

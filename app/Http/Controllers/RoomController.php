@@ -123,10 +123,18 @@ class RoomController extends Controller
      */
     public function destroy(string $id)
     {
-        RoomDeletedEvent::dispatch($id);
         $room = Room::findOrFail($id);
-        $room->delete();
-        session()->flash('message', 'Room deleted.');
-        return redirect()->route('home');
+
+        // Only the owner of the room is allowed to delete it.
+        if(Gate::allows('private', $room->user->id)){
+            RoomDeletedEvent::dispatch($id);
+            $room->delete();
+            session()->flash('message', 'Room deleted.');
+            return redirect()->route('home');
+        }else{
+            session()->flash('message', 'You do not have permission to delete this room.');
+            session()->flash('alert-class', 'alert-danger');
+            return view('rooms.show', ['room' => $room]);
+        }
     }
 }

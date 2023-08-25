@@ -535,6 +535,12 @@ privateChannel
         let indexToRemove = myFriends.indexOf(event.user);
         myFriends.splice(indexToRemove,1);
     })
+
+    .listen('.role-changed', (event) => {
+        console.log(event);
+        currentRole = event.role.role;
+        console.log(currentRole);
+    })
     
 
 channel
@@ -640,13 +646,13 @@ channel
         muteUnmute(username, state);
     })
 
-    .listen('.role-changed', (event) => {
-        console.log(event);
-        if(event.user.username == currentUser){
-            currentRole = event.role.role;
-            console.log(currentRole);
-        }
-    })
+    // .listen('.role-changed', (event) => {
+    //     console.log(event);
+    //     if(event.user.username == currentUser){
+    //         currentRole = event.role.role;
+    //         console.log(currentRole);
+    //     }
+    // })
 
     .listen('.reaction-sent', (event) => {
         console.log(event);

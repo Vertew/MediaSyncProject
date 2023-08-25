@@ -9,6 +9,9 @@ use App\Events\UserUnfriendedEvent;
 use Livewire\Component;
 use App\Models\User;
 
+// This function handles the friend request list logic on the user account page.
+// Fairly straightforward.
+
 class FriendRequestList extends Component
 {
     public $user;

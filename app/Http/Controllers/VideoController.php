@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+// An old class for when the video model was in use instead of the newer File model.
 class VideoController extends Controller
 {
     /**
