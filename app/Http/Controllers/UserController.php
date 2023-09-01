@@ -167,6 +167,7 @@ class UserController extends Controller
             //Deleting user files from storage when the account is deleted.
             SystemFile::deleteDirectory('storage/media/videos/'.$user->username);
             SystemFile::deleteDirectory('storage/media/audios/'.$user->username);
+            SystemFile::deleteDirectory('storage/media/images/'.$user->username);
 
             // Due to the way the Laravel handles the creation/deletion of tables, and the fact
             // that the rooms table doesn't get cascade deleted when a file it is associated with gets
