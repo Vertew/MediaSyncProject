@@ -30,7 +30,9 @@ use App\Events\SetEvent;
 // --- EVENTS ---
 Route::post('/input-message', function(Request $request){
     //event(new MessageEvent($request->message, auth()->user())); <-- Alternative/old way of doing it, achieves the same thing.
-    MessageEvent::dispatch($request->message, auth()->user(), $request->room_id);
+    if(Gate::allows('standard-action', $request->room_id)){
+        MessageEvent::dispatch($request->message, auth()->user(), $request->room_id);
+    }
     return null;
 });
 
