@@ -279,7 +279,7 @@ class MediaRoom extends Component
         UpdateQueueEvent::dispatch(Auth::user(), $this->room->id);
     }
 
-    // Function for upadting the queue based on the mode selected.
+    // Function for updating the queue based on the mode selected.
     public function updateQueue(){
         $this->room->refresh();
         if($this->queue_mode == "sequential")

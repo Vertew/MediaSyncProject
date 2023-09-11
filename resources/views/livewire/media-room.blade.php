@@ -119,9 +119,15 @@
                             <div class="container mt-2 d-grid">
                                 @if ($queue_mode == "vote")
                                     <input type="radio" class='btn-check' name='btnradio' autocomplete="off" id={{"queuebutton".$file->id}} wire:click="placeVote({{$file}})" wire:ignore.self/>    
-                                    <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>
+                                    {{-- <label class="btn btn-outline-primary btn-block d-flex justify-content-between align-items-center" for={{"queuebutton".$file->id}}>
                                         <span class="flex-grow-1">{{$file->title}}</span>
                                         <span class="badge bg-success m-2" title="Votes">{{($room->files->find($file->id))->pivot->votes}}</span>
+                                        <button class="btn btn-danger btn-sm" type="button" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
+                                    </label> --}}
+                                    <label class="btn btn-outline-primary btn-block d-flex align-items-center py-0 ps-0 pe-2" for={{"queuebutton".$file->id}}>
+                                        <div style="height: auto; width: 50%;"><img class="img-fluid rounded-start" src="{{url($file->thumbnail)}}" alt="thumbnail"></div>
+                                        <span class="badge bg-success ms-2" title="Votes">{{($room->files->find($file->id))->pivot->votes}}</span>
+                                        <span class="d-flex align-items-center justify-content-center" style="height: auto; width: 80%;"><small class="lh-1">{{$file->title}}</small></span>
                                         <button class="btn btn-danger btn-sm" type="button" title="Remove from queue" wire:click="removeFromQueue({{ $file->id }})"><b>X</b></button>
                                     </label>
                                 @else
